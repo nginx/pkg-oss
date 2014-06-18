@@ -1,0 +1,23 @@
+Source: nginx
+Section: httpd
+Priority: optional
+Maintainer: Sergey Budnevitch <sb@nginx.com>
+Build-Depends: debhelper (>= 7.0.50~), libssl-dev (>= 0.9.7), libpcre3-dev, zlib1g-dev
+Standards-Version: 3.9.1
+Homepage: http://nginx.org
+
+Package: nginx
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base, adduser
+Provides: httpd
+Description: high performance web server
+ nginx [engine x] is an HTTP and reverse proxy server, as well as
+ a mail proxy server.
+
+Package: nginx-debug
+Architecture: any
+Section: debug
+Priority: extra
+Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${binary:Version})
+Description: debug version of nginx
+ Not stripped version of nginx built with the debugging log support.

@@ -1,0 +1,7 @@
+# nginx.repo
+
+[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/OS/RELEASEVER/$basearch/
+gpgcheck=0
+enabled=1
