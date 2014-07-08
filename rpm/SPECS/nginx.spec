@@ -45,7 +45,7 @@ Requires(pre): pwdutils
 
 Summary: High performance web server
 Name: nginx
-Version: 1.7.2
+Version: 1.7.3
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -326,6 +326,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Jun  8 2014 Sergey Budnevitch <sb@nginx.com>
+- 1.7.3
+
 * Tue Jun 17 2014 Sergey Budnevitch <sb@nginx.com>
 - 1.7.2
 
