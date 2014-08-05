@@ -45,8 +45,8 @@ Requires(pre): pwdutils
 
 Summary: High performance web server
 Name: nginx
-Version: 1.6.0
-Release: 2%{?dist}.ngx
+Version: 1.6.1
+Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
 
@@ -326,6 +326,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Thu Aug  5 2014 Sergey Budnevitch <sb@nginx.com>
+- 1.6.1
+
 * Thu Jul 12 2014 Sergey Budnevitch <sb@nginx.com>
 - incorrect sysconfig filename finding in the initscript fixed
 
