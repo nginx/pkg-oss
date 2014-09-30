@@ -46,7 +46,7 @@ Requires(pre): pwdutils
 
 Summary: High performance web server
 Name: nginx
-Version: 1.7.5
+Version: 1.7.6
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -327,6 +327,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Sep 30 2014 Sergey Budnevitch <sb@nginx.com>
+- 1.7.6
+
 * Tue Sep 16 2014 Sergey Budnevitch <sb@nginx.com>
 - epoch added to the EPEL7/CentOS7 spec to override EPEL one
 - 1.7.5

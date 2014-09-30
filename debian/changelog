@@ -1,3 +1,9 @@
+nginx (1.7.6-1) unstable; urgency=low
+
+  * 1.7.6
+
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 30 Sep 2014 17:53:00 +0400
+
 nginx (1.7.5-1) unstable; urgency=low
 
   * 1.7.5
