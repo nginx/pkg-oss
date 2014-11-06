@@ -2,6 +2,7 @@
 %define nginx_home %{_localstatedir}/cache/nginx
 %define nginx_user nginx
 %define nginx_group nginx
+%define nginx_loggroup adm
 
 # distribution specific definitions
 %define use_systemd (0%{?fedora} && 0%{?fedora} >= 18) || (0%{?rhel} && 0%{?rhel} >= 7) || (0%{?suse_version} == 1315)
@@ -40,6 +41,7 @@ Epoch: 1
 Group: Productivity/Networking/Web/Servers
 BuildRequires: libopenssl-devel
 Requires(pre): pwdutils
+%define nginx_loggroup trusted
 %endif
 
 %if 0%{?suse_version} == 1315
@@ -49,6 +51,7 @@ BuildRequires: systemd
 Requires(pre): shadow
 Requires: systemd
 %define with_spdy 1
+%define nginx_loggroup trusted
 %endif
 
 # end of distribution specific definitions
@@ -70,6 +73,7 @@ Source6: nginx.vh.example_ssl.conf
 Source7: nginx.suse.init
 Source8: nginx.service
 Source9: nginx.upgrade.sh
+Source10: nginx.suse.logrotate
 
 License: 2-clause BSD-like license
 
@@ -219,8 +223,14 @@ make %{?_smp_mflags}
 
 # install log rotation stuff
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d
+%if 0%{?suse_version}
+%{__install} -m 644 -p %{SOURCE10} \
+   $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/nginx
+%else
 %{__install} -m 644 -p %{SOURCE1} \
    $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/nginx
+%endif
+
 %{__install} -m644 %{_builddir}/%{name}-%{version}/objs/nginx.debug \
    $RPM_BUILD_ROOT%{_sbindir}/nginx.debug
 
@@ -303,13 +313,13 @@ BANNER
         if [ ! -e %{_localstatedir}/log/nginx/access.log ]; then
             touch %{_localstatedir}/log/nginx/access.log
             %{__chmod} 640 %{_localstatedir}/log/nginx/access.log
-            %{__chown} nginx:adm %{_localstatedir}/log/nginx/access.log
+            %{__chown} nginx:%{nginx_loggroup} %{_localstatedir}/log/nginx/access.log
         fi
 
         if [ ! -e %{_localstatedir}/log/nginx/error.log ]; then
             touch %{_localstatedir}/log/nginx/error.log
             %{__chmod} 640 %{_localstatedir}/log/nginx/error.log
-            %{__chown} nginx:adm %{_localstatedir}/log/nginx/error.log
+            %{__chown} nginx:%{nginx_loggroup} %{_localstatedir}/log/nginx/error.log
         fi
     fi
 fi
