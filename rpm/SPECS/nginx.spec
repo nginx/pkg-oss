@@ -4,7 +4,7 @@
 %define nginx_group nginx
 
 # distribution specific definitions
-%define use_systemd (0%{?fedora} && 0%{?fedora} >= 18) || (0%{?rhel} && 0%{?rhel} >= 7)
+%define use_systemd (0%{?fedora} && 0%{?fedora} >= 18) || (0%{?rhel} && 0%{?rhel} >= 7) || (0%{?suse_version} == 1315)
 
 %if 0%{?rhel}  == 5
 Group: System Environment/Daemons
@@ -36,10 +36,19 @@ Epoch: 1
 %define with_spdy 1
 %endif
 
-%if 0%{?suse_version}
+%if 0%{?suse_version} == 1110
 Group: Productivity/Networking/Web/Servers
 BuildRequires: libopenssl-devel
 Requires(pre): pwdutils
+%endif
+
+%if 0%{?suse_version} == 1315
+Group: Productivity/Networking/Web/Servers
+BuildRequires: libopenssl-devel
+BuildRequires: systemd
+Requires(pre): shadow
+Requires: systemd
+%define with_spdy 1
 %endif
 
 # end of distribution specific definitions
@@ -199,7 +208,7 @@ make %{?_smp_mflags}
 %else
 # install SYSV init stuff
 %{__mkdir} -p $RPM_BUILD_ROOT%{_initrddir}
-%if 0%{?suse_version}
+%if 0%{?suse_version} == 1110
 %{__install} -m755 %{SOURCE7} \
    $RPM_BUILD_ROOT%{_initrddir}/nginx
 %else

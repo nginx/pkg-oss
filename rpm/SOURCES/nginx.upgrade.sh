@@ -3,7 +3,7 @@
 # Legacy action script for "service nginx upgrade"
 
 # Source function library.
-. /etc/rc.d/init.d/functions
+[ -f /etc/rc.d/init.d/functions ] && . /etc/rc.d/init.d/functions
 
 prog=nginx
 nginx=/usr/sbin/nginx
