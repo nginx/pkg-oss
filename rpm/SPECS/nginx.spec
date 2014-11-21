@@ -94,6 +94,10 @@ Requires: nginx
 %description debug
 Not stripped version of nginx built with the debugging log support.
 
+%if 0%{?suse_version} == 1315
+%debug_package
+%endif
+
 %prep
 %setup -q
 
