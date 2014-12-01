@@ -21,3 +21,11 @@ Priority: extra
 Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${binary:Version})
 Description: debug version of nginx
  Not stripped version of nginx built with the debugging log support.
+
+Package: nginx-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: ${misc:Depends}, nginx (= ${binary:Version})
+Description: nginx debug symbols
+ This package contains the debugging symbols for nginx.
