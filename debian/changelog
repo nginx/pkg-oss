@@ -1,3 +1,10 @@
+nginx (1.7.8-1) unstable; urgency=low
+
+  * 1.7.8
+  * package with debug symbols added
+
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 02 Dec 2014 12:00:00 +0300
+
 nginx (1.7.7-1) unstable; urgency=low
 
   * 1.7.7
