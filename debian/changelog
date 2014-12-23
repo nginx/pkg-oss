@@ -1,3 +1,10 @@
+nginx (1.7.9-1) unstable; urgency=low
+
+  * 1.7.9
+  * init-script now sends signal only to the PID derived from pidfile
+
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 23 Dec 2014 17:56:00 +0300
+
 nginx (1.7.8-1) unstable; urgency=low
 
   * 1.7.8
