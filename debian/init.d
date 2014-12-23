@@ -45,7 +45,7 @@ do_stop()
     #   1 if daemon was already stopped
     #   2 if daemon could not be stopped
     #   other if a failure occurred
-    start-stop-daemon --stop --quiet --oknodo --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
+    start-stop-daemon --stop --quiet --oknodo --retry=TERM/30/KILL/5 --pidfile $PIDFILE
     RETVAL="$?"
     rm -f $PIDFILE
     return "$RETVAL"
@@ -53,7 +53,7 @@ do_stop()
 
 do_reload() {
     #
-    start-stop-daemon --stop --signal HUP --quiet --pidfile $PIDFILE --name $NAME
+    start-stop-daemon --stop --signal HUP --quiet --pidfile $PIDFILE
     RETVAL="$?"
     return "$RETVAL"
 }
@@ -78,13 +78,13 @@ do_upgrade() {
     OLDBINPIDFILE=$PIDFILE.oldbin
 
     do_configtest -q || return 6
-    start-stop-daemon --stop --signal USR2 --quiet --pidfile $PIDFILE --name $NAME
+    start-stop-daemon --stop --signal USR2 --quiet --pidfile $PIDFILE
     RETVAL="$?"
     
     for i in `/usr/bin/seq  $UPGRADEWAITLOOPS`; do
         sleep $SLEEPSEC
         if [ -f $OLDBINPIDFILE -a -f $PIDFILE ]; then
-            start-stop-daemon --stop --signal QUIT --quiet --pidfile $OLDBINPIDFILE --name $NAME
+            start-stop-daemon --stop --signal QUIT --quiet --pidfile $OLDBINPIDFILE
             RETVAL="$?"
             return
         fi
