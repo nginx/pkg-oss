@@ -58,7 +58,7 @@ Requires: systemd
 
 Summary: High performance web server
 Name: nginx
-Version: 1.6.2
+Version: 1.6.3
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -350,6 +350,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Apr  7 2015 Sergey Budnevitch <sb@nginx.com>
+- 1.6.3
+
 * Tue Sep 16 2014 Sergey Budnevitch <sb@nginx.com>
 - epoch added to the EPEL7/CentOS7 spec to override EPEL one
 - 1.6.2
