@@ -58,7 +58,7 @@ Requires: systemd
 
 Summary: High performance web server
 Name: nginx
-Version: 1.7.12
+Version: 1.6.3
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -351,99 +351,54 @@ fi
 
 %changelog
 * Tue Apr  7 2015 Sergey Budnevitch <sb@nginx.com>
-- 1.7.12
-
-* Tue Mar 24 2015 Sergey Budnevitch <sb@nginx.com>
-- 1.7.11
-
-* Tue Feb 10 2015 Sergey Budnevitch <sb@nginx.com>
-- 1.7.10
-
-* Tue Dec 23 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.7.9
-
-* Tue Dec  2 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.7.8
-
-* Tue Sep 30 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.7.6
+- 1.6.3
 
 * Tue Sep 16 2014 Sergey Budnevitch <sb@nginx.com>
 - epoch added to the EPEL7/CentOS7 spec to override EPEL one
-- 1.7.5
+- 1.6.2
 
-* Tue Aug  5 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.7.4
+* Thu Aug  5 2014 Sergey Budnevitch <sb@nginx.com>
+- 1.6.1
 
-* Tue Jul  8 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.7.3
-
-* Tue Jun 17 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.7.2
-
-* Tue May 27 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.7.1
+* Thu Jul 12 2014 Sergey Budnevitch <sb@nginx.com>
 - incorrect sysconfig filename finding in the initscript fixed
 
 * Thu Apr 24 2014 Konstantin Pavlov <thresh@nginx.com>
-- 1.7.0
-
-* Tue Apr  8 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.5.13
-- built spdy module on rhel/centos 6
+- 1.6.0
+- http-auth-request module added
 
 * Tue Mar 18 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.5.12
+- 1.4.7
 - spec cleanup
 - openssl version dependence added
 - upgrade() function in the init script improved
 - warning added when binary upgrade returns non-zero exit code
 
 * Tue Mar  4 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.5.11
+- 1.4.6
 
-* Tue Feb  4 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.5.10
-
-* Wed Jan 22 2014 Sergey Budnevitch <sb@nginx.com>
-- 1.5.9
-
-* Tue Dec 17 2013 Sergey Budnevitch <sb@nginx.com>
-- 1.5.8
-- fixed invalid week days in the changelog
+* Tue Feb 11 2014 Konstantin Pavlov <thresh@nginx.com>
+- 1.4.5
 
 * Tue Nov 19 2013 Sergey Budnevitch <sb@nginx.com>
-- 1.5.7
+- 1.4.4
 
-* Tue Oct  1 2013 Sergey Budnevitch <sb@nginx.com>
-- 1.5.6
+* Tue Oct  8 2013 Sergey Budnevitch <sb@nginx.com>
+- 1.4.3
 
-* Tue Sep 17 2013 Andrei Belov <defan@nginx.com>
-- 1.5.5
+* Tue Jul 17 2013 Sergey Budnevitch <sb@nginx.com>
+- 1.4.2
 
-* Tue Aug 27 2013 Sergey Budnevitch <sb@nginx.com>
-- 1.5.4
-- auth request module added
+* Tue May  6 2013 Sergey Budnevitch <sb@nginx.com>
+- 1.4.1
 
-* Tue Jul 30 2013 Sergey Budnevitch <sb@nginx.com>
-- 1.5.3
-
-* Tue Jul  2 2013 Sergey Budnevitch <sb@nginx.com>
-- 1.5.2
-
-* Tue Jun  4 2013 Sergey Budnevitch <sb@nginx.com>
-- 1.5.1
-
-* Mon May  6 2013 Sergey Budnevitch <sb@nginx.com>
-- 1.5.0
-
-* Tue Apr 16 2013 Sergey Budnevitch <sb@nginx.com>
-- 1.3.16
-
-* Tue Mar 26 2013 Sergey Budnevitch <sb@nginx.com>
-- 1.3.15
+* Wed Apr 24 2013 Sergey Budnevitch <sb@nginx.com>
 - gunzip module added
+- 1.4.0
+
+* Tue Apr  2 2013 Sergey Budnevitch <sb@nginx.com>
 - set permissions on default log files at installation
+- 1.2.8
 
 * Tue Feb 12 2013 Sergey Budnevitch <sb@nginx.com>
 - excess slash removed from --prefix
@@ -514,5 +469,5 @@ fi
 - 1.0.6
 - replace "conf.d/*" config include with "conf.d/*.conf" in default nginx.conf
 
-* Wed Aug 10 2011 Sergey Budnevitch
+* Tue Aug 10 2011 Sergey Budnevitch
 - Initial release

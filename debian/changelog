@@ -1,187 +1,89 @@
-nginx (1.7.12-1) unstable; urgency=low
+nginx (1.6.3-1) unstable; urgency=low
 
-  * 1.7.12
+  * 1.6.3
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 07 Apr 2015 19:33:00 +0300
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 07 Apr 2015 19:36:00 +0300
 
-nginx (1.7.11-1) unstable; urgency=low
+nginx (1.6.2-1) unstable; urgency=low
 
-  * 1.7.11
+  * 1.6.2
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 24 Mar 2015 18:52:00 +0300
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 16 Sep 2014 13:57:00 +0400
 
-nginx (1.7.10-1) unstable; urgency=low
+nginx (1.6.1-1) unstable; urgency=low
 
-  * 1.7.10
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 10 Feb 2015 15:33:00 +0300
-
-nginx (1.7.9-1) unstable; urgency=low
-
-  * 1.7.9
-  * init-script now sends signal only to the PID derived from pidfile
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 23 Dec 2014 17:56:00 +0300
-
-nginx (1.7.8-1) unstable; urgency=low
-
-  * 1.7.8
-  * package with debug symbols added
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 02 Dec 2014 12:00:00 +0300
-
-nginx (1.7.7-1) unstable; urgency=low
-
-  * 1.7.7
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 28 Oct 2014 16:35:00 +0400
-
-nginx (1.7.6-1) unstable; urgency=low
-
-  * 1.7.6
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 30 Sep 2014 17:53:00 +0400
-
-nginx (1.7.5-1) unstable; urgency=low
-
-  * 1.7.5
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 16 Sep 2014 13:49:00 +0400
-
-nginx (1.7.4-1) unstable; urgency=low
-
-  * 1.7.4
+  * 1.6.1
   * init-script now returns 0 on stop command if nginx is not running
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 05 Aug 2014 14:10:00 +0400
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 05 Aug 2014 13:37:00 +0400
 
-nginx (1.7.3-1) unstable; urgency=low
+nginx (1.6.0-1) unstable; urgency=low
 
-  * 1.7.3
+  * 1.6.0
+  * http-auth-request module added
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 08 Jul 2014 18:33:00 +0400
+ -- Konstantin Pavlov <thresh@nginx.com>  Thu, 24 Apr 2014 17:12:40 +0400
 
-nginx (1.7.2-1) unstable; urgency=low
+nginx (1.4.7-1) unstable; urgency=low
 
-  * 1.7.2
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 17 Jun 2014 18:18:00 +0400
-
-nginx (1.7.1-1) unstable; urgency=low
-
-  * 1.7.1
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 27 May 2014 18:12:00 +0400
-
-nginx (1.7.0-1) unstable; urgency=low
-
-  * 1.7.0
-
- -- Konstantin Pavlov <thresh@nginx.com>  Thu, 24 Apr 2014 19:30:07 +0400
-
-nginx (1.5.13-1) unstable; urgency=low
-
-  * 1.5.13
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 08 Apr 2014 17:00:00 +0400
-
-nginx (1.5.12-1) unstable; urgency=low
-
-  * 1.5.12
+  * 1.4.7
   * warning added when binary upgrade returns non-zero exit code
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 18 Mar 2014 16:04:01 +0400
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 18 Mar 2014 16:05:56 +0400
 
-nginx (1.5.11-1) unstable; urgency=low
+nginx (1.4.6-1) unstable; urgency=low
 
-  * 1.5.11
+  * 1.4.6
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 04 Mar 2014 15:33:32 +0400
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 04 Mar 2014 15:39:59 +0400
 
-nginx (1.5.10-1) unstable; urgency=low
+nginx (1.4.5-1) unstable; urgency=low
 
-  * 1.5.10
+  * 1.4.5
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 04 Feb 2014 16:12:01 +0400
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 11 Feb 2014 17:48:22 +0400
 
-nginx (1.5.9-1) unstable; urgency=low
+nginx (1.4.4-1) unstable; urgency=low
 
-  * 1.5.9
+  * 1.4.4
 
- -- Sergey Budnevitch <sb@nginx.com>  Wed, 22 Jan 2014 17:54:40 +0400
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 19 Nov 2013 15:52:19 +0400
 
-nginx (1.5.8-1) unstable; urgency=low
+nginx (1.4.3-1) unstable; urgency=low
 
-  * 1.5.8
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 17 Dec 2013 18:05:32 +0400
-
-nginx (1.5.7-1) unstable; urgency=low
-
-  * 1.5.7
+  * 1.4.3
   * init script now honours additional options sourced from /etc/default/nginx
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 19 Nov 2013 15:59:56 +0400
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 08 Oct 2013 17:18:22 +0400
 
-nginx (1.5.6-1) unstable; urgency=low
+nginx (1.4.2-1) unstable; urgency=low
 
-  * 1.5.6
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 01 Oct 2013 16:35:33 +0400
-
-nginx (1.5.5-1) unstable; urgency=low
-
-  * 1.5.5
-
- -- Andrei Belov <defan@nginx.com>  Tue, 17 Sep 2013 17:40:00 +0400
-
-nginx (1.5.4-1) unstable; urgency=low
-
-  * 1.5.4
-  * auth request module added
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 27 Aug 2013 15:00:00 +0400
-
-nginx (1.5.3-1) unstable; urgency=low
-
-  * 1.5.3
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 30 Jul 2013 13:55:04 +0400
-
-nginx (1.5.2-1) unstable; urgency=low
-
-  * 1.5.2
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 02 Jul 2013 17:27:00 +0400
-
-nginx (1.5.1-1) unstable; urgency=low
-
-  * 1.5.1
+  * 1.4.2
   * dpkg-buildflags options now passed by --with-{cc,ld}-opt
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 04 Jun 2013 17:45:54 +0400
+ -- Sergey Budnevitch <sb@nginx.com>  Wed, 17 Jul 2013 17:32:00 +0400
 
-nginx (1.5.0-1) unstable; urgency=low
+nginx (1.4.1-1) unstable; urgency=low
 
-  * 1.5.0
+  * 1.4.1
   * fixed openssl version detection with dash as /bin/sh
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 06 May 2013 14:15:00 +0400
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 06 May 2013 14:05:00 +0400
 
-nginx (1.3.16-1) unstable; urgency=low
+nginx (1.4.0-1) unstable; urgency=low
 
-  * 1.3.16
-
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 16 Apr 2013 16:44:00 +0400
-
-nginx (1.3.15-1) unstable; urgency=low
-
-  * 1.3.15
+  * 1.4.0
   * gunzip module added
   * spdy module added if openssl version >= 1.0.1
+
+ -- Sergey Budnevitch <sb@nginx.com>  Wed, 24 Apr 2013 17:17:00 +0400
+
+nginx (1.2.8-1) unstable; urgency=low
+
+  * 1.2.8
   * set permissions on default log files at installation
 
- -- Sergey Budnevitch <sb@nginx.com>  Tue, 26 Mar 2013 19:05:00 +0400
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 02 Apr 2013 16:50:00 +0400
 
 nginx (1.2.7-1) unstable; urgency=low
 
