@@ -58,7 +58,7 @@ Requires: systemd
 
 Summary: High performance web server
 Name: nginx
-Version: 1.7.12
+Version: 1.9.0
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -69,7 +69,6 @@ Source2: nginx.init
 Source3: nginx.sysconf
 Source4: nginx.conf
 Source5: nginx.vh.default.conf
-Source6: nginx.vh.example_ssl.conf
 Source7: nginx.suse.init
 Source8: nginx.service
 Source9: nginx.upgrade.sh
@@ -130,6 +129,9 @@ Not stripped version of nginx built with the debugging log support.
         --with-http_secure_link_module \
         --with-http_stub_status_module \
         --with-http_auth_request_module \
+        --with-threads \
+        --with-stream \
+        --with-stream_ssl_module \
         --with-mail \
         --with-mail_ssl_module \
         --with-file-aio \
@@ -169,6 +171,9 @@ make %{?_smp_mflags}
         --with-http_secure_link_module \
         --with-http_stub_status_module \
         --with-http_auth_request_module \
+        --with-threads \
+        --with-stream \
+        --with-stream_ssl_module \
         --with-mail \
         --with-mail_ssl_module \
         --with-file-aio \
@@ -198,8 +203,6 @@ make %{?_smp_mflags}
    $RPM_BUILD_ROOT%{_sysconfdir}/nginx/nginx.conf
 %{__install} -m 644 -p %{SOURCE5} \
    $RPM_BUILD_ROOT%{_sysconfdir}/nginx/conf.d/default.conf
-%{__install} -m 644 -p %{SOURCE6} \
-   $RPM_BUILD_ROOT%{_sysconfdir}/nginx/conf.d/example_ssl.conf
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
 %{__install} -m 644 -p %{SOURCE3} \
@@ -350,6 +353,12 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Apr 28 2015 Sergey Budnevitch <sb@nginx.com>
+- 1.9.0
+- thread pool support added
+- stream module added
+- example_ssl.conf removed
+
 * Tue Apr  7 2015 Sergey Budnevitch <sb@nginx.com>
 - 1.7.12
 

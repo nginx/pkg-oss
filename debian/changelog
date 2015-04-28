@@ -1,3 +1,12 @@
+nginx (1.9.0-1) unstable; urgency=low
+
+  * 1.9.0
+  * thread pool support added
+  * stream module added
+  * example_ssl.conf removed
+
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 28 Apr 2015 11:29:00 +0300
+
 nginx (1.7.12-1) unstable; urgency=low
 
   * 1.7.12
