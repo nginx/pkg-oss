@@ -58,7 +58,7 @@ Requires: systemd
 
 Summary: High performance web server
 Name: nginx
-Version: 1.9.1
+Version: 1.9.2
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -352,6 +352,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Jun 16 2015 Sergey Budnevitch <sb@nginx.com>
+- 1.9.2
+
 * Tue May 26 2015 Sergey Budnevitch <sb@nginx.com>
 - 1.9.1
 
