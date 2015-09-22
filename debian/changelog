@@ -1,3 +1,10 @@
+nginx (1.9.5-1) unstable; urgency=low
+
+  * 1.9.5
+  * http_spdy module replaced with http_v2 module
+
+ -- Andrei Belov <defan@nginx.com>  Tue, 22 Sep 2015 10:30:00 +0300
+
 nginx (1.9.4-1) unstable; urgency=low
 
   * 1.9.4
