@@ -13,11 +13,11 @@ WITH_HTTP2 := $(shell printf "Source: nginx\nBuild-Depends: libssl-dev (>= 1.0.1
 override_dh_auto_configure: configure_debug
 
 override_dh_strip:
-	dh_strip -Xdebug --dbg-package=nginx-dbg
+	dh_strip --dbg-package=nginx-dbg
 
 override_dh_auto_build:
 	dh_auto_build
-	mv objs/nginx objs/nginx.debug
+	mv objs/nginx objs/nginx-debug
 	CFLAGS="" ./configure \
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
@@ -100,7 +100,18 @@ configure_debug:
 		--with-debug
 
 override_dh_auto_install:
+	sed -e 's/%%PROVIDES%%/nginx/g' \
+		-e 's/%%DEFAULTSTART%%/2 3 4 5/g' \
+		-e 's/%%DEFAULTSTOP%%/0 1 6/g' \
+		< debian/init.d.in > debian/init.d
 	dh_auto_install
+	mkdir -p debian/nginx/etc/init.d debian/nginx/etc/default
+	sed -e 's/%%PROVIDES%%/nginx-debug/g' \
+		-e 's/%%DEFAULTSTART%%//g' \
+		-e 's/%%DEFAULTSTOP%%/0 1 2 3 4 5 6/g' \
+		< debian/init.d.in > debian/debug.init.d
+	/usr/bin/install -m 755 debian/debug.init.d debian/nginx/etc/init.d/nginx-debug
+	/usr/bin/install -m 644 debian/nginx-debug.default debian/nginx/etc/default/nginx-debug
 	/usr/bin/install -m 644 debian/nginx.conf debian/nginx/etc/nginx/
 	/usr/bin/install -m 644 conf/win-utf debian/nginx/etc/nginx/
 	/usr/bin/install -m 644 conf/koi-utf debian/nginx/etc/nginx/
@@ -113,3 +124,8 @@ override_dh_auto_install:
 	/usr/bin/install -m 644 html/50x.html debian/nginx/usr/share/nginx/html/
 	/usr/bin/install -m 644 debian/nginx.vh.default.conf debian/nginx/etc/nginx/conf.d/default.conf
 	/usr/bin/install -m 755 objs/nginx  debian/nginx/usr/sbin/
+	/usr/bin/install -m 755 objs/nginx-debug  debian/nginx/usr/sbin/
+
+override_dh_clean:
+	dh_clean
+	rm -f debian/*init.d

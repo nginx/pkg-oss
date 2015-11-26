@@ -37,13 +37,6 @@ Epoch: 1
 %define with_http2 1
 %endif
 
-%if 0%{?suse_version} == 1110
-Group: Productivity/Networking/Web/Servers
-BuildRequires: libopenssl-devel
-Requires(pre): pwdutils
-%define nginx_loggroup trusted
-%endif
-
 %if 0%{?suse_version} == 1315
 Group: Productivity/Networking/Web/Servers
 BuildRequires: libopenssl-devel
@@ -65,14 +58,15 @@ URL: http://nginx.org/
 
 Source0: http://nginx.org/download/%{name}-%{version}.tar.gz
 Source1: logrotate
-Source2: nginx.init
+Source2: nginx.init.in
 Source3: nginx.sysconf
 Source4: nginx.conf
 Source5: nginx.vh.default.conf
-Source7: nginx.suse.init
+Source7: nginx-debug.sysconf
 Source8: nginx.service
 Source9: nginx.upgrade.sh
 Source10: nginx.suse.logrotate
+Source11: nginx-debug.service
 
 License: 2-clause BSD-like license
 
@@ -86,19 +80,17 @@ Provides: webserver
 nginx [engine x] is an HTTP and reverse proxy server, as well as
 a mail proxy server.
 
-%package debug
-Summary: debug version of nginx
-Group: System Environment/Daemons
-Requires: nginx
-%description debug
-Not stripped version of nginx built with the debugging log support.
-
 %if 0%{?suse_version} == 1315
 %debug_package
 %endif
 
 %prep
 %setup -q
+cp %{SOURCE2} .
+sed -e 's|%%DEFAULTSTART%%|2 3 4 5|g' -e 's|%%DEFAULTSTOP%%|0 1 6|g' \
+    -e 's|%%PROVIDES%%|nginx|g' < %{SOURCE2} > nginx.init
+sed -e 's|%%DEFAULTSTART%%||g' -e 's|%%DEFAULTSTOP%%|0 1 2 3 4 5 6|g' \
+    -e 's|%%PROVIDES%%|nginx-debug|g' < %{SOURCE2} > nginx-debug.init
 
 %build
 ./configure \
@@ -142,7 +134,7 @@ Not stripped version of nginx built with the debugging log support.
         $*
 make %{?_smp_mflags}
 %{__mv} %{_builddir}/%{name}-%{version}/objs/nginx \
-        %{_builddir}/%{name}-%{version}/objs/nginx.debug
+        %{_builddir}/%{name}-%{version}/objs/nginx-debug
 ./configure \
         --prefix=%{_sysconfdir}/nginx \
         --sbin-path=%{_sbindir}/nginx \
@@ -207,25 +199,24 @@ make %{?_smp_mflags}
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
 %{__install} -m 644 -p %{SOURCE3} \
    $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nginx
+%{__install} -m 644 -p %{SOURCE7} \
+   $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nginx-debug
 
 %if %{use_systemd}
 # install systemd-specific files
 %{__mkdir} -p $RPM_BUILD_ROOT%{_unitdir}
 %{__install} -m644 %SOURCE8 \
         $RPM_BUILD_ROOT%{_unitdir}/nginx.service
+%{__install} -m644 %SOURCE11 \
+        $RPM_BUILD_ROOT%{_unitdir}/nginx-debug.service
 %{__mkdir} -p $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx
 %{__install} -m755 %SOURCE9 \
         $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx/upgrade
 %else
 # install SYSV init stuff
 %{__mkdir} -p $RPM_BUILD_ROOT%{_initrddir}
-%if 0%{?suse_version} == 1110
-%{__install} -m755 %{SOURCE7} \
-   $RPM_BUILD_ROOT%{_initrddir}/nginx
-%else
-%{__install} -m755 %{SOURCE2} \
-   $RPM_BUILD_ROOT%{_initrddir}/nginx
-%endif
+%{__install} -m755 nginx.init $RPM_BUILD_ROOT%{_initrddir}/nginx
+%{__install} -m755 nginx-debug.init $RPM_BUILD_ROOT%{_initrddir}/nginx-debug
 %endif
 
 # install log rotation stuff
@@ -238,8 +229,8 @@ make %{?_smp_mflags}
    $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/nginx
 %endif
 
-%{__install} -m644 %{_builddir}/%{name}-%{version}/objs/nginx.debug \
-   $RPM_BUILD_ROOT%{_sbindir}/nginx.debug
+%{__install} -m755 %{_builddir}/%{name}-%{version}/objs/nginx-debug \
+   $RPM_BUILD_ROOT%{_sbindir}/nginx-debug
 
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
@@ -248,6 +239,7 @@ make %{?_smp_mflags}
 %defattr(-,root,root)
 
 %{_sbindir}/nginx
+%{_sbindir}/nginx-debug
 
 %dir %{_sysconfdir}/nginx
 %dir %{_sysconfdir}/nginx/conf.d
@@ -264,12 +256,15 @@ make %{?_smp_mflags}
 
 %config(noreplace) %{_sysconfdir}/logrotate.d/nginx
 %config(noreplace) %{_sysconfdir}/sysconfig/nginx
+%config(noreplace) %{_sysconfdir}/sysconfig/nginx-debug
 %if %{use_systemd}
 %{_unitdir}/nginx.service
+%{_unitdir}/nginx-debug.service
 %dir %{_libexecdir}/initscripts/legacy-actions/nginx
 %{_libexecdir}/initscripts/legacy-actions/nginx/*
 %else
 %{_initrddir}/nginx
+%{_initrddir}/nginx-debug
 %endif
 
 %dir %{_datadir}/nginx
@@ -278,9 +273,6 @@ make %{?_smp_mflags}
 
 %attr(0755,root,root) %dir %{_localstatedir}/cache/nginx
 %attr(0755,root,root) %dir %{_localstatedir}/log/nginx
-
-%files debug
-%attr(0755,root,root) %{_sbindir}/nginx.debug
 
 %pre
 # Add the "nginx" user
@@ -295,8 +287,10 @@ exit 0
 if [ $1 -eq 1 ]; then
 %if %{use_systemd}
     /usr/bin/systemctl preset nginx.service >/dev/null 2>&1 ||:
+    /usr/bin/systemctl preset nginx-debug.service >/dev/null 2>&1 ||:
 %else
     /sbin/chkconfig --add nginx
+    /sbin/chkconfig --add nginx-debug
 %endif
     # print site info
     cat <<BANNER
@@ -338,6 +332,7 @@ if [ $1 -eq 0 ]; then
 %else
     /sbin/service nginx stop > /dev/null 2>&1
     /sbin/chkconfig --del nginx
+    /sbin/chkconfig --del nginx-debug
 %endif
 fi
 

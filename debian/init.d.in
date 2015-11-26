@@ -1,28 +1,36 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          nginx
+# Provides:          %%PROVIDES%%
 # Required-Start:    $network $remote_fs $local_fs 
 # Required-Stop:     $network $remote_fs $local_fs
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
+# Default-Start:     %%DEFAULTSTART%%
+# Default-Stop:      %%DEFAULTSTOP%%
 # Short-Description: Stop/start nginx
 ### END INIT INFO
 
 # Author: Sergey Budnevitch <sb@nginx.com>
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC=nginx
-NAME=nginx
-CONFFILE=/etc/nginx/nginx.conf
-DAEMON=/usr/sbin/nginx
-PIDFILE=/var/run/$NAME.pid
-SCRIPTNAME=/etc/init.d/$NAME
+
+if [ -L $0 ]; then
+    SCRIPTNAME=`/bin/readlink -f $0`
+else
+    SCRIPTNAME=$0
+fi
+
+sysconfig=`/usr/bin/basename $SCRIPTNAME`
+
+[ -r /etc/default/$sysconfig ] && . /etc/default/$sysconfig
+
+DESC=${DESC-%%PROVIDES%%}
+NAME=${NAME-%%PROVIDES%%}
+CONFFILE=${CONFFILE-/etc/nginx/nginx.conf}
+DAEMON=${DAEMON-/usr/sbin/%%PROVIDES%%}
+PIDFILE=${PIDFILE-/var/run/nginx.pid}
 SLEEPSEC=1
 UPGRADEWAITLOOPS=5
 
 [ -x $DAEMON ] || exit 0
-
-[ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
 DAEMON_ARGS="-c $CONFFILE $DAEMON_ARGS"
 
