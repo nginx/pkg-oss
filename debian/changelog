@@ -1,3 +1,10 @@
+nginx (1.9.8-1) unstable; urgency=low
+
+  * 1.9.8
+  * http_slice module enabled
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 08 Dec 2015 15:55:00 +0300
+
 nginx (1.9.7-1) unstable; urgency=low
 
   * 1.9.7

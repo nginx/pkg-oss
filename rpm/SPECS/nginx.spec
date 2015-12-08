@@ -51,7 +51,7 @@ Requires: systemd
 
 Summary: High performance web server
 Name: nginx
-Version: 1.9.7
+Version: 1.9.8
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -125,6 +125,7 @@ sed -e 's|%%DEFAULTSTART%%||g' -e 's|%%DEFAULTSTOP%%|0 1 2 3 4 5 6|g' \
         --with-threads \
         --with-stream \
         --with-stream_ssl_module \
+        --with-http_slice_module \
         --with-mail \
         --with-mail_ssl_module \
         --with-file-aio \
@@ -167,6 +168,7 @@ make %{?_smp_mflags}
         --with-threads \
         --with-stream \
         --with-stream_ssl_module \
+        --with-http_slice_module \
         --with-mail \
         --with-mail_ssl_module \
         --with-file-aio \
@@ -352,6 +354,10 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Dec  8 2015 Konstantin Pavlov <thresh@nginx.com>
+- 1.9.8
+- http_slice module enabled
+
 * Tue Nov 17 2015 Konstantin Pavlov <thresh@nginx.com>
 - 1.9.7
 
