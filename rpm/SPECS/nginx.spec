@@ -67,6 +67,7 @@ Source8: nginx.service
 Source9: nginx.upgrade.sh
 Source10: nginx.suse.logrotate
 Source11: nginx-debug.service
+Source12: COPYRIGHT
 
 License: 2-clause BSD-like license
 
@@ -188,6 +189,10 @@ make %{?_smp_mflags}
 %{__mkdir} -p $RPM_BUILD_ROOT%{_localstatedir}/log/nginx
 %{__mkdir} -p $RPM_BUILD_ROOT%{_localstatedir}/run/nginx
 %{__mkdir} -p $RPM_BUILD_ROOT%{_localstatedir}/cache/nginx
+
+%{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/nginx
+%{__install} -m 644 -p %{SOURCE12} \
+   $RPM_BUILD_ROOT%{_datadir}/doc/nginx/
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/nginx/conf.d
 %{__rm} $RPM_BUILD_ROOT%{_sysconfdir}/nginx/nginx.conf
