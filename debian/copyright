@@ -12,7 +12,7 @@ Upstream Author:
 
 Copyright:
 
- Copyright (C) 2002-2011 Igor Sysoev
+ Copyright (C) 2002-2015 Igor Sysoev
 
 License:
 
@@ -39,5 +39,5 @@ License:
 
 The Debian packaging is:
 
-  Copyright (C) 2011 nginx inc.
+  Copyright (C) 2011-2015 nginx inc.
   provided under the same license as nginx itself.
