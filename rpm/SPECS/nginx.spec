@@ -192,9 +192,9 @@ make %{?_smp_mflags}
 %{__mkdir} -p $RPM_BUILD_ROOT%{_localstatedir}/run/nginx
 %{__mkdir} -p $RPM_BUILD_ROOT%{_localstatedir}/cache/nginx
 
-%{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/nginx
+%{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/%{name}-%{version}
 %{__install} -m 644 -p %{SOURCE12} \
-    $RPM_BUILD_ROOT%{_datadir}/doc/nginx/
+    $RPM_BUILD_ROOT%{_datadir}/doc/%{name}-%{version}/
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/nginx/conf.d
 %{__rm} $RPM_BUILD_ROOT%{_sysconfdir}/nginx/nginx.conf
@@ -280,6 +280,9 @@ make %{?_smp_mflags}
 
 %attr(0755,root,root) %dir %{_localstatedir}/cache/nginx
 %attr(0755,root,root) %dir %{_localstatedir}/log/nginx
+
+%doc %{_datadir}/doc/%{name}-%{version}
+%doc %{_datadir}/doc/%{name}-%{version}/COPYRIGHT
 
 %pre
 # Add the "nginx" user
