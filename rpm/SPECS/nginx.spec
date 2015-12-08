@@ -192,31 +192,31 @@ make %{?_smp_mflags}
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/nginx
 %{__install} -m 644 -p %{SOURCE12} \
-   $RPM_BUILD_ROOT%{_datadir}/doc/nginx/
+    $RPM_BUILD_ROOT%{_datadir}/doc/nginx/
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/nginx/conf.d
 %{__rm} $RPM_BUILD_ROOT%{_sysconfdir}/nginx/nginx.conf
 %{__install} -m 644 -p %{SOURCE4} \
-   $RPM_BUILD_ROOT%{_sysconfdir}/nginx/nginx.conf
+    $RPM_BUILD_ROOT%{_sysconfdir}/nginx/nginx.conf
 %{__install} -m 644 -p %{SOURCE5} \
-   $RPM_BUILD_ROOT%{_sysconfdir}/nginx/conf.d/default.conf
+    $RPM_BUILD_ROOT%{_sysconfdir}/nginx/conf.d/default.conf
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
 %{__install} -m 644 -p %{SOURCE3} \
-   $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nginx
+    $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nginx
 %{__install} -m 644 -p %{SOURCE7} \
-   $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nginx-debug
+    $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/nginx-debug
 
 %if %{use_systemd}
 # install systemd-specific files
 %{__mkdir} -p $RPM_BUILD_ROOT%{_unitdir}
 %{__install} -m644 %SOURCE8 \
-        $RPM_BUILD_ROOT%{_unitdir}/nginx.service
+    $RPM_BUILD_ROOT%{_unitdir}/nginx.service
 %{__install} -m644 %SOURCE11 \
-        $RPM_BUILD_ROOT%{_unitdir}/nginx-debug.service
+    $RPM_BUILD_ROOT%{_unitdir}/nginx-debug.service
 %{__mkdir} -p $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx
 %{__install} -m755 %SOURCE9 \
-        $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx/upgrade
+    $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx/upgrade
 %else
 # install SYSV init stuff
 %{__mkdir} -p $RPM_BUILD_ROOT%{_initrddir}
@@ -228,14 +228,14 @@ make %{?_smp_mflags}
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d
 %if 0%{?suse_version}
 %{__install} -m 644 -p %{SOURCE10} \
-   $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/nginx
+    $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/nginx
 %else
 %{__install} -m 644 -p %{SOURCE1} \
-   $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/nginx
+    $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/nginx
 %endif
 
 %{__install} -m755 %{_builddir}/%{name}-%{version}/objs/nginx-debug \
-   $RPM_BUILD_ROOT%{_sbindir}/nginx-debug
+    $RPM_BUILD_ROOT%{_sbindir}/nginx-debug
 
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
