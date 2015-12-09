@@ -51,7 +51,7 @@ Requires: systemd
 
 Summary: High performance web server
 Name: nginx
-Version: 1.9.8
+Version: 1.9.9
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -357,6 +357,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Wed Dec  9 2015 Konstantin Pavlov <thresh@nginx.com>
+- 1.9.9
+
 * Tue Dec  8 2015 Konstantin Pavlov <thresh@nginx.com>
 - 1.9.8
 - http_slice module enabled
