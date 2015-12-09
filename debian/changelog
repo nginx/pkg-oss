@@ -2,7 +2,7 @@ nginx (1.9.9-1) unstable; urgency=low
 
   * 1.9.9
 
- -- Konstantin Pavlov <thresh@nginx.com>  Wed , 09 Dec 2015 14:50:00 +0300
+ -- Konstantin Pavlov <thresh@nginx.com>  Wed, 09 Dec 2015 14:50:00 +0300
 
 nginx (1.9.8-1) unstable; urgency=low
 
