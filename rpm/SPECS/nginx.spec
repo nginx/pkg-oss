@@ -58,7 +58,7 @@ Requires: systemd
 
 Summary: High performance web server
 Name: nginx
-Version: 1.8.0
+Version: 1.8.1
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -350,6 +350,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Jan 26 2016 Konstantin Pavlov <thresh@nginx.com>
+- 1.8.1
+
 * Tue Apr 21 2015 Sergey Budnevitch <sb@nginx.com>
 - 1.8.0
 
