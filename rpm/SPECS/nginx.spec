@@ -51,7 +51,7 @@ Requires: systemd
 
 Summary: High performance web server
 Name: nginx
-Version: 1.9.10
+Version: 1.9.11
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -97,6 +97,7 @@ sed -e 's|%%DEFAULTSTART%%||g' -e 's|%%DEFAULTSTOP%%|0 1 2 3 4 5 6|g' \
 ./configure \
         --prefix=%{_sysconfdir}/nginx \
         --sbin-path=%{_sbindir}/nginx \
+        --modules-path=%{_libdir}/nginx/modules \
         --conf-path=%{_sysconfdir}/nginx/nginx.conf \
         --error-log-path=%{_localstatedir}/log/nginx/error.log \
         --http-log-path=%{_localstatedir}/log/nginx/access.log \
@@ -130,9 +131,9 @@ sed -e 's|%%DEFAULTSTART%%||g' -e 's|%%DEFAULTSTOP%%|0 1 2 3 4 5 6|g' \
         --with-mail_ssl_module \
         --with-file-aio \
         --with-ipv6 \
-        --with-debug \
         %{?with_http2:--with-http_v2_module} \
         --with-cc-opt="%{optflags} $(pcre-config --cflags)" \
+        --with-debug \
         $*
 make %{?_smp_mflags}
 %{__mv} %{_builddir}/%{name}-%{version}/objs/nginx \
@@ -140,6 +141,7 @@ make %{?_smp_mflags}
 ./configure \
         --prefix=%{_sysconfdir}/nginx \
         --sbin-path=%{_sbindir}/nginx \
+        --modules-path=%{_libdir}/nginx/modules \
         --conf-path=%{_sysconfdir}/nginx/nginx.conf \
         --error-log-path=%{_localstatedir}/log/nginx/error.log \
         --http-log-path=%{_localstatedir}/log/nginx/access.log \
@@ -191,6 +193,10 @@ make %{?_smp_mflags}
 %{__mkdir} -p $RPM_BUILD_ROOT%{_localstatedir}/log/nginx
 %{__mkdir} -p $RPM_BUILD_ROOT%{_localstatedir}/run/nginx
 %{__mkdir} -p $RPM_BUILD_ROOT%{_localstatedir}/cache/nginx
+
+%{__mkdir} -p $RPM_BUILD_ROOT%{_libdir}/nginx/modules
+cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx/modules && \
+    %{__ln_s} ../..%{_libdir}/nginx/modules modules && cd -
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/%{name}-%{version}
 %{__install} -m 644 -p %{SOURCE12} \
@@ -250,6 +256,7 @@ make %{?_smp_mflags}
 
 %dir %{_sysconfdir}/nginx
 %dir %{_sysconfdir}/nginx/conf.d
+%{_sysconfdir}/nginx/modules
 
 %config(noreplace) %{_sysconfdir}/nginx/nginx.conf
 %config(noreplace) %{_sysconfdir}/nginx/conf.d/default.conf
@@ -274,6 +281,8 @@ make %{?_smp_mflags}
 %{_initrddir}/nginx-debug
 %endif
 
+%attr(0755,root,root) %dir %{_libdir}/nginx
+%attr(0755,root,root) %dir %{_libdir}/nginx/modules
 %dir %{_datadir}/nginx
 %dir %{_datadir}/nginx/html
 %{_datadir}/nginx/html/*
@@ -357,6 +366,10 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Feb  9 2016 Sergey Budnevitch <sb@nginx.com>
+* dynamic modules path and symlink in %{_sysconfdir}/nginx added
+- 1.9.11
+
 * Tue Jan 26 2016 Konstantin Pavlov <thresh@nginx.com>
 - 1.9.10
 

@@ -1,3 +1,10 @@
+nginx (1.9.11-1) unstable; urgency=low
+
+  * 1.9.11
+  * dynamic modules path and symlink in /etc/nginx added
+
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 09 Feb 2016 17:37:00 +0300
+
 nginx (1.9.10-1) unstable; urgency=low
 
   * 1.9.10
