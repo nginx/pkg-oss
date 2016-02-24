@@ -80,6 +80,9 @@ Requires: systemd
         --with-http_secure_link_module \
         --with-http_stub_status_module \
         --with-http_auth_request_module \
+        --with-http_xslt_module=dynamic \
+        --with-http_image_filter_module=dynamic \
+        --with-http_geoip_module=dynamic \
         --with-threads \
         --with-stream \
         --with-stream_ssl_module \
@@ -126,6 +129,42 @@ a mail proxy server.
 %debug_package
 %endif
 
+%package module-xslt
+%if 0%{?suse_version:1}
+Group: Productivity/Networking/Web/Servers
+BuildRequires: libxslt-devel
+%else
+Group: System Environment/Daemons
+BuildRequires: libxslt-devel
+%endif
+Summary: nginx xslt module
+%description module-xslt
+Dynamic xslt module for nginx.
+
+%package module-image-filter
+%if 0%{?suse_version:1}
+Group: Productivity/Networking/Web/Servers
+BuildRequires: gd-devel
+%else
+Group: System Environment/Daemons
+BuildRequires: gd-devel
+%endif
+Summary: nginx image filter module
+%description module-image-filter
+Dynamic image filter module for nginx.
+
+%package module-geoip
+%if 0%{?suse_version:1}
+Group: Productivity/Networking/Web/Servers
+BuildRequires: libGeoIP-devel
+%else
+Group: System Environment/Daemons
+BuildRequires: GeoIP-devel
+%endif
+Summary: nginx geoip module
+%description module-geoip
+Dynamic xslt module for nginx.
+
 %prep
 %setup -q
 cp %{SOURCE2} .
@@ -141,6 +180,12 @@ sed -e 's|%%DEFAULTSTART%%||g' -e 's|%%DEFAULTSTOP%%|0 1 2 3 4 5 6|g' \
 make %{?_smp_mflags}
 %{__mv} %{_builddir}/%{name}-%{version}/objs/nginx \
     %{_builddir}/%{name}-%{version}/objs/nginx-debug
+%{__mv} %{_builddir}/%{name}-%{version}/objs/ngx_http_xslt_filter_module.so \
+    %{_builddir}/%{name}-%{version}/objs/ngx_http_xslt_filter_module-debug.so
+%{__mv} %{_builddir}/%{name}-%{version}/objs/ngx_http_image_filter_module.so \
+    %{_builddir}/%{name}-%{version}/objs/ngx_http_image_filter_module-debug.so
+%{__mv} %{_builddir}/%{name}-%{version}/objs/ngx_http_geoip_module.so \
+    %{_builddir}/%{name}-%{version}/objs/ngx_http_geoip_module-debug.so
 ./configure %{COMMON_CONFIGURE_ARGS} \
     --with-cc-opt="%{WITH_CC_OPT}"
 make %{?_smp_mflags}
@@ -210,6 +255,13 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
 %{__install} -m755 %{_builddir}/%{name}-%{version}/objs/nginx-debug \
     $RPM_BUILD_ROOT%{_sbindir}/nginx-debug
 
+%{__install} -m755 %{_builddir}/%{name}-%{version}/objs/ngx_http_xslt_filter_module-debug.so \
+    $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_http_xslt_filter_module-debug.so
+%{__install} -m755 %{_builddir}/%{name}-%{version}/objs/ngx_http_image_filter_module-debug.so \
+    $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_http_image_filter_module-debug.so
+%{__install} -m755 %{_builddir}/%{name}-%{version}/objs/ngx_http_geoip_module-debug.so \
+    $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_http_geoip_module-debug.so
+
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
 
@@ -257,6 +309,18 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
 
 %doc %{_datadir}/doc/%{name}-%{version}
 %doc %{_datadir}/doc/%{name}-%{version}/COPYRIGHT
+
+%files module-xslt
+%{_libdir}/nginx/modules/ngx_http_xslt_filter_module.so
+%{_libdir}/nginx/modules/ngx_http_xslt_filter_module-debug.so
+
+%files module-image-filter
+%{_libdir}/nginx/modules/ngx_http_image_filter_module.so
+%{_libdir}/nginx/modules/ngx_http_image_filter_module-debug.so
+
+%files module-geoip
+%{_libdir}/nginx/modules/ngx_http_geoip_module.so
+%{_libdir}/nginx/modules/ngx_http_geoip_module-debug.so
 
 %pre
 # Add the "nginx" user

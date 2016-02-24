@@ -21,3 +21,24 @@ Priority: extra
 Depends: ${misc:Depends}, nginx (= ${binary:Version})
 Description: nginx debug symbols
  This package contains the debugging symbols for nginx.
+
+Package: nginx-module-xslt
+Architecture: any
+Priority: extra
+Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${binary:Version})
+Description: xslt module
+ This package contains dynamic xslt module for nginx.
+
+Package: nginx-module-image-filter
+Architecture: any
+Priority: extra
+Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${binary:Version})
+Description: image filter module
+ This package contains dynamic image filter module for nginx.
+
+Package: nginx-module-geoip
+Architecture: any
+Priority: extra
+Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${binary:Version})
+Description: geoip module
+ This package contains dynamic geoip module for nginx.
