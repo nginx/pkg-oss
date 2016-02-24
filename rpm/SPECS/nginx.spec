@@ -95,7 +95,7 @@ Requires: systemd
    
 Summary: High performance web server
 Name: nginx
-Version: 1.9.11
+Version: 1.9.12
 Release: 1%{?dist}.ngx
 Vendor: nginx inc.
 URL: http://nginx.org/
@@ -398,8 +398,13 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Wed Feb 24 2016 Sergey Budnevitch <sb@nginx.com>
+- common configure args are now in macros
+- xslt, image-filter and geoip dynamic modules added
+- 1.9.12
+
 * Tue Feb  9 2016 Sergey Budnevitch <sb@nginx.com>
-* dynamic modules path and symlink in %{_sysconfdir}/nginx added
+- dynamic modules path and symlink in %{_sysconfdir}/nginx added
 - 1.9.11
 
 * Tue Jan 26 2016 Konstantin Pavlov <thresh@nginx.com>

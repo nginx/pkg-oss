@@ -1,3 +1,11 @@
+nginx (1.9.12-1) unstable; urgency=low
+
+  * 1.9.12
+  * common configure args are now in variable
+  * xslt, image-filter and geoip dynamic modules added
+
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 24 Feb 2016 18:24:00 +0300
+
 nginx (1.9.11-1) unstable; urgency=low
 
   * 1.9.11
