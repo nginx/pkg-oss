@@ -7,6 +7,46 @@ WITH_HTTP2 := $(shell printf \
 	"Source: nginx\nBuild-Depends: libssl-dev (>= 1.0.1)\n" | \
 	dpkg-checkbuilddeps - >/dev/null 2>&1 && \
 	echo "--with-http_v2_module")
+COMMON_CONFIGURE_ARGS := \
+	--prefix=/etc/nginx \
+	--sbin-path=/usr/sbin/nginx \
+	--modules-path=%{_libdir}/nginx/modules \
+	--conf-path=/etc/nginx/nginx.conf \
+	--error-log-path=/var/log/nginx/error.log \
+	--http-log-path=/var/log/nginx/access.log \
+	--pid-path=/var/run/nginx.pid \
+	--lock-path=/var/run/nginx.lock \
+	--http-client-body-temp-path=/var/cache/nginx/client_temp \
+	--http-proxy-temp-path=/var/cache/nginx/proxy_temp \
+	--http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
+	--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
+	--http-scgi-temp-path=/var/cache/nginx/scgi_temp \
+	--user=nginx \
+	--group=nginx \
+	--with-http_ssl_module \
+	--with-http_realip_module \
+	--with-http_addition_module \
+	--with-http_sub_module \
+	--with-http_dav_module \
+	--with-http_flv_module \
+	--with-http_mp4_module \
+	--with-http_gunzip_module \
+	--with-http_gzip_static_module \
+	--with-http_random_index_module \
+	--with-http_secure_link_module \
+	--with-http_stub_status_module \
+	--with-http_auth_request_module \
+	--with-threads \
+	--with-stream \
+	--with-stream_ssl_module \
+	--with-http_slice_module \
+	--with-mail \
+	--with-mail_ssl_module \
+	--with-file-aio \
+	$(WITH_HTTP2) \
+	--with-cc-opt="$(CFLAGS)" \
+	--with-ld-opt="$(LDFLAGS)" \
+	--with-ipv6
 
 %:
 	dh $@ 
@@ -19,89 +59,11 @@ override_dh_strip:
 override_dh_auto_build:
 	dh_auto_build
 	mv objs/nginx objs/nginx-debug
-	CFLAGS="" ./configure \
-		--prefix=/etc/nginx \
-		--sbin-path=/usr/sbin/nginx \
-		--modules-path=%{_libdir}/nginx/modules \
-		--conf-path=/etc/nginx/nginx.conf \
-		--error-log-path=/var/log/nginx/error.log \
-		--http-log-path=/var/log/nginx/access.log \
-		--pid-path=/var/run/nginx.pid \
-		--lock-path=/var/run/nginx.lock \
-		--http-client-body-temp-path=/var/cache/nginx/client_temp \
-		--http-proxy-temp-path=/var/cache/nginx/proxy_temp \
-		--http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
-		--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
-		--http-scgi-temp-path=/var/cache/nginx/scgi_temp \
-		--user=nginx \
-		--group=nginx \
-		--with-http_ssl_module \
-		--with-http_realip_module \
-		--with-http_addition_module \
-		--with-http_sub_module \
-		--with-http_dav_module \
-		--with-http_flv_module \
-		--with-http_mp4_module \
-		--with-http_gunzip_module \
-		--with-http_gzip_static_module \
-		--with-http_random_index_module \
-		--with-http_secure_link_module \
-		--with-http_stub_status_module \
-		--with-http_auth_request_module \
-		--with-threads \
-		--with-stream \
-		--with-stream_ssl_module \
-		--with-http_slice_module \
-		--with-mail \
-		--with-mail_ssl_module \
-		--with-file-aio \
-		$(WITH_HTTP2) \
-		--with-cc-opt="$(CFLAGS)" \
-		--with-ld-opt="$(LDFLAGS)" \
-		--with-ipv6
+	CFLAGS="" ./configure $(COMMON_CONFIGURE_ARGS)
 	dh_auto_build
 
 configure_debug:
-	CFLAGS="" ./configure \
-		--prefix=/etc/nginx \
-		--sbin-path=/usr/sbin/nginx \
-		--modules-path=%{_libdir}/nginx/modules \
-		--conf-path=/etc/nginx/nginx.conf \
-		--error-log-path=/var/log/nginx/error.log \
-		--http-log-path=/var/log/nginx/access.log \
-		--pid-path=/var/run/nginx.pid \
-		--lock-path=/var/run/nginx.lock \
-		--http-client-body-temp-path=/var/cache/nginx/client_temp \
-		--http-proxy-temp-path=/var/cache/nginx/proxy_temp \
-		--http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
-		--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
-		--http-scgi-temp-path=/var/cache/nginx/scgi_temp \
-		--user=nginx \
-		--group=nginx \
-		--with-http_ssl_module \
-		--with-http_realip_module \
-		--with-http_addition_module \
-		--with-http_sub_module \
-		--with-http_dav_module \
-		--with-http_flv_module \
-		--with-http_mp4_module \
-		--with-http_gunzip_module \
-		--with-http_gzip_static_module \
-		--with-http_random_index_module \
-		--with-http_secure_link_module \
-		--with-http_stub_status_module \
-		--with-http_auth_request_module \
-		--with-threads \
-		--with-stream \
-		--with-stream_ssl_module \
-		--with-http_slice_module \
-		--with-mail \
-		--with-mail_ssl_module \
-		--with-file-aio \
-		$(WITH_HTTP2) \
-		--with-cc-opt="$(CFLAGS)" \
-		--with-ld-opt="$(LDFLAGS)" \
-		--with-ipv6 \
+	CFLAGS="" ./configure $(COMMON_CONFIGURE_ARGS) \
 		--with-debug
 
 override_dh_auto_install:
