@@ -137,6 +137,7 @@ BuildRequires: libxslt-devel
 Group: System Environment/Daemons
 BuildRequires: libxslt-devel
 %endif
+Requires: nginx = %{version}-%{release}
 Summary: nginx xslt module
 %description module-xslt
 Dynamic xslt module for nginx.
@@ -149,6 +150,7 @@ BuildRequires: gd-devel
 Group: System Environment/Daemons
 BuildRequires: gd-devel
 %endif
+Requires: nginx = %{version}-%{release}
 Summary: nginx image filter module
 %description module-image-filter
 Dynamic image filter module for nginx.
@@ -161,6 +163,7 @@ BuildRequires: libGeoIP-devel
 Group: System Environment/Daemons
 BuildRequires: GeoIP-devel
 %endif
+Requires: nginx = %{version}-%{release}
 Summary: nginx geoip module
 %description module-geoip
 Dynamic xslt module for nginx.
