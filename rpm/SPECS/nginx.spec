@@ -166,7 +166,7 @@ BuildRequires: GeoIP-devel
 Requires: nginx = %{version}-%{release}
 Summary: nginx geoip module
 %description module-geoip
-Dynamic xslt module for nginx.
+Dynamic geoip module for nginx.
 
 %prep
 %setup -q
