@@ -259,11 +259,11 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
 %{__install} -m755 %{_builddir}/%{name}-%{version}/objs/nginx-debug \
     $RPM_BUILD_ROOT%{_sbindir}/nginx-debug
 
-%{__install} -m755 %{_builddir}/%{name}-%{version}/objs/ngx_http_xslt_filter_module-debug.so \
+%{__install} -m644 %{_builddir}/%{name}-%{version}/objs/ngx_http_xslt_filter_module-debug.so \
     $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_http_xslt_filter_module-debug.so
-%{__install} -m755 %{_builddir}/%{name}-%{version}/objs/ngx_http_image_filter_module-debug.so \
+%{__install} -m644 %{_builddir}/%{name}-%{version}/objs/ngx_http_image_filter_module-debug.so \
     $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_http_image_filter_module-debug.so
-%{__install} -m755 %{_builddir}/%{name}-%{version}/objs/ngx_http_geoip_module-debug.so \
+%{__install} -m644 %{_builddir}/%{name}-%{version}/objs/ngx_http_geoip_module-debug.so \
     $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_http_geoip_module-debug.so
 
 %clean
@@ -315,16 +315,16 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
 %doc %{_datadir}/doc/%{name}-%{version}/COPYRIGHT
 
 %files module-xslt
-%{_libdir}/nginx/modules/ngx_http_xslt_filter_module.so
-%{_libdir}/nginx/modules/ngx_http_xslt_filter_module-debug.so
+%attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_xslt_filter_module.so
+%attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_xslt_filter_module-debug.so
 
 %files module-image-filter
-%{_libdir}/nginx/modules/ngx_http_image_filter_module.so
-%{_libdir}/nginx/modules/ngx_http_image_filter_module-debug.so
+%attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_image_filter_module.so
+%attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_image_filter_module-debug.so
 
 %files module-geoip
-%{_libdir}/nginx/modules/ngx_http_geoip_module.so
-%{_libdir}/nginx/modules/ngx_http_geoip_module-debug.so
+%attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_geoip_module.so
+%attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_geoip_module-debug.so
 
 %pre
 # Add the "nginx" user
