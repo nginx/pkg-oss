@@ -33,7 +33,8 @@ Requires: systemd
 Requires: openssl >= 1.0.1
 BuildRequires: systemd
 BuildRequires: openssl-devel >= 1.0.1
-Epoch: 1
+%define epoch 1
+Epoch: %{epoch}
 %define with_http2 1
 %endif
 
@@ -137,7 +138,7 @@ BuildRequires: libxslt-devel
 Group: System Environment/Daemons
 BuildRequires: libxslt-devel
 %endif
-Requires: nginx = %{version}-%{release}
+Requires: nginx = %{?epoch:%{epoch}:}%{version}-%{release}
 Summary: nginx xslt module
 %description module-xslt
 Dynamic xslt module for nginx.
@@ -150,7 +151,7 @@ BuildRequires: gd-devel
 Group: System Environment/Daemons
 BuildRequires: gd-devel
 %endif
-Requires: nginx = %{version}-%{release}
+Requires: nginx = %{?epoch:%{epoch}:}%{version}-%{release}
 Summary: nginx image filter module
 %description module-image-filter
 Dynamic image filter module for nginx.
@@ -163,7 +164,7 @@ BuildRequires: libGeoIP-devel
 Group: System Environment/Daemons
 BuildRequires: GeoIP-devel
 %endif
-Requires: nginx = %{version}-%{release}
+Requires: nginx = %{?epoch:%{epoch}:}%{version}-%{release}
 Summary: nginx geoip module
 %description module-geoip
 Dynamic geoip module for nginx.
