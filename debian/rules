@@ -7,6 +7,9 @@ WITH_HTTP2 := $(shell printf \
 	"Source: nginx\nBuild-Depends: libssl-dev (>= 1.0.1)\n" | \
 	dpkg-checkbuilddeps - >/dev/null 2>&1 && \
 	echo "--with-http_v2_module")
+PKGS = nginx nginx-dbg \
+	nginx-module-xslt nginx-module-geoip nginx-module-image-filter \
+	nginx-module-perl nginx-module-njs
 COMMON_CONFIGURE_ARGS := \
 	--prefix=/etc/nginx \
 	--sbin-path=/usr/sbin/nginx \
@@ -39,6 +42,8 @@ COMMON_CONFIGURE_ARGS := \
 	--with-http_xslt_module=dynamic \
 	--with-http_image_filter_module=dynamic \
 	--with-http_geoip_module=dynamic \
+	--with-http_perl_module=dynamic \
+	--add-dynamic-module=debian/extra/njs-480849ab9e96/nginx \
 	--with-threads \
 	--with-stream \
 	--with-stream_ssl_module \
@@ -65,6 +70,9 @@ override_dh_auto_build:
 	mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so
 	mv objs/ngx_http_image_filter_module.so objs/ngx_http_image_filter_module-debug.so
 	mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so
+	mv objs/ngx_http_perl_module.so objs/ngx_http_perl_module-debug.so
+	mv objs/src/http/modules/perl/blib/arch/auto/nginx/nginx.so objs/src/http/modules/perl/blib/arch/auto/nginx/nginx-debug.so
+	mv objs/ngx_http_js_module.so objs/ngx_http_js_module-debug.so
 	CFLAGS="" ./configure $(COMMON_CONFIGURE_ARGS)
 	dh_auto_build
 
@@ -106,6 +114,15 @@ override_dh_auto_install:
 	/usr/bin/install -m 755 objs/nginx-debug  debian/nginx/usr/sbin/
 	cd debian/nginx/etc/nginx && /bin/ln -s \
 		../../usr/lib/nginx/modules modules && cd -
+
+override_dh_gencontrol:
+	for p in $(PKGS); do \
+		if [ -e debian/$$p.version ]; then \
+			dpkg-gencontrol -p$$p -ldebian/changelog -Tdebian/$$p.substvars -Pdebian/$$p -v`cat debian/$$p.version`~`lsb_release -cs`; \
+		else \
+			dpkg-gencontrol -p$$p -ldebian/changelog -Tdebian/$$p.substvars -Pdebian/$$p ; \
+		fi ; \
+	done
 
 override_dh_clean:
 	dh_clean

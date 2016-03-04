@@ -18,27 +18,41 @@ Package: nginx-dbg
 Architecture: any
 Section: debug
 Priority: extra
-Depends: ${misc:Depends}, nginx (= ${binary:Version})
+Depends: ${misc:Depends}, nginx (= ${source:Version})
 Description: nginx debug symbols
  This package contains the debugging symbols for nginx.
 
 Package: nginx-module-xslt
 Architecture: any
 Priority: extra
-Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${source:Version})
 Description: xslt module
  This package contains dynamic xslt module for nginx.
 
 Package: nginx-module-image-filter
 Architecture: any
 Priority: extra
-Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${source:Version})
 Description: image filter module
  This package contains dynamic image filter module for nginx.
 
 Package: nginx-module-geoip
 Architecture: any
 Priority: extra
-Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${source:Version})
 Description: geoip module
  This package contains dynamic geoip module for nginx.
+
+Package: nginx-module-perl
+Architecture: any
+Priority: extra
+Depends: ${misc:Depends}, ${shlibs:Depends}, ${perl:Depends}, nginx (= ${source:Version})
+Description: perl module
+ This package contains dynamic perl module for nginx.
+
+Package: nginx-module-njs
+Architecture: any
+Priority: extra
+Depends: ${misc:Depends}, ${shlibs:Depends}, nginx (= ${source:Version})
+Description: nJScript module
+ This package contains dynamic nJScript module for nginx.
