@@ -1,4 +1,4 @@
-nginx (1.9.12-1) unstable; urgency=low
+nginx (1.9.12-1~%%CODENAME%%) %%CODENAME%%; urgency=low
 
   * 1.9.12
   * common configure args are now in variable
