@@ -126,7 +126,7 @@ Summary: High performance web server
 Name: nginx
 Version: %{main_version}
 Release: %{main_release}
-Vendor: nginx inc.
+Vendor: Nginx, Inc.
 URL: http://nginx.org/
 Group: %{_group}
 
