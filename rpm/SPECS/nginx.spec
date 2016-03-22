@@ -249,6 +249,7 @@ make %{?_smp_mflags}
 find %{buildroot} -type f -name .packlist -exec rm -f '{}' \;
 find %{buildroot} -type f -name perllocal.pod -exec rm -f '{}' \;
 find %{buildroot} -type f -empty -exec rm -f '{}' \;
+find %{buildroot} -type f -name nginx.so -exec chmod u+w '{}' \;
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/nginx
 %{__mv} $RPM_BUILD_ROOT%{_sysconfdir}/nginx/html $RPM_BUILD_ROOT%{_datadir}/nginx/
