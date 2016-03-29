@@ -43,7 +43,7 @@ COMMON_CONFIGURE_ARGS := \
 	--with-http_image_filter_module=dynamic \
 	--with-http_geoip_module=dynamic \
 	--with-http_perl_module=dynamic \
-	--add-dynamic-module=debian/extra/njs-480849ab9e96/nginx \
+	--add-dynamic-module=debian/extra/njs-91543c86f412/nginx \
 	--with-threads \
 	--with-stream \
 	--with-stream_ssl_module \

@@ -70,8 +70,8 @@ BuildRequires: libGeoIP-devel
 %define module_image_filter_release  1%{?dist}.ngx
 %define module_perl_version          %{main_version}
 %define module_perl_release          1%{?dist}.ngx
-%define module_njs_shaid             480849ab9e96
-%define module_njs_version           0.0.20160304.%{module_njs_shaid}
+%define module_njs_shaid             91543c86f412
+%define module_njs_version           0.0.20160329.%{module_njs_shaid}
 %define module_njs_release           1%{?dist}.ngx
 
 %define bdir %{_builddir}/%{name}-%{main_version}
