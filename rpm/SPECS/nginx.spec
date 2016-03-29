@@ -60,7 +60,7 @@ BuildRequires: libGeoIP-devel
 
 # end of distribution specific definitions
 
-%define main_version                 1.9.12
+%define main_version                 1.9.13
 %define main_release                 1%{?dist}.ngx
 %define module_xslt_version          %{main_version}
 %define module_xslt_release          1%{?dist}.ngx
@@ -562,6 +562,11 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Mar 29 2016 Konstantin Pavlov <thresh@nginx.com>
+- 1.9.13
+- Added perl and nJScript dynamic modules
+- Fixed Requires section for dynamic modules on CentOS7/RHEL7
+
 * Wed Feb 24 2016 Sergey Budnevitch <sb@nginx.com>
 - common configure args are now in macros
 - xslt, image-filter and geoip dynamic modules added

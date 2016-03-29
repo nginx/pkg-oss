@@ -1,3 +1,11 @@
+nginx (1.9.13-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
+  * 1.9.13
+  * Fixed modules path
+  * Added perl and nJScript dynamic modules subpackages
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 29 Mar 2016 15:50:00 +0300
+
 nginx (1.9.12-1~%%CODENAME%%) %%CODENAME%%; urgency=low
 
   * 1.9.12
