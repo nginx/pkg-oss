@@ -27,6 +27,7 @@ Requires(post): chkconfig
 Requires: openssl >= 1.0.1
 BuildRequires: openssl-devel >= 1.0.1
 BuildRequires: perl-devel
+BuildRequires: perl-ExtUtils-Embed
 BuildRequires: GeoIP-devel
 %endif
 
