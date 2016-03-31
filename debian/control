@@ -2,7 +2,15 @@ Source: nginx
 Section: httpd
 Priority: optional
 Maintainer: Sergey Budnevitch <sb@nginx.com>
-Build-Depends: debhelper (>= 7.0.50~), libssl-dev (>= 0.9.7), libpcre3-dev, zlib1g-dev
+Build-Depends: debhelper (>= 7.0.50~),
+               libgd2-xpm-dev,
+               libgeoip-dev,
+               libpcre3-dev,
+               libperl-dev,
+               libssl-dev (>= 0.9.7),
+               libxslt1-dev,
+               lsb-release,
+               zlib1g-dev
 Standards-Version: 3.9.1
 Homepage: http://nginx.org
 
