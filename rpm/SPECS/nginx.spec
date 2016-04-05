@@ -61,7 +61,7 @@ BuildRequires: libGeoIP-devel
 
 # end of distribution specific definitions
 
-%define main_version                 1.9.13
+%define main_version                 1.9.14
 %define main_release                 1%{?dist}.ngx
 %define module_xslt_version          %{main_version}
 %define module_xslt_release          1%{?dist}.ngx
@@ -73,7 +73,7 @@ BuildRequires: libGeoIP-devel
 %define module_perl_release          1%{?dist}.ngx
 %define module_njs_shaid             91543c86f412
 %define module_njs_version           0.0.20160329.%{module_njs_shaid}
-%define module_njs_release           1%{?dist}.ngx
+%define module_njs_release           2%{?dist}.ngx
 
 %define bdir %{_builddir}/%{name}-%{main_version}
 
@@ -563,6 +563,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Apr 04 2016 Konstantin Pavlov <thresh@nginx.com>
+- 1.9.14
+
 * Tue Mar 29 2016 Konstantin Pavlov <thresh@nginx.com>
 - 1.9.13
 - Added perl and nJScript dynamic modules
