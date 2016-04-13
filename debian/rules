@@ -49,10 +49,10 @@ override_dh_auto_build:
 		--with-mail \
 		--with-mail_ssl_module \
 		--with-file-aio \
+		--with-ipv6 \
 		$(WITH_SPDY) \
 		--with-cc-opt="$(CFLAGS)" \
-		--with-ld-opt="$(LDFLAGS)" \
-		--with-ipv6
+		--with-ld-opt="$(LDFLAGS)"
 	dh_auto_build
 
 configure_debug:
@@ -87,10 +87,10 @@ configure_debug:
 		--with-mail \
 		--with-mail_ssl_module \
 		--with-file-aio \
+		--with-ipv6 \
 		$(WITH_SPDY) \
 		--with-cc-opt="$(CFLAGS)" \
 		--with-ld-opt="$(LDFLAGS)" \
-		--with-ipv6 \
 		--with-debug
 
 override_dh_auto_install:
