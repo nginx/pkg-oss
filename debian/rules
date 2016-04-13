@@ -51,10 +51,10 @@ COMMON_CONFIGURE_ARGS := \
 	--with-mail \
 	--with-mail_ssl_module \
 	--with-file-aio \
+	--with-ipv6 \
 	$(WITH_HTTP2) \
 	--with-cc-opt="$(CFLAGS)" \
-	--with-ld-opt="$(LDFLAGS)" \
-	--with-ipv6
+	--with-ld-opt="$(LDFLAGS)"
 
 %:
 	dh $@ 
