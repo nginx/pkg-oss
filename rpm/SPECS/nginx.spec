@@ -61,7 +61,7 @@ BuildRequires: libGeoIP-devel
 
 # end of distribution specific definitions
 
-%define main_version                 1.9.15
+%define main_version                 1.10.0
 %define main_release                 1%{?dist}.ngx
 %define module_xslt_version          %{main_version}
 %define module_xslt_release          1%{?dist}.ngx
@@ -72,7 +72,7 @@ BuildRequires: libGeoIP-devel
 %define module_perl_version          %{main_version}
 %define module_perl_release          1%{?dist}.ngx
 %define module_njs_shaid             1c50334fbea6
-%define module_njs_version           0.0.20160414.%{module_njs_shaid}
+%define module_njs_version           %{main_version}-0.0.20160414.%{module_njs_shaid}
 %define module_njs_release           1%{?dist}.ngx
 
 %define bdir %{_builddir}/%{name}-%{main_version}
@@ -563,6 +563,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Apr 26 2016 Konstantin Pavlov <thresh@nginx.com>
+- 1.10.0
+
 * Tue Apr 19 2016 Konstantin Pavlov <thresh@nginx.com>
 - 1.9.15
 - njs updated to 1c50334fbea6.
