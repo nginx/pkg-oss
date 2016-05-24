@@ -61,7 +61,7 @@ BuildRequires: libGeoIP-devel
 
 # end of distribution specific definitions
 
-%define main_version                 1.9.15
+%define main_version                 1.11.0
 %define main_release                 1%{?dist}.ngx
 %define module_xslt_version          %{main_version}
 %define module_xslt_release          1%{?dist}.ngx
@@ -563,6 +563,10 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Wed May 24 2016 Sergey Budnevitch <sb@nginx.com>
+- Fixed logrotate error if nginx is not running
+- 1.11.0
+
 * Tue Apr 19 2016 Konstantin Pavlov <thresh@nginx.com>
 - 1.9.15
 - njs updated to 1c50334fbea6.
