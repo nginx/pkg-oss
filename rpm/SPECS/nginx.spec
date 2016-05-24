@@ -72,7 +72,7 @@ BuildRequires: libGeoIP-devel
 %define module_perl_version          %{main_version}
 %define module_perl_release          1%{?dist}.ngx
 %define module_njs_shaid             1c50334fbea6
-%define module_njs_version           0.0.20160414.%{module_njs_shaid}
+%define module_njs_version           %{main_version}.0.0.20160414.%{module_njs_shaid}
 %define module_njs_release           1%{?dist}.ngx
 
 %define bdir %{_builddir}/%{name}-%{main_version}
