@@ -33,7 +33,6 @@ BuildRequires: GeoIP-devel
 
 %if 0%{?rhel}  == 7
 %define _group System Environment/Daemons
-%define perlldopts --with-ld-opt="-Wl,-E"
 %define epoch 1
 %define with_http2 1
 Epoch: %{epoch}
@@ -221,7 +220,6 @@ sed -e 's|%%DEFAULTSTART%%||g' -e 's|%%DEFAULTSTOP%%|0 1 2 3 4 5 6|g' \
 %build
 ./configure %{COMMON_CONFIGURE_ARGS} \
     --with-cc-opt="%{WITH_CC_OPT}" \
-    %{?perlldopts} \
     --with-debug
 make %{?_smp_mflags}
 %{__mv} %{bdir}/objs/nginx \
@@ -239,8 +237,7 @@ make %{?_smp_mflags}
 %{__mv} %{bdir}/objs/ngx_http_js_module.so \
     %{bdir}/objs/ngx_http_js_module-debug.so
 ./configure %{COMMON_CONFIGURE_ARGS} \
-    --with-cc-opt="%{WITH_CC_OPT}" \
-    %{?perlldopts}
+    --with-cc-opt="%{WITH_CC_OPT}"
 make %{?_smp_mflags}
 
 %install
