@@ -1,3 +1,9 @@
+nginx (1.10.1-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
+  * 1.10.1
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 31 May 2016 16:30:00 +0300
+
 nginx (1.10.0-1~%%CODENAME%%) %%CODENAME%%; urgency=low
 
   * 1.10.0
