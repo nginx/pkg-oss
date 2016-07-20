@@ -115,6 +115,7 @@ BuildRequires: libGeoIP-devel
         --with-threads \
         --with-stream \
         --with-stream_ssl_module \
+        --with-stream_geoip_module=dynamic \
         --with-http_slice_module \
         --with-mail \
         --with-mail_ssl_module \
@@ -185,9 +186,9 @@ Version: %{module_geoip_version}
 Release: %{module_geoip_release}
 Group: %{_group}
 Requires: nginx = %{?epoch:%{epoch}:}%{main_version}-%{main_release}
-Summary: nginx geoip module
+Summary: nginx geoip modules
 %description module-geoip
-Dynamic geoip module for nginx.
+Dynamic geoip modules for nginx.
 
 %package module-perl
 Version: %{module_perl_version}
@@ -236,6 +237,8 @@ make %{?_smp_mflags}
     %{bdir}/objs/src/http/modules/perl/blib/arch/auto/nginx/nginx-debug.so
 %{__mv} %{bdir}/objs/ngx_http_js_module.so \
     %{bdir}/objs/ngx_http_js_module-debug.so
+%{__mv} %{bdir}/objs/ngx_stream_geoip_module.so \
+    %{bdir}/objs/ngx_stream_geoip_module-debug.so
 ./configure %{COMMON_CONFIGURE_ARGS} \
     --with-cc-opt="%{WITH_CC_OPT}"
 make %{?_smp_mflags}
@@ -323,6 +326,8 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
     $RPM_BUILD_ROOT%{perl_vendorarch}/auto/nginx/nginx-debug.so
 %{__install} -m644 %{bdir}/objs/ngx_http_js_module-debug.so \
     $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_http_js_module-debug.so
+%{__install} -m644 %{bdir}/objs/ngx_stream_geoip_module-debug.so \
+    $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_stream_geoip_module-debug.so
 
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
@@ -383,6 +388,8 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
 %files module-geoip
 %attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_geoip_module.so
 %attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_geoip_module-debug.so
+%attr(0644,root,root) %{_libdir}/nginx/modules/ngx_stream_geoip_module.so
+%attr(0644,root,root) %{_libdir}/nginx/modules/ngx_stream_geoip_module-debug.so
 
 %files module-perl
 %attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_perl_module.so
@@ -470,14 +477,16 @@ if [ $1 -eq 1 ]; then
     cat <<BANNER
 ----------------------------------------------------------------------
 
-The GeoIP dynamic module for nginx has been installed.
-To enable this module, add the following to /etc/nginx/nginx.conf
+The GeoIP dynamic modules for nginx have been installed.
+To enable those modules, add the following to /etc/nginx/nginx.conf
 and reload nginx:
 
     load_module modules/ngx_http_geoip_module.so;
+    load_module modules/ngx_stream_geoip_module.so;
 
-Please refer to the module documentation for further details:
+Please refer to the modules documentation for further details:
 http://nginx.org/en/docs/http/ngx_http_geoip_module.html
+http://nginx.org/en/docs/stream/ngx_stream_geoip_module.html
 
 ----------------------------------------------------------------------
 BANNER
