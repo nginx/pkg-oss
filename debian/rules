@@ -43,7 +43,7 @@ COMMON_CONFIGURE_ARGS := \
 	--with-http_image_filter_module=dynamic \
 	--with-http_geoip_module=dynamic \
 	--with-http_perl_module=dynamic \
-	--add-dynamic-module=debian/extra/njs-ef2b708510b1/nginx \
+	--add-dynamic-module=debian/extra/njs-0.1.0/nginx \
 	--with-threads \
 	--with-stream \
 	--with-stream_ssl_module \
@@ -74,6 +74,7 @@ override_dh_auto_build:
 	mv objs/ngx_http_perl_module.so objs/ngx_http_perl_module-debug.so
 	mv objs/src/http/modules/perl/blib/arch/auto/nginx/nginx.so objs/src/http/modules/perl/blib/arch/auto/nginx/nginx-debug.so
 	mv objs/ngx_http_js_module.so objs/ngx_http_js_module-debug.so
+	mv objs/ngx_stream_js_module.so objs/ngx_stream_js_module-debug.so
 	mv objs/ngx_stream_geoip_module.so objs/ngx_stream_geoip_module-debug.so
 	CFLAGS="" ./configure $(COMMON_CONFIGURE_ARGS)
 	dh_auto_build

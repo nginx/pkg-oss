@@ -62,6 +62,7 @@ BuildRequires: libGeoIP-devel
 
 %define main_version                 1.11.2
 %define main_release                 1%{?dist}.ngx
+%define njs_version                  0.1.0
 %define module_xslt_version          %{main_version}
 %define module_xslt_release          1%{?dist}.ngx
 %define module_geoip_version         %{main_version}
@@ -70,8 +71,7 @@ BuildRequires: libGeoIP-devel
 %define module_image_filter_release  1%{?dist}.ngx
 %define module_perl_version          %{main_version}
 %define module_perl_release          1%{?dist}.ngx
-%define module_njs_shaid             ef2b708510b1
-%define module_njs_version           %{main_version}.0.0.20160705.%{module_njs_shaid}
+%define module_njs_version           %{main_version}.%{njs_version}
 %define module_njs_release           1%{?dist}.ngx
 
 %define bdir %{_builddir}/%{name}-%{main_version}
@@ -111,7 +111,7 @@ BuildRequires: libGeoIP-devel
         --with-http_image_filter_module=dynamic \
         --with-http_geoip_module=dynamic \
         --with-http_perl_module=dynamic \
-        --add-dynamic-module=njs-%{module_njs_shaid}/nginx \
+        --add-dynamic-module=njs-%{njs_version}/nginx \
         --with-threads \
         --with-stream \
         --with-stream_ssl_module \
@@ -143,7 +143,7 @@ Source9: nginx.upgrade.sh
 Source10: nginx.suse.logrotate
 Source11: nginx-debug.service
 Source12: COPYRIGHT
-Source13: njs-%{module_njs_shaid}.tar.gz
+Source13: njs-%{njs_version}.tar.gz
 
 License: 2-clause BSD-like license
 
@@ -237,6 +237,8 @@ make %{?_smp_mflags}
     %{bdir}/objs/src/http/modules/perl/blib/arch/auto/nginx/nginx-debug.so
 %{__mv} %{bdir}/objs/ngx_http_js_module.so \
     %{bdir}/objs/ngx_http_js_module-debug.so
+%{__mv} %{bdir}/objs/ngx_stream_js_module.so \
+    %{bdir}/objs/ngx_stream_js_module-debug.so
 %{__mv} %{bdir}/objs/ngx_stream_geoip_module.so \
     %{bdir}/objs/ngx_stream_geoip_module-debug.so
 ./configure %{COMMON_CONFIGURE_ARGS} \
@@ -326,6 +328,8 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
     $RPM_BUILD_ROOT%{perl_vendorarch}/auto/nginx/nginx-debug.so
 %{__install} -m644 %{bdir}/objs/ngx_http_js_module-debug.so \
     $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_http_js_module-debug.so
+%{__install} -m644 %{bdir}/objs/ngx_stream_js_module-debug.so \
+    $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_stream_js_module-debug.so
 %{__install} -m644 %{bdir}/objs/ngx_stream_geoip_module-debug.so \
     $RPM_BUILD_ROOT%{_libdir}/nginx/modules/ngx_stream_geoip_module-debug.so
 
@@ -403,6 +407,8 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
 %files module-njs
 %attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_js_module.so
 %attr(0644,root,root) %{_libdir}/nginx/modules/ngx_http_js_module-debug.so
+%attr(0644,root,root) %{_libdir}/nginx/modules/ngx_stream_js_module.so
+%attr(0644,root,root) %{_libdir}/nginx/modules/ngx_stream_js_module-debug.so
 
 %pre
 # Add the "nginx" user
@@ -533,13 +539,14 @@ if [ $1 -eq 1 ]; then
     cat <<BANNER
 ----------------------------------------------------------------------
 
-The nJScript dynamic module for nginx has been installed.
-To enable this module, add the following to /etc/nginx/nginx.conf
+The nJScript dynamic modules for nginx have been installed.
+To enable those modules, add the following to /etc/nginx/nginx.conf
 and reload nginx:
 
     load_module modules/ngx_http_js_module.so;
+    load_module modules/ngx_stream_js_module.so;
 
-Please refer to the module documentation for further details:
+Please refer to the modules documentation for further details:
 https://www.nginx.com/resources/wiki/nginScript/
 
 ----------------------------------------------------------------------
