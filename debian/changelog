@@ -1,3 +1,12 @@
+nginx (1.11.3-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
+  * 1.11.3
+  * njs updated to 0.1.0.
+  * njs stream dynamic module added to nginx-module-njs package.
+  * geoip stream dynamic module added to nginx-module-geoip package.
+
+ -- Konstantin Pavlov <thresh@nginx.com>>  Tue, 26 Jul 2016 15:03:42 +0300
+
 nginx (1.11.2-1~%%CODENAME%%) %%CODENAME%%; urgency=low
 
   * 1.11.2
