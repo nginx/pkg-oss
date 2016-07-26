@@ -584,7 +584,7 @@ fi
 - 1.9.15
 - njs updated to 1c50334fbea6.
 
-* Tue Apr 04 2016 Konstantin Pavlov <thresh@nginx.com>
+* Tue Apr  5 2016 Konstantin Pavlov <thresh@nginx.com>
 - 1.9.14
 
 * Tue Mar 29 2016 Konstantin Pavlov <thresh@nginx.com>
