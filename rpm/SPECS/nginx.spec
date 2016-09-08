@@ -115,6 +115,7 @@ BuildRequires: libGeoIP-devel
         --with-threads \
         --with-stream \
         --with-stream_ssl_module \
+        --with-stream_realip_module \
         --with-stream_geoip_module=dynamic \
         --with-http_slice_module \
         --with-mail \
