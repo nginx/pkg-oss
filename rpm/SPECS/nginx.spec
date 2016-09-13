@@ -60,7 +60,7 @@ BuildRequires: libGeoIP-devel
 
 # end of distribution specific definitions
 
-%define main_version                 1.11.3
+%define main_version                 1.11.4
 %define main_release                 1%{?dist}.ngx
 %define njs_version                  0.1.0
 %define module_xslt_version          %{main_version}
@@ -577,6 +577,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Sep 13 2016 Konstantin Pavlov <thresh@nginx.com>
+- 1.11.4.
+
 * Tue Jul 26 2016 Konstantin Pavlov <thresh@nginx.com>
 - 1.11.3.
 - njs updated to 0.1.0.
