@@ -36,3 +36,7 @@ if [ -x "/etc/init.d/nginx" ]; then
         fi
     fi
 fi
+
+#DEBHELPER#
+
+exit 0
