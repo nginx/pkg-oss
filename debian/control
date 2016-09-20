@@ -11,7 +11,7 @@ Build-Depends: debhelper (>= 7.0.50~),
                libxslt1-dev,
                lsb-release,
                zlib1g-dev
-Standards-Version: 3.9.1
+Standards-Version: 3.9.8.0
 Homepage: http://nginx.org
 
 Package: nginx
