@@ -1,8 +1,10 @@
 #!/usr/bin/make -f
 
 #export DH_VERBOSE=1
-CFLAGS ?= $(shell dpkg-buildflags --get CFLAGS)
-LDFLAGS ?= $(shell dpkg-buildflags --get LDFLAGS)
+
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+
 WITH_HTTP2 := $(shell printf \
 	"Source: nginx\nBuild-Depends: libssl-dev (>= 1.0.1)\n" | \
 	dpkg-checkbuilddeps - >/dev/null 2>&1 && \
