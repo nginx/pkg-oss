@@ -1,0 +1,4 @@
+# there is no separate man page for nginx-debug
+nginx binary: binary-without-manpage usr/sbin/nginx-debug
+# the name is not wrong
+nginx: wrong-name-for-upstream-changelog usr/share/doc/nginx/CHANGES.ru.gz
