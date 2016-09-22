@@ -96,9 +96,8 @@ override_dh_auto_install:
 	sed -e 's/%%PROVIDES%%/nginx-debug/g' \
 		-e 's/%%DEFAULTSTART%%//g' \
 		-e 's/%%DEFAULTSTOP%%/0 1 2 3 4 5 6/g' \
-		< debian/init.d.in > debian/debug.init.d
-	/usr/bin/install -m 755 debian/debug.init.d \
-		debian/nginx/etc/init.d/nginx-debug
+		< debian/init.d.in > debian/nginx.nginx-debug.init
+	dh_installinit --no-start --init-script=nginx-debug --name=nginx-debug
 	/usr/bin/install -m 644 debian/nginx-debug.default \
 		debian/nginx/etc/default/nginx-debug
 	/usr/bin/install -m 644 debian/nginx.conf debian/nginx/etc/nginx/
