@@ -91,7 +91,7 @@ configure_debug:
 
 override_dh_installinit:
 	dh_installinit --no-start --no-restart-on-upgrade
-	dh_installinit --no-start --no-restart-on-upgrade --init-script=nginx-debug --name=nginx-debug
+	dh_installinit --no-start --no-restart-on-upgrade --noscripts --init-script=nginx-debug --name=nginx-debug
 
 override_dh_auto_install:
 	sed -e 's/%%PROVIDES%%/nginx/g' \
