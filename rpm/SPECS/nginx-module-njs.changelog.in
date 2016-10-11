@@ -1,0 +1,3 @@
+* Mon Oct 10 2016 Andrei Belov <defan@nginx.com>
+- base version updated to 1.11.5
+- njs module updated to 0.1.3
