@@ -1,0 +1,6 @@
+nginx-module-njs (%%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
+
+  * base version updated to 1.11.5
+  * njs module updated to 0.1.3
+
+ -- Andrei Belov <defan@nginx.com>  Mon, 10 Oct 2016 10:15:00 +0300

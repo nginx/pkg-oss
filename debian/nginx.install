@@ -1,0 +1,12 @@
+debian/nginx.conf			etc/nginx
+conf/win-utf				etc/nginx
+conf/koi-utf				etc/nginx
+conf/koi-win				etc/nginx
+conf/mime.types				etc/nginx
+conf/scgi_params			etc/nginx
+conf/fastcgi_params			etc/nginx
+conf/uwsgi_params			etc/nginx
+html/index.html				usr/share/nginx/html
+html/50x.html				usr/share/nginx/html
+debian/build-nginx/objs/nginx		usr/sbin
+debian/build-nginx-debug/objs/nginx-debug	usr/sbin
