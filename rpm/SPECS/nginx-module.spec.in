@@ -1,0 +1,111 @@
+#
+%define nginx_user nginx
+%define nginx_group nginx
+
+%%MODULE_DEFINITIONS%%
+
+%if 0%{?rhel} || 0%{?amzn}
+%define _group System Environment/Daemons
+BuildRequires: openssl-devel
+%endif
+
+%if 0%{?suse_version} == 1315
+%define _group Productivity/Networking/Web/Servers
+BuildRequires: libopenssl-devel
+%endif
+
+%if 0%{?rhel} == 7
+%define epoch 1
+Epoch: %{epoch}
+%endif
+
+%define main_version %%MAIN_VERSION%%
+%define main_release %%MAIN_RELEASE%%%{?dist}.ngx
+
+%define bdir %{_builddir}/%{name}-%{main_version}
+
+Summary: %%SUMMARY%%
+Name: %%NAME%%
+Version: %%VERSION_PREFIX%%%%VERSION%%
+Release: %%RELEASE%%%{?dist}.ngx
+Vendor: Nginx, Inc.
+URL: http://nginx.org/
+Group: %{_group}
+
+Source0: http://nginx.org/download/nginx-%{main_version}.tar.gz
+Source1: %%COPYRIGHT_SOURCE%%
+%%MODULE_SOURCES%%
+
+%%MODULE_PATCHES%%
+
+License: 2-clause BSD-like license
+
+BuildRoot: %{_tmppath}/%{name}-%{main_version}-%{main_release}-root
+BuildRequires: zlib-devel
+BuildRequires: pcre-devel
+Requires: nginx == %{?epoch:%{epoch}:}%%MAIN_VERSION%%-%%MAIN_RELEASE%%%{?dist}.ngx
+
+%description
+nginx %%SHORT_SUMMARY%%.
+
+%if 0%{?suse_version} || 0%{?amzn}
+%debug_package
+%endif
+
+%define WITH_CC_OPT $(echo %{optflags} $(pcre-config --cflags))
+
+%define BASE_CONFIGURE_ARGS $(echo "%%BASE_CONFIGURE_ARGS%%")
+%define MODULE_CONFIGURE_ARGS $(echo "%%MODULE_CONFIGURE_ARGS%%")
+
+%prep
+%setup -qcTn %{name}-%{main_version}
+tar --strip-components=1 -zxf %{SOURCE0}
+%%MODULE_PREP_SOURCES%%
+%%MODULE_PREP_PATCHES%%
+
+%build
+%%MODULE_PREBUILD%%
+cd %{bdir}
+./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
+	--with-cc-opt="%{WITH_CC_OPT}" \
+	--with-debug
+make %{?_smp_mflags} modules
+for so in `find %{bdir}/objs/ -type f -name "*.so"`; do
+debugso=`echo $so | sed -e "s|.so|-debug.so|"`
+mv $so $debugso
+done
+./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
+	--with-cc-opt="%{WITH_CC_OPT}"
+make %{?_smp_mflags} modules
+
+%install
+cd %{bdir}
+%{__rm} -rf $RPM_BUILD_ROOT
+%{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/%%NAME%%
+%{__install} -m 644 -p %{SOURCE1} \
+    $RPM_BUILD_ROOT%{_datadir}/doc/%%NAME%%/
+
+%%MODULE_PREINSTALL%%
+
+%{__mkdir} -p $RPM_BUILD_ROOT%{_libdir}/nginx/modules
+for so in `find %{bdir}/objs/ -maxdepth 1 -type f -name "*.so"`; do
+%{__install} -m755 $so \
+   $RPM_BUILD_ROOT%{_libdir}/nginx/modules/
+done
+
+%clean
+%{__rm} -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+%{_libdir}/nginx/modules/*
+%dir %{_datadir}/doc/%%NAME%%
+%{_datadir}/doc/%%NAME%%/*
+%%MODULE_FILES%%
+
+%post
+if [ $1 -eq 1 ]; then
+%%MODULE_POST%%
+fi
+
+%changelog

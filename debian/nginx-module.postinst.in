@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" != "configure" ]; then
+    exit 0
+fi
+
+%%MODULE_POST%%
+
+#DEBHELPER#
+
+exit 0

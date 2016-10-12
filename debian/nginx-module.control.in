@@ -1,0 +1,31 @@
+Source: nginx-module-%%MODULE%%
+Section: httpd
+Priority: optional
+Maintainer: Sergey Budnevitch <sb@nginx.com>
+Build-Depends: debhelper (>= 9~),
+               dpkg-dev (>= 1.16.1~),
+               quilt (>= 0.46-7~),
+               lsb-release,
+               libssl-dev (>= 1.0.1),
+               libpcre3-dev,
+               zlib1g-dev%%MODULE_BUILD_DEPENDS%%
+Standards-Version: 3.9.8.0
+Homepage: http://nginx.org
+
+Package: nginx-module-%%MODULE%%
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         nginx (= %%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%)%%MODULE_DEPENDS%%%%ADD_CONTROL_TAGS%%
+Description: %%SUMMARY%%
+ %%SHORT_SUMMARY%% for nginx
+
+Package: nginx-module-%%MODULE%%-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: nginx (= %%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%),
+         nginx-module-%%MODULE%% (= %%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%),
+         ${misc:Depends}
+Description: debug symbols for the nginx-module-%%MODULE%%
+ %%SHORT_SUMMARY%% for nginx (debug symbols)

@@ -1,0 +1,129 @@
+#!/usr/bin/make -f
+
+#export DH_VERBOSE=1
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all,-pie                              
+DPKG_EXPORT_BUILDFLAGS = 1                                                      
+include /usr/share/dpkg/buildflags.mk
+
+BUILDDIR_nginx = $(CURDIR)/debian/build-nginx
+BUILDDIR_nginx_debug = $(CURDIR)/debian/build-nginx-debug
+INSTALLDIR = $(CURDIR)/debian/nginx-module-%%MODULE%%
+BASEDIR = $(CURDIR)
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	ifeq (${NUMJOBS}, 0)
+		NUMJOBS = 1
+	endif
+else
+	NUMJOBS = 1
+endif
+
+%%MODULE_DEFINITIONS%%
+
+config.env.%:
+	dh_testdir
+	mkdir -p $(BUILDDIR_$*)
+	cp -Pa $(CURDIR)/auto $(BUILDDIR_$*)/
+	cp -Pa $(CURDIR)/conf $(BUILDDIR_$*)/
+	cp -Pa $(CURDIR)/configure $(BUILDDIR_$*)/
+	cp -Pa $(CURDIR)/contrib $(BUILDDIR_$*)/
+	cp -Pa $(CURDIR)/man $(BUILDDIR_$*)/
+	cp -Pa $(CURDIR)/src $(BUILDDIR_$*)/
+	test -d $(CURDIR)/debian/extra && cp -Pa $(CURDIR)/debian/extra $(BUILDDIR_$*)/
+	touch $@
+
+config.pre.nginx:
+	dh_testdir
+%%MODULE_PREBUILD%%
+	touch $@
+
+config.pre.nginx_debug: config.pre.nginx
+	dh_testdir
+	rm -rf $(BUILDDIR_nginx_debug)/extra && cp -Pa $(BUILDDIR_nginx)/extra $(BUILDDIR_nginx_debug)/
+	touch $@
+
+config.status.nginx: config.env.nginx config.pre.nginx
+	cd $(BUILDDIR_nginx) && \
+	CFLAGS="" ./configure %%BASE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS)" --with-ld-opt="$(LDFLAGS)"
+	touch $@
+
+config.status.nginx_debug: config.env.nginx_debug config.pre.nginx_debug
+	cd $(BUILDDIR_nginx_debug) && \
+	CFLAGS="" ./configure %%BASE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS)" --with-ld-opt="$(LDFLAGS)" --with-debug
+	touch $@
+
+build-arch.%: config.status.%
+	dh_testdir
+	dh_prep
+	$(MAKE) -j$(NUMJOBS) -C $(BUILDDIR_$*) modules
+
+build-arch: build-arch.nginx build-arch.nginx_debug
+	dh_testdir
+	touch $@
+
+build-dbg.%: install
+	dh_testdir
+	dh_strip --dbg-package=nginx-module-%%MODULE%%-dbg
+
+build-dbg: build-dbg.nginx
+	dh_testdir
+	touch $@
+
+build-indep:
+	dh_testdir
+	touch $@
+
+build: build-arch build-indep
+	dh_testdir
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	dh_clean
+	rm -rf $(CURDIR)/debian/build-*
+	find $(CURDIR) -maxdepth 1 -size 0 -delete
+
+post-build:
+	for so in `find $(BUILDDIR_nginx_debug)/objs/ -maxdepth 1 -type f -name "*.so"`; do \
+	    debugso=`echo $${so} | sed -e "s|.so|-debug.so|"` ; \
+	    mv $${so} $${debugso} ; \
+	done
+
+install:
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+	dh_install
+%%MODULE_PREINSTALL%%
+	mkdir -p $(INSTALLDIR)/usr/lib/nginx/modules
+	for so in `find $(BUILDDIR_nginx_debug)/objs/ -maxdepth 1 -type f -name "*.so"`; do \
+	    install -m755 $${so} $(INSTALLDIR)/usr/lib/nginx/modules/ ; \
+	done
+	for so in `find $(BUILDDIR_nginx)/objs/ -maxdepth 1 -type f -name "*.so"`; do \
+	    install -m755 $${so} $(INSTALLDIR)/usr/lib/nginx/modules/ ; \
+	done
+
+binary-indep: build post-build install
+
+binary-arch: install build-dbg
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs -a
+	dh_installdocs -a
+	dh_lintian -a
+	dh_link -aA
+	dh_compress -a
+	dh_perl -a
+	dh_fixperms -a
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+binary: binary-indep binary-arch
+
+.PHONY: build clean binary-indep binary-arch binary install
