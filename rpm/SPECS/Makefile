@@ -27,8 +27,7 @@ MODULE_RELEASE_xslt=		1
 
 MODULE_SOURCES_njs=		njs-$(MODULE_SHAID_njs).tar.gz
 
-MODULE_CONFARGS_geoip=		--with-http_geoip_module=dynamic \
-				--with-stream_geoip_module=dynamic
+MODULE_CONFARGS_geoip=		--with-http_geoip_module=dynamic
 MODULE_CONFARGS_image_filter=	--with-http_image_filter_module=dynamic
 MODULE_CONFARGS_njs=		--add-dynamic-module=njs-$(MODULE_SHAID_njs)/nginx
 MODULE_CONFARGS_perl=		--with-http_perl_module=dynamic
@@ -56,11 +55,9 @@ To enable these modules, add the following to /etc/nginx/nginx.conf
 and reload nginx:
 
     load_module modules/ngx_http_geoip_module.so;
-    load_module modules/ngx_stream_geoip_module.so;
 
 Please refer to the modules documentation for further details:
 http://nginx.org/en/docs/http/ngx_http_geoip_module.html
-http://nginx.org/en/docs/stream/ngx_stream_geoip_module.html
 
 ----------------------------------------------------------------------
 BANNER
