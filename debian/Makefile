@@ -227,10 +227,10 @@ modules:	$(addprefix module-, $(MODULES))
 rules:	rules-base $(addprefix rules-module-, $(MODULES))
 
 base:	rules-base
-	@echo "===> Building base package"
-	@$(SHELL) -c "cd debuild-base/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc"
-	@find debuild-base/ -maxdepth 1 -type f -exec cp {} ../../ \;
-	@ln -s debuild-base/$(SRCDIR)/debian/nginx/usr/sbin base
+	@echo "===> Building base package" ; \
+	$(SHELL) -c "cd debuild-base/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" && \
+	find debuild-base/ -maxdepth 1 -type f -exec cp {} ../../ \; && \
+	ln -s debuild-base/$(SRCDIR)/debian/nginx/usr/sbin base
 
 $(BASE_SRC):
 	@{ \
@@ -272,8 +272,8 @@ rules-base: $(BASE_SRC)
 
 module-%: rules-module-%
 	@echo "===> Building nginx-$@ package" ; \
-	$(SHELL) -c "cd debuild-$@/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" ; \
-	find debuild-$@/ -maxdepth 1 -type f -exec cp {} ../../ \;; \
+	$(SHELL) -c "cd debuild-$@/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" && \
+	find debuild-$@/ -maxdepth 1 -type f -exec cp {} ../../ \; && \
 	ln -s debuild-$@/$(SRCDIR)/debian/nginx-$@/usr/lib/nginx/modules $@
 
 rules-module-%: $(BASE_SRC)
