@@ -90,7 +90,7 @@ MODULE_VERSION_PREFIX_njs=$(BASE_VERSION).
 
 define MODULE_PREINSTALL_njs
 	mkdir -p $$(INSTALLDIR)/usr/share/doc/nginx-module-njs
-	install -m644 $$(BUILDDIR_nginx)/extra/njs-$(MODULE_VERSION_njs)/README $$(INSTALLDIR)/usr/share/doc/nginx-module-njs/
+	install -m644 $$(BUILDDIR_nginx)/extra/njs-$(MODULE_SHAID_njs)/README $$(INSTALLDIR)/usr/share/doc/nginx-module-njs/
 endef
 export MODULE_PREINSTALL_njs
 
