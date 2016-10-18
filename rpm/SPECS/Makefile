@@ -257,9 +257,9 @@ $(SRCPATH)/$(BASE_SRC):
 	@cd $(SRCPATH) && wget http://nginx.org/download/$(BASE_SRC)
 
 base:	nginx.spec $(SRCPATH)/$(BASE_SRC)
-	@echo "===> Building base package"
-	@$(SHELL) -c "time -p rpmbuild -ba nginx.spec"
-	@ln -s ../BUILD/nginx-$(BASE_VERSION)/objs base
+	@echo "===> Building base package" ; \
+	$(SHELL) -c "time -p rpmbuild -ba nginx.spec" && \
+	ln -s ../BUILD/nginx-$(BASE_VERSION)/objs base
 
 nginx.spec:
 	@echo "===> Creating $@"
@@ -274,7 +274,7 @@ nginx.spec:
 
 module-%: nginx-module-%.spec $(SRCPATH)/$(BASE_SRC)
 	@echo "===> Building nginx-$@ package" ; \
-	$(SHELL) -c "time -p rpmbuild -ba nginx-$@.spec" ; \
+	$(SHELL) -c "time -p rpmbuild -ba nginx-$@.spec" && \
 	ln -s ../BUILD/nginx-$@-$(BASE_VERSION)/objs $@
 
 nginx-module-%.spec:
