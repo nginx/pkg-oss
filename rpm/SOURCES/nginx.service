@@ -1,7 +1,8 @@
 [Unit]
 Description=nginx - high performance web server
 Documentation=http://nginx.org/en/docs/
-After=network.target remote-fs.target nss-lookup.target
+After=network-online.target remote-fs.target nss-lookup.target
+Wants=network-online.target
  
 [Service]
 Type=forking
