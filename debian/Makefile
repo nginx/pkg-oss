@@ -281,7 +281,6 @@ rules-module-%: $(BASE_SRC)
 	@{ \
 	set -e ; \
 	curdir=`pwd` ; \
-	module=`echo $@ | cut -d '-' -f 3- | tr '-' '_'` ; \
 	module_asis=`echo $@ | cut -d '-' -f 3-` ; \
 	builddir=`echo debuild-module-$${module_asis}` ; \
 	mkdir -p $${builddir} ; \
@@ -298,13 +297,13 @@ rules-module-%: $(BASE_SRC)
 		( cd $${builddir}/$(SRCDIR)/debian/extra && patch -p1 < $${curdir}/extra/$${p} ) ; \
 	done ; \
 	( cd $${builddir}/$(SRCDIR) && find debian/ -type f -exec file --mime {} \; | fgrep 'charset=binary' | cut -d ':' -f 1 > include-binaries && mv include-binaries debian/source/ ) ; \
-	copyright_file="nginx-module-$${module}.copyright" ; \
+	copyright_file="nginx-module-$${module_asis}.copyright" ; \
 	if [ -f $${copyright_file} ]; then \
 		copyright_source=$${copyright_file} ; \
 	else \
 		copyright_source=copyright ; \
 	fi ; \
-	changelog_file="nginx-module-$${module}.changelog.in" ; \
+	changelog_file="nginx-module-$${module_asis}.changelog.in" ; \
 	if [ -f $${changelog_file} ]; then \
 		changelog_tmpl=$${changelog_file} ; \
 	else \
