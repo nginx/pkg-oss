@@ -1,5 +1,11 @@
 nginx (%%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * 1.11.6
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 15 Nov 2016 18:50:49 +0300
+
+nginx (%%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * 1.11.5
 
  -- Andrei Belov <defan@nginx.com>  Mon, 10 Oct 2016 10:15:00 +0300
