@@ -114,8 +114,9 @@ and reload nginx:
     load_module modules/ngx_stream_js_module.so;
 
 Please refer to the modules documentation for further details:
-/usr/share/doc/nginx-module-njs/README
-https://www.nginx.com/resources/wiki/nginScript/
+http://nginx.org/en/docs/njs_about.html
+http://nginx.org/en/docs/http/ngx_http_js_module.html
+http://nginx.org/en/docs/stream/ngx_stream_js_module.html
 
 ----------------------------------------------------------------------
 BANNER
