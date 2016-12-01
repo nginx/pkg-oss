@@ -96,12 +96,6 @@ export MODULE_POST_image_filter
 
 MODULE_VERSION_PREFIX_njs=$(BASE_VERSION).
 
-define MODULE_PREINSTALL_njs
-%{__install} -m644 %{bdir}/njs-$(MODULE_VERSION_njs)/README \
-    $$RPM_BUILD_ROOT%{_datadir}/doc/nginx-module-njs/
-endef
-export MODULE_PREINSTALL_njs
-
 define MODULE_POST_njs
 cat <<BANNER
 ----------------------------------------------------------------------
