@@ -328,7 +328,7 @@ fi
 * Tue May 31 2016 Konstantin Pavlov <thresh@nginx.com>
 - 1.11.1
 
-* Wed May 24 2016 Sergey Budnevitch <sb@nginx.com>
+* Tue May 24 2016 Sergey Budnevitch <sb@nginx.com>
 - Fixed logrotate error if nginx is not running
 - 1.11.0
 
