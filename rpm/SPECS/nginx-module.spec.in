@@ -53,6 +53,7 @@ nginx %%SHORT_SUMMARY%%.
 %endif
 
 %define WITH_CC_OPT $(echo %{optflags} $(pcre-config --cflags))
+%define WITH_LD_OPT -Wl,-z,relro -Wl,-z,now
 
 %define BASE_CONFIGURE_ARGS $(echo "%%BASE_CONFIGURE_ARGS%%")
 %define MODULE_CONFIGURE_ARGS $(echo "%%MODULE_CONFIGURE_ARGS%%")
@@ -68,6 +69,7 @@ tar --strip-components=1 -zxf %{SOURCE0}
 cd %{bdir}
 ./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
 	--with-cc-opt="%{WITH_CC_OPT}" \
+	--with-ld-opt="%{WITH_LD_OPT}" \
 	--with-debug
 make %{?_smp_mflags} modules
 for so in `find %{bdir}/objs/ -type f -name "*.so"`; do
@@ -75,7 +77,8 @@ debugso=`echo $so | sed -e "s|.so|-debug.so|"`
 mv $so $debugso
 done
 ./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
-	--with-cc-opt="%{WITH_CC_OPT}"
+	--with-cc-opt="%{WITH_CC_OPT}" \
+	--with-ld-opt="%{WITH_LD_OPT}"
 make %{?_smp_mflags} modules
 
 %install

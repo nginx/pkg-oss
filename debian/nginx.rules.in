@@ -5,6 +5,9 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+all,-pie
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
 
+ADD_CFLAGS = -fPIC
+ADD_LDFLAGS = -pie
+
 PKGS = nginx nginx-dbg
 
 BUILDDIR_nginx = $(CURDIR)/debian/build-nginx
@@ -36,12 +39,12 @@ config.env.%:
 
 config.status.nginx: config.env.nginx
 	cd $(BUILDDIR_nginx) && \
-	CFLAGS="" ./configure %%BASE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS)" --with-ld-opt="$(LDFLAGS)"
+	CFLAGS="" ./configure %%BASE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS) $(ADD_CFLAGS)" --with-ld-opt="$(LDFLAGS) $(ADD_LDFLAGS)"
 	touch $@
 
 config.status.nginx_debug: config.env.nginx_debug
 	cd $(BUILDDIR_nginx_debug) && \
-	CFLAGS="" ./configure %%BASE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS)" --with-ld-opt="$(LDFLAGS)" --with-debug
+	CFLAGS="" ./configure %%BASE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS) $(ADD_CFLAGS)" --with-ld-opt="$(LDFLAGS) $(ADD_LDFLAGS)" --with-debug
 	touch $@
 
 build-arch.%: config.status.%
