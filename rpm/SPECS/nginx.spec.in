@@ -52,7 +52,8 @@ BuildRequires: systemd
 
 %define bdir %{_builddir}/%{name}-%{main_version}
 
-%define WITH_CC_OPT $(echo %{optflags} $(pcre-config --cflags))
+%define WITH_CC_OPT $(echo %{optflags} $(pcre-config --cflags)) -fPIC
+%define WITH_LD_OPT -Wl,-z,relro -Wl,-z,now -pie
 
 %define BASE_CONFIGURE_ARGS $(echo "%%BASE_CONFIGURE_ARGS%%")
 
@@ -105,12 +106,14 @@ sed -e 's|%%DEFAULTSTART%%||g' -e 's|%%DEFAULTSTOP%%|0 1 2 3 4 5 6|g' \
 %build
 ./configure %{BASE_CONFIGURE_ARGS} \
     --with-cc-opt="%{WITH_CC_OPT}" \
+    --with-ld-opt="%{WITH_LD_OPT}" \
     --with-debug
 make %{?_smp_mflags}
 %{__mv} %{bdir}/objs/nginx \
     %{bdir}/objs/nginx-debug
 ./configure %{BASE_CONFIGURE_ARGS} \
-    --with-cc-opt="%{WITH_CC_OPT}"
+    --with-cc-opt="%{WITH_CC_OPT}" \
+    --with-ld-opt="%{WITH_LD_OPT}"
 make %{?_smp_mflags}
 
 %install
