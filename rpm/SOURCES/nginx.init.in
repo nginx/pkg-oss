@@ -40,6 +40,7 @@ lockfile=${LOCKFILE-/var/lock/subsys/%PROVIDES%}
 pidfile=${PIDFILE-/var/run/nginx.pid}
 SLEEPMSEC=${SLEEPMSEC-200000}
 UPGRADEWAITLOOPS=${UPGRADEWAITLOOPS-5}
+CHECKSLEEP=${CHECKSLEEP-3}
 RETVAL=0
 
 start() {
@@ -110,6 +111,18 @@ rh_status() {
     status -p ${pidfile} -b ${nginx} ${nginx}
 }
 
+check_reload() {
+    templog=`/bin/mktemp --tmpdir nginx-check-reload-XXXXXX.log`
+    trap '/bin/rm -f $templog' 0
+    /usr/bin/tail --pid=$$ -n 0 --follow=name /var/log/nginx/error.log > $templog &
+    /bin/sleep 1
+    /bin/echo -n $"Sending reload signal to $prog: "
+    killproc -p ${pidfile} ${prog} -HUP
+    /bin/echo
+    /bin/sleep $CHECKSLEEP
+    /bin/grep -E "\[emerg\]|\[alert\]" $templog
+}
+
 # See how we were called.
 case "$1" in
     start)
@@ -144,8 +157,11 @@ case "$1" in
     configtest)
         configtest
         ;;
+    check-reload)
+        check_reload
+        ;;
     *)
-        echo $"Usage: $prog {start|stop|restart|condrestart|try-restart|force-reload|upgrade|reload|status|help|configtest}"
+        echo $"Usage: $prog {start|stop|restart|condrestart|try-restart|force-reload|upgrade|reload|status|help|configtest|check-reload}"
         RETVAL=2
 esac
 
