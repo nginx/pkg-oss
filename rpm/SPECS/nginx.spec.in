@@ -308,6 +308,11 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Jan 24 2017 Konstantin Pavlov <thresh@nginx.com>
+- 1.11.9
+- Extended hardening build flags.
+- Added check-reload target to init script / systemd service.
+
 * Tue Dec 27 2016 Konstantin Pavlov <thresh@nginx.com>
 - 1.11.8
 
