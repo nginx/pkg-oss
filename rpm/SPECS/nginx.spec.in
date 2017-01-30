@@ -76,6 +76,7 @@ Source9: nginx.upgrade.sh
 Source10: nginx.suse.logrotate
 Source11: nginx-debug.service
 Source12: COPYRIGHT
+Source13: nginx.check-reload.sh
 
 License: 2-clause BSD-like license
 
@@ -160,6 +161,8 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
 %{__mkdir} -p $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx
 %{__install} -m755 %SOURCE9 \
     $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx/upgrade
+%{__install} -m755 %SOURCE13 \
+    $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx/check-reload
 %else
 # install SYSV init stuff
 %{__mkdir} -p $RPM_BUILD_ROOT%{_initrddir}

@@ -29,6 +29,7 @@ DAEMON=${DAEMON-/usr/sbin/%%PROVIDES%%}
 PIDFILE=${PIDFILE-/var/run/nginx.pid}
 SLEEPSEC=1
 UPGRADEWAITLOOPS=5
+CHECKSLEEP=${CHECKSLEEP-3}
 
 [ -x $DAEMON ] || exit 0
 
@@ -103,6 +104,16 @@ do_upgrade() {
     return $RETVAL
 }
 
+do_checkreload() {
+    templog=`/bin/mktemp --tmpdir nginx-check-reload-XXXXXX.log`
+    trap '/bin/rm -f $templog' 0
+    /usr/bin/tail --pid=$$ -n 0 --follow=name /var/log/nginx/error.log > $templog &
+    /bin/sleep 1
+    start-stop-daemon --stop --signal HUP --quiet --pidfile $PIDFILE
+    /bin/sleep $CHECKSLEEP
+    /bin/grep -E "\[emerg\]|\[alert\]" $templog
+}
+
 case "$1" in
     start)
         [ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC " "$NAME"
@@ -153,8 +164,12 @@ case "$1" in
                 ;;
         esac
         ;;
+    check-reload)
+        do_checkreload
+        RETVAL=0
+        ;;
     *)
-        echo "Usage: $SCRIPTNAME {start|stop|status|restart|reload|force-reload|upgrade|configtest}" >&2
+        echo "Usage: $SCRIPTNAME {start|stop|status|restart|reload|force-reload|upgrade|configtest|check-reload}" >&2
         exit 3
         ;;
 esac
