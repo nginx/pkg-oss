@@ -159,6 +159,7 @@ case "$1" in
         ;;
     check-reload)
         check_reload
+        RETVAL=0
         ;;
     *)
         echo $"Usage: $prog {start|stop|restart|condrestart|try-restart|force-reload|upgrade|reload|status|help|configtest|check-reload}"

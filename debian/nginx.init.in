@@ -166,6 +166,7 @@ case "$1" in
         ;;
     check-reload)
         do_checkreload
+        RETVAL=0
         ;;
     *)
         echo "Usage: $SCRIPTNAME {start|stop|status|restart|reload|force-reload|upgrade|configtest|check-reload}" >&2
