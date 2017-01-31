@@ -1,5 +1,13 @@
 nginx (%%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * 1.10.3
+  * Extended hardening build flags.
+  * Added check-reload target to init script / systemd service.
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 31 Jan 2017 14:39:32 +0300
+
+nginx (1.10.2-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * 1.10.2
 
  -- Konstantin Pavlov <thresh@nginx.com>  Tue, 18 Oct 2016 17:30:00 +0300
