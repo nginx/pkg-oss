@@ -308,6 +308,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Feb 14 2017 Konstantin Pavlov <thresh@nginx.com>
+- 1.11.10
+
 * Tue Jan 24 2017 Konstantin Pavlov <thresh@nginx.com>
 - 1.11.9
 - Extended hardening build flags.
