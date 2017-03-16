@@ -12,20 +12,20 @@ Build-Depends: debhelper (>= 9~),
 Standards-Version: 3.9.8.0
 Homepage: %%MODULE_PACKAGE_URL%%
 
-Package: nginx-module-%%MODULE%%
+Package: nginx-plus-module-%%MODULE%%
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         nginx (= %%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%)%%MODULE_DEPENDS%%%%ADD_CONTROL_TAGS%%
+         nginx-plus (>> %%MAIN_PREV%%), nginx-plus (<< %%MAIN_NEXT%%)%%MODULE_DEPENDS%%%%ADD_CONTROL_TAGS%%
 Description: %%SUMMARY%%
- %%SHORT_SUMMARY%% for nginx
+ %%SHORT_SUMMARY%% for NGINX Plus
 
-Package: nginx-module-%%MODULE%%-dbg
+Package: nginx-plus-module-%%MODULE%%-dbg
 Architecture: any
 Section: debug
 Priority: extra
-Depends: nginx (= %%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%),
-         nginx-module-%%MODULE%% (= %%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%),
+Depends: nginx-plus (>> %%MAIN_PREV%%), nginx-plus (<< %%MAIN_NEXT%%),
+         nginx-plus-module-%%MODULE%% (= %%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%),
          ${misc:Depends}
-Description: debug symbols for the nginx-module-%%MODULE%%
- %%SHORT_SUMMARY%% for nginx (debug symbols)
+Description: debug symbols for the nginx-plus-module-%%MODULE%%
+ %%SHORT_SUMMARY%% for NGINX Plus (debug symbols)

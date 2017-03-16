@@ -2,10 +2,25 @@ SHELL=		/bin/bash
 
 BASE_VERSION=	1.11.10
 BASE_RELEASE=	1
+BASE_PREV=	1.11.9
+BASE_NEXT=	1.11.11
 BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
 SRCDIR=		nginx-$(BASE_VERSION)
 SRCPATH?=	../..
 BUILD_ENV_PATH=	${HOME}/debuild
+MODULE_TARGET?=	oss
+
+ifeq ($(MODULE_TARGET), plus)
+MODULE_CONTROL_TEMPLATE=   nginx-plus-module.control.in
+TARGET_SUFFIX=	-plus
+MODULE_SUMMARY_PREFIX=NGINX Plus
+else
+MODULE_CONTROL_TEMPLATE=   nginx-module.control.in
+MODULE_SUMMARY_PREFIX=nginx
+endif
+
+MODULE_PACKAGE_VENDOR=	Sergey Budnevitch <sb@nginx.com>
+MODULE_PACKAGE_URL=	http://nginx.org/
 
 CODENAME=	$(shell lsb_release -cs)
 ARCH=		$(shell uname -m)
@@ -13,6 +28,8 @@ NPROC=		$(shell getconf _NPROCESSORS_ONLN)
 MODSRC_PREFIX=	extra/
 
 MODULES=	geoip image-filter njs perl xslt
+
+-include Makefile.module-*
 
 MODULE_SUMMARY_geoip=		GeoIP dynamic modules
 MODULE_SUMMARY_image_filter=	image filter dynamic module
@@ -311,13 +328,17 @@ rules-module-%: $(BASE_SRC)
 	prebuild=`echo "$$MODULE_PREBUILD_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	preinstall=`echo "$$MODULE_PREINSTALL_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	post=`echo "$$MODULE_POST_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
-	cat nginx-module.control.in | sed \
+	cat $(MODULE_CONTROL_TEMPLATE) | sed \
 		-e "s#%%MODULE%%#$${module_asis}#g" \
-		-e "s#%%SUMMARY%%#nginx $(MODULE_SUMMARY_$(call modname, $@))#g" \
+		-e "s#%%MODULE_PACKAGE_VENDOR%%#$(MODULE_PACKAGE_VENDOR)#g" \
+		-e "s#%%MODULE_PACKAGE_URL%%#$(MODULE_PACKAGE_URL)#g" \
+		-e "s#%%SUMMARY%%#$(MODULE_SUMMARY_PREFIX) $(MODULE_SUMMARY_$(call modname, $@))#g" \
 		-e "s#%%SHORT_SUMMARY%%#$(MODULE_SUMMARY_$(call modname, $@))#g" \
 		-e "s#%%CODENAME%%#$(CODENAME)#g" \
 		-e "s#%%MAIN_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%MAIN_RELEASE%%#$(BASE_RELEASE)#g" \
+		-e "s#%%MAIN_PREV%%#$(BASE_PREV)#g" \
+		-e "s#%%MAIN_NEXT%%#$(BASE_NEXT)#g" \
 		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $@))#g" \
 		-e "s#%%MODULE_VERSION%%#$(MODULE_VERSION_$(call modname, $@))#g" \
 		-e "s#%%MODULE_RELEASE%%#$(MODULE_RELEASE_$(call modname, $@))#g" \
@@ -337,6 +358,7 @@ rules-module-%: $(BASE_SRC)
 		-e "s#%%CODENAME%%#$(CODENAME)#g" \
 		-e "s#%%MAIN_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%MAIN_RELEASE%%#$(BASE_RELEASE)#g" \
+		-e "s#%%TARGET_SUFFIX%%#$(TARGET_SUFFIX)#g" \
 		-e "s#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g" \
 		-e "s#%%MODULE_CONFIGURE_ARGS%%#$(MODULE_CONFARGS_$(call modname, $@))#g" \
 		-e "s#%%MODULE_DEFINITIONS%%#$${definitions}#g" \
@@ -345,7 +367,7 @@ rules-module-%: $(BASE_SRC)
 	> $${builddir}/$(SRCDIR)/debian/rules ; \
 	cat nginx-module.postinst.in | sed \
 		-e "s#%%MODULE_POST%%#$$post#g" \
-	> $${builddir}/$(SRCDIR)/debian/nginx-module-$${module_asis}.postinst ; \
+	> $${builddir}/$(SRCDIR)/debian/nginx$(TARGET_SUFFIX)-module-$${module_asis}.postinst ; \
 	chmod +x $${builddir}/$(SRCDIR)/debian/rules ; \
 	ln -s $${builddir}/$(SRCDIR)/debian/rules $@ ; \
 	}
@@ -415,7 +437,7 @@ prepare-build-env: $(BASE_SRC)
 	}
 
 clean:
-	@rm -rf base module-* rules-base rules-module-* debuild-base debuild-module-* nginx-tests
+	@rm -rf base module-* rules-base rules-module-* debuild-base debuild-module-* nginx-tests $(BASE_SRC)
 
 .PHONY:	default all modules rules test test-debug clean
 

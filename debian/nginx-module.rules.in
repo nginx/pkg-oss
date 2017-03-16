@@ -8,7 +8,7 @@ include /usr/share/dpkg/buildflags.mk
 
 BUILDDIR_nginx = $(CURDIR)/debian/build-nginx
 BUILDDIR_nginx_debug = $(CURDIR)/debian/build-nginx-debug
-INSTALLDIR = $(CURDIR)/debian/nginx-module-%%MODULE%%
+INSTALLDIR = $(CURDIR)/debian/nginx%%TARGET_SUFFIX%%-module-%%MODULE%%
 BASEDIR = $(CURDIR)
 
 ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
@@ -65,7 +65,7 @@ build-arch: build-arch.nginx build-arch.nginx_debug
 
 build-dbg.%: install
 	dh_testdir
-	dh_strip --dbg-package=nginx-module-%%MODULE%%-dbg
+	dh_strip --dbg-package=nginx%%TARGET_SUFFIX%%-module-%%MODULE%%-dbg
 
 build-dbg: build-dbg.nginx
 	dh_testdir

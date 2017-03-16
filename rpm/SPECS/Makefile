@@ -5,8 +5,23 @@ BASE_RELEASE=	1
 BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
 SRCPATH?=	../SOURCES
 BUILD_ENV_PATH=	${HOME}/rpmbuild
+MODULE_TARGET?=	oss                                                     
+
+ifeq ($(MODULE_TARGET), plus)
+MODULE_SPEC_TEMPLATE=	nginx-plus-module.spec.in
+MODULE_SUMMARY_PREFIX=	NGINX Plus
+else
+MODULE_SPEC_TEMPLATE=	nginx-module.spec.in
+MODULE_SUMMARY_PREFIX=	nginx
+endif
+
+MODULE_PACKAGE_VENDOR=	Nginx, Inc.
+MODULE_PACKAGE_URL=	http://nginx.org/
+MODULE_PACKAGE_LICENSE=2-clause BSD-like license
 
 MODULES=	geoip image-filter njs perl xslt
+
+-include Makefile.module-*
 
 MODULE_SUMMARY_geoip=		GeoIP dynamic modules
 MODULE_SUMMARY_image_filter=	image filter dynamic module
@@ -312,14 +327,22 @@ nginx-module-%.spec:
 	else \
 		changelog_file=nginx-module.changelog.in ; \
 	fi ; \
+	pkgname=$(shell echo $@ | cut -d '.' -f 1) ; \
+	if [ "$(MODULE_TARGET)" = "plus" ]; then \
+		pkgname=`echo $${pkgname} | sed -e "s#^nginx-#nginx-plus-#"` ; \
+	fi ; \
 	definitions=`echo "$$MODULE_DEFINITIONS_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	prebuild=`echo "$$MODULE_PREBUILD_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	preinstall=`echo "$$MODULE_PREINSTALL_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
+	buildenv=`echo "$$MODULE_ENV_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	files=`echo "$$MODULE_FILES_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	post=`echo "$$MODULE_POST_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
-	cat nginx-module.spec.in | sed \
-		-e "s#%%NAME%%#$(shell echo $@ | cut -d '.' -f 1)#g" \
-		-e "s#%%SUMMARY%%#nginx $(MODULE_SUMMARY_$(call modname, $@))#g" \
+	cat $(MODULE_SPEC_TEMPLATE) | sed \
+		-e "s#%%NAME%%#$${pkgname}#g" \
+		-e "s#%%MODULE_PACKAGE_VENDOR%%#$(MODULE_PACKAGE_VENDOR)#g" \
+		-e "s#%%MODULE_PACKAGE_URL%%#$(MODULE_PACKAGE_URL)#g" \
+		-e "s#%%MODULE_PACKAGE_LICENSE%%#$(MODULE_PACKAGE_LICENSE)#g" \
+		-e "s#%%SUMMARY%%#$(MODULE_SUMMARY_PREFIX) $(MODULE_SUMMARY_$(call modname, $@))#g" \
 		-e "s#%%SHORT_SUMMARY%%#$(MODULE_SUMMARY_$(call modname, $@))#g" \
 		-e "s#%%MAIN_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%MAIN_RELEASE%%#$(BASE_RELEASE)#g" \
@@ -335,6 +358,9 @@ nginx-module-%.spec:
 		-e "s#%%MODULE_PREP_PATCHES%%#$${preppatches}#g" \
 		-e "s#%%MODULE_DEFINITIONS%%#$${definitions}#g" \
 		-e "s#%%MODULE_PREBUILD%%#$${prebuild}#g" \
+		-e "s#%%MODULE_ENV%%#$${buildenv}#g" \
+		-e "s#%%MODULE_CC_OPT_DEBUG%%#$(MODULE_CC_OPT_DEBUG_$(call modname, $@))#g" \
+		-e "s#%%MODULE_CC_OPT_NODEBUG%%#$(MODULE_CC_OPT_NODEBUG_$(call modname, $@))#g" \
 		-e "s#%%MODULE_PREINSTALL%%#$${preinstall}#g" \
 		-e "s#%%MODULE_FILES%%#$${files}#g" \
 		-e "s#%%MODULE_POST%%#$${post}#g" \
@@ -412,6 +438,7 @@ clean:
 	@rm -f base module-*
 	@rm -f nginx.spec nginx-module-*.spec
 	@rm -rf nginx-tests
+	@rm -f $(BASE_SRC)
 
 .PHONY:	default all modules specs test test-debug clean
 

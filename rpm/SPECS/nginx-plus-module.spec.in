@@ -14,11 +14,6 @@ BuildRequires: openssl-devel
 BuildRequires: libopenssl-devel
 %endif
 
-%if 0%{?rhel} == 7
-%define epoch 1
-Epoch: %{epoch}
-%endif
-
 %define main_version %%MAIN_VERSION%%
 %define main_release %%MAIN_RELEASE%%%{?dist}.ngx
 
@@ -26,7 +21,7 @@ Epoch: %{epoch}
 
 Summary: %%SUMMARY%%
 Name: %%NAME%%
-Version: %%VERSION_PREFIX%%%%VERSION%%
+Version: %%VERSION%%
 Release: %%RELEASE%%%{?dist}.ngx
 Vendor: %%MODULE_PACKAGE_VENDOR%%
 URL: %%MODULE_PACKAGE_URL%%
@@ -43,10 +38,10 @@ License: %%MODULE_PACKAGE_LICENSE%%
 BuildRoot: %{_tmppath}/%{name}-%{main_version}-%{main_release}-root
 BuildRequires: zlib-devel
 BuildRequires: pcre-devel
-Requires: nginx == %{?epoch:%{epoch}:}%%MAIN_VERSION%%-%%MAIN_RELEASE%%%{?dist}.ngx
+Requires: nginx-plus == %%MAIN_VERSION%%
 
 %description
-nginx %%SHORT_SUMMARY%%.
+NGINX Plus: %%SHORT_SUMMARY%%.
 
 %if 0%{?suse_version} || 0%{?amzn}
 %debug_package
@@ -67,8 +62,9 @@ tar --strip-components=1 -zxf %{SOURCE0}
 %build
 %%MODULE_PREBUILD%%
 cd %{bdir}
+%%MODULE_ENV%%
 ./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
-	--with-cc-opt="%{WITH_CC_OPT}" \
+	--with-cc-opt="%{WITH_CC_OPT} %%MODULE_CC_OPT_DEBUG%%" \
 	--with-ld-opt="%{WITH_LD_OPT}" \
 	--with-debug
 make %{?_smp_mflags} modules
@@ -76,8 +72,9 @@ for so in `find %{bdir}/objs/ -type f -name "*.so"`; do
 debugso=`echo $so | sed -e "s|.so|-debug.so|"`
 mv $so $debugso
 done
+%%MODULE_ENV%%
 ./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
-	--with-cc-opt="%{WITH_CC_OPT}" \
+	--with-cc-opt="%{WITH_CC_OPT} %%MODULE_CC_OPT_NODEBUG%%" \
 	--with-ld-opt="%{WITH_LD_OPT}"
 make %{?_smp_mflags} modules
 
@@ -106,9 +103,15 @@ done
 %{_datadir}/doc/%%NAME%%/*
 %%MODULE_FILES%%
 
+%pre
+
 %post
 if [ $1 -eq 1 ]; then
 %%MODULE_POST%%
 fi
+
+%preun
+
+%postun
 
 %changelog
