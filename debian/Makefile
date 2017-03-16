@@ -5,6 +5,7 @@ BASE_RELEASE=	1
 BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
 SRCDIR=		nginx-$(BASE_VERSION)
 SRCPATH?=	../..
+BUILD_ENV_PATH=	${HOME}/debuild
 
 CODENAME=	$(shell lsb_release -cs)
 ARCH=		$(shell uname -m)
@@ -386,6 +387,31 @@ test-debug: base nginx-tests
 		globals="$$globals env PERL5LIB=$$pwd/debuild-module-perl/nginx-$(BASE_VERSION)/debian/build-nginx/objs/src/http/modules/perl:$$pwd/debuild-module-perl/nginx-$(BASE_VERSION)/debian/build-nginx/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
 	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx-debug TEST_NGINX_GLOBALS="$$globals" prove . ; \
+	}
+
+prepare-build-env: $(BASE_SRC)
+	@{ \
+	set -e ; \
+	cwd=`pwd` ; \
+	case $$cwd in $(BUILD_ENV_PATH)*) \
+		echo "You are in $(BUILD_ENV_PATH), skipping" >&2 ; \
+		exit 1 ; \
+	esac ; \
+	if [ -e $(BUILD_ENV_PATH) ]; then \
+		echo "$(BUILD_ENV_PATH) is already exists and going to be removed." ; \
+		echo "Press Enter to continue or Ctrl+C to exit" ; \
+		read ; \
+		rm -rf $(BUILD_ENV_PATH) ; \
+	fi ; \
+	mkdir -p $(BUILD_ENV_PATH) ; \
+	tar -C $(BUILD_ENV_PATH) -xf $(BASE_SRC) ; \
+	cp -rP $${cwd} $(BUILD_ENV_PATH)/nginx-$(BASE_VERSION)/ ; \
+	cp $(BASE_SRC) $(BUILD_ENV_PATH)/nginx_$(BASE_VERSION).orig.tar.gz ; \
+	echo "Build environment has been created in: $(BUILD_ENV_PATH)" ; \
+	echo ; \
+	echo "Please do the following in order to get available build targets:" ; \
+	echo "    cd $(BUILD_ENV_PATH)/nginx-$(BASE_VERSION)/debian" ; \
+	echo "    make" ; \
 	}
 
 clean:

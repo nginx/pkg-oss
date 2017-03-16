@@ -4,6 +4,7 @@ BASE_VERSION=	1.11.10
 BASE_RELEASE=	1
 BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
 SRCPATH?=	../SOURCES
+BUILD_ENV_PATH=	${HOME}/rpmbuild
 
 MODULES=	geoip image-filter njs perl xslt
 
@@ -248,6 +249,9 @@ modules:	$(addprefix module-, $(MODULES))
 
 specs:	nginx.spec $(addsuffix .spec, $(addprefix nginx-module-, $(MODULES)))
 
+$(BASE_SRC):
+	wget http://nginx.org/download/$(BASE_SRC)
+
 $(SRCPATH)/$(BASE_SRC):
 	@cd $(SRCPATH) && wget http://nginx.org/download/$(BASE_SRC)
 
@@ -376,6 +380,32 @@ test-debug: base nginx-tests
 		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
 	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx-debug TEST_NGINX_GLOBALS="$$globals" prove . ; \
+	}
+
+prepare-build-env: $(BASE_SRC)
+	@{ \
+	set -e ; \
+	cwd=`pwd` ; \
+	case $$cwd in $(BUILD_ENV_PATH)*) \
+		echo "You are in $(BUILD_ENV_PATH), skipping" >&2 ; \
+		exit 1 ; \
+	esac ; \
+	if [ -e $(BUILD_ENV_PATH) ]; then \
+		echo "$(BUILD_ENV_PATH) is already exists and going to be removed." ; \
+		echo "Press Enter to continue or Ctrl+C to exit" ; \
+		read ; \
+		rm -rf $(BUILD_ENV_PATH) ; \
+	fi ; \
+	mkdir -p $(BUILD_ENV_PATH) ; \
+	pd=`dirname $${cwd}` ; \
+	cp -rP $${pd}/SPECS $(BUILD_ENV_PATH)/ ; \
+	cp -rP $${pd}/SOURCES $(BUILD_ENV_PATH)/ ; \
+	cp $(BASE_SRC) $(BUILD_ENV_PATH)/SOURCES/ ; \
+	echo "Build environment has been created in: $(BUILD_ENV_PATH)" ; \
+	echo ; \
+	echo "Please do the following in order to get available build targets:" ; \
+	echo "    cd $(BUILD_ENV_PATH)/SPECS" ; \
+	echo "    make" ; \
 	}
 
 clean:
