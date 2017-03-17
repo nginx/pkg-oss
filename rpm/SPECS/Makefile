@@ -5,7 +5,10 @@ BASE_RELEASE=	1
 BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
 SRCPATH?=	../SOURCES
 BUILD_ENV_PATH=	${HOME}/rpmbuild
-MODULE_TARGET?=	oss                                                     
+MODULE_TARGET?=	oss
+MODSRC_PREFIX=
+MODSRC_PATH=	$(SRCPATH)
+BUILD_DIR=	%{bdir}
 
 ifeq ($(MODULE_TARGET), plus)
 MODULE_SPEC_TEMPLATE=	nginx-plus-module.spec.in
