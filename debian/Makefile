@@ -26,6 +26,8 @@ CODENAME=	$(shell lsb_release -cs)
 ARCH=		$(shell uname -m)
 NPROC=		$(shell getconf _NPROCESSORS_ONLN)
 MODSRC_PREFIX=	extra/
+MODSRC_PATH=	$(MODSRC_PREFIX)
+BUILD_DIR=	$$(BUILDDIR_nginx)
 
 MODULES=	geoip image-filter njs perl xslt
 
