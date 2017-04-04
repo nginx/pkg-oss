@@ -39,10 +39,10 @@ test -x $nginx || { echo "$nginx not installed";
 	if [ "$1" = "stop" ]; then exit 0;
 	else exit 5; fi; }
 
-nginx=${NGINX-/usr/sbin/nginx}
-conffile=${CONFFILE-/etc/nginx/nginx.conf}
-pidfile=${PIDFILE-/var/run/nginx.pid}
-SLEEPMSEC=100000
+nginx=${NGINX:-/usr/sbin/nginx}
+conffile=${CONFFILE:-/etc/nginx/nginx.conf}
+pidfile=${PIDFILE:-/var/run/nginx.pid}
+SLEEPSEC=${SLEEPSEC:-1}
 
 . /etc/rc.status
 
@@ -54,7 +54,7 @@ upgrade() {
     configtest -q || return 6
     echo -n $"Starting new master: "
     /sbin/killproc -p ${pidfile} -USR2 $nginx
-    /bin/usleep $SLEEPMSEC
+    /bin/sleep $SLEEPSEC
     if [ -f ${oldbinpidfile} -a -f ${pidfile} ]; then
         echo -n $"Graceful shutdown of old nginx: "
         killproc -p ${oldbinpidfile} -QUIT $nginx

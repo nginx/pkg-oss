@@ -33,14 +33,14 @@ if [ -f /etc/sysconfig/$sysconfig ]; then
     . /etc/sysconfig/$sysconfig
 fi
 
-nginx=${NGINX-/usr/sbin/%PROVIDES%}
+nginx=${NGINX:-/usr/sbin/%PROVIDES%}
 prog=`/bin/basename $nginx`
-conffile=${CONFFILE-/etc/nginx/nginx.conf}
-lockfile=${LOCKFILE-/var/lock/subsys/%PROVIDES%}
-pidfile=${PIDFILE-/var/run/nginx.pid}
-SLEEPMSEC=${SLEEPMSEC-200000}
-UPGRADEWAITLOOPS=${UPGRADEWAITLOOPS-5}
-CHECKSLEEP=${CHECKSLEEP-3}
+conffile=${CONFFILE:-/etc/nginx/nginx.conf}
+lockfile=${LOCKFILE:-/var/lock/subsys/%PROVIDES%}
+pidfile=${PIDFILE:-/var/run/nginx.pid}
+SLEEPSEC=${SLEEPSEC:-1}}
+UPGRADEWAITLOOPS=${UPGRADEWAITLOOPS:-5}
+CHECKSLEEP=${CHECKSLEEP:-3}
 RETVAL=0
 
 start() {
@@ -77,7 +77,7 @@ upgrade() {
     echo
 
     for i in `/usr/bin/seq $UPGRADEWAITLOOPS`; do
-        /bin/usleep $SLEEPMSEC
+        /bin/sleep $SLEEPSEC
         if [ -f ${oldbinpidfile} -a -f ${pidfile} ]; then
             echo -n $"Graceful shutdown of old $prog: "
             killproc -p ${oldbinpidfile} ${prog} -QUIT

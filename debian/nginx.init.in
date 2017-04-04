@@ -22,14 +22,14 @@ sysconfig=`/usr/bin/basename $SCRIPTNAME`
 
 [ -r /etc/default/$sysconfig ] && . /etc/default/$sysconfig
 
-DESC=${DESC-%%PROVIDES%%}
-NAME=${NAME-%%PROVIDES%%}
-CONFFILE=${CONFFILE-/etc/nginx/nginx.conf}
-DAEMON=${DAEMON-/usr/sbin/%%PROVIDES%%}
-PIDFILE=${PIDFILE-/var/run/nginx.pid}
-SLEEPSEC=1
-UPGRADEWAITLOOPS=5
-CHECKSLEEP=${CHECKSLEEP-3}
+DESC=${DESC:-%%PROVIDES%%}
+NAME=${NAME:-%%PROVIDES%%}
+CONFFILE=${CONFFILE:-/etc/nginx/nginx.conf}
+DAEMON=${DAEMON:-/usr/sbin/%%PROVIDES%%}
+PIDFILE=${PIDFILE:-/var/run/nginx.pid}
+SLEEPSEC=${SLEEPSEC:-1}
+UPGRADEWAITLOOPS=${UPGRADEWAITLOOPS:-5}
+CHECKSLEEP=${CHECKSLEEP:-3}
 
 [ -x $DAEMON ] || exit 0
 
