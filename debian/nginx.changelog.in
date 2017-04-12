@@ -1,5 +1,11 @@
 nginx (%%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * 1.12.0
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Wed, 12 Apr 2017 16:05:18 +0300
+
+nginx (1.11.13-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * 1.11.13
   * Made upgrade loops/timeouts configurable via /etc/defaults/nginx.
 
