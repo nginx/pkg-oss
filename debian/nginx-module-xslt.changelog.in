@@ -1,5 +1,11 @@
 nginx-module-xslt (%%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * base version updated to 1.13.1-1
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 30 May 2017 16:03:25 +0300
+
+nginx-module-xslt (1.13.0-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * base version updated to 1.13.0-1
 
  -- Konstantin Pavlov <thresh@nginx.com>  Tue, 25 Apr 2017 14:49:20 +0300
