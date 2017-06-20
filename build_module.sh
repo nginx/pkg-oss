@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# build_module.sh (c) NGINX, Inc. [v0.10 27-Apr-2017] Liam Crilly <liam.crilly@nginx.com>
+# build_module.sh (c) NGINX, Inc. [v0.11 20-Jun-2017] Liam Crilly <liam.crilly@nginx.com>
 #
 # This script supports apt(8) and yum(8) package managers. Installs the minimum
 # necessary prerequisite packages to build 3rd party modules for NGINX Plus.
@@ -9,6 +9,7 @@
 # Obtains pkg-oss tool, creates packaging files and copies in module source.
 #
 # CHANGELOG
+# v0.11 [20-Jun-2017] Enforces NGINX versions that support dynamic modules
 # v0.10 [27-Apr-2017] Fixed postinstall banner, improved .so filename detection,
 #                     -v option for specifying OSS build/version
 # v0.9  [10-Apr-2017] @defan patch, improved postinstall banner, added disclaimer
@@ -75,6 +76,9 @@ while [ $# -gt 1 ]; do
 			if [ `echo -n $2 | tr -d '[0-9p]' | wc -c` -gt 0 ]; then
 				echo "$ME: ERROR: NGINX Plus release must be in the format NN[pN] - quitting"
 				exit 1
+			elif [ "`echo "10^$2" | tr '^' '\n' | sort -nr | head -1`" == "10" ]; then
+				echo "$ME: ERROR: NGINX Plus release must be at least 11 to support dynamic modules - quitting"
+				exit 1
 			fi
 			PLUS_REL=$2
 			shift; shift
@@ -84,6 +88,10 @@ while [ $# -gt 1 ]; do
 			if [ `echo -n .$2 | tr -d '[0-9\.]' | wc -c` -eq 0 ]; then
 				OSS_VER=$2
 				shift
+			fi
+			if [ `echo "1.11.4^$OSS_VER" | tr '^' '\n' | tr '.' ',' | sort -nr | head -1` == "1,11,4" ]; then
+				echo "$ME: ERROR: NGINX version must be at least 1.11.5 to support dynamic modules - quitting"
+				exit 1
 			fi
 			shift
 			;;
