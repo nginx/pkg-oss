@@ -312,6 +312,10 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Jul 11 2017 Konstantin Pavlov <thresh@nginx.com>
+- 1.13.3
+- Fixes CVE-2017-7529
+
 * Tue Jun 27 2017 Konstantin Pavlov <thresh@nginx.com>
 - 1.13.2
 
