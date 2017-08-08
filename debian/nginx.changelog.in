@@ -1,5 +1,11 @@
 nginx (%%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * 1.13.4
+
+ -- Sergey Budnevitch <sb@nginx.com>  Tue, 08 Aug 2017 18:25:00 +0300
+
+nginx (1.13.3-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * 1.13.3
   * Fixes CVE-2017-7529
 
