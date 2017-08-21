@@ -17,6 +17,7 @@ BuildRequires: libopenssl-devel
 %if 0%{?rhel} == 7
 %define epoch 1
 Epoch: %{epoch}
+%define dist .el7
 %endif
 
 %define main_version %%MAIN_VERSION%%
