@@ -280,7 +280,7 @@ rules-base: $(BASE_SRC)
 		-e 's#%%MAIN_RELEASE%%#$(BASE_RELEASE)#g' \
 		> debuild-base/$(SRCDIR)/debian/changelog ; \
 	cp nginx.control.in debuild-base/$(SRCDIR)/debian/control ; \
-	cp copyright ../CHANGES ../CHANGES.ru nginx.* nginx-debug.default debuild-base/$(SRCDIR)/debian/ ; \
+	cp copyright ../CHANGES ../CHANGES.ru nginx.* nginx-debug.default nginx-debug.service debuild-base/$(SRCDIR)/debian/ ; \
 	chmod +x debuild-base/$(SRCDIR)/debian/rules ; \
 	ln -s debuild-base/$(SRCDIR)/debian/rules rules-base ; \
 	}
