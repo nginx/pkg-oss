@@ -17,6 +17,7 @@ Package: nginx
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base (>= 3.0-6), adduser
 Provides: httpd
+Conflicts: nginx-common
 Description: high performance web server
  nginx [engine x] is an HTTP and reverse proxy server, as well as
  a mail proxy server.
