@@ -115,6 +115,11 @@ export MODULE_POST_image_filter
 
 MODULE_VERSION_PREFIX_njs=$(BASE_VERSION).
 
+define MODULE_DEFINITIONS_njs
+BuildRequires: libedit-devel
+endef
+export MODULE_DEFINITIONS_njs
+
 define MODULE_PREBUILD_njs
 cd %{bdir}/njs-$(MODULE_VERSION_njs) \&\& ./configure \&\& make njs
 endef

@@ -110,6 +110,8 @@ export MODULE_POST_image_filter
 
 MODULE_VERSION_PREFIX_njs=$(BASE_VERSION).
 
+MODULE_BUILD_DEPENDS_njs=,libedit-dev
+
 define MODULE_PREBUILD_njs
 	cd debian/extra/njs-$(MODULE_VERSION_njs) \&\& ./configure \&\& make njs
 endef
