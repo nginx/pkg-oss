@@ -110,6 +110,21 @@ export MODULE_POST_image_filter
 
 MODULE_VERSION_PREFIX_njs=$(BASE_VERSION).
 
+MODULE_BUILD_DEPENDS_njs=,libedit-dev
+
+define MODULE_PREBUILD_njs
+	cd debian/extra/njs-$(MODULE_VERSION_njs) \&\& ./configure \&\& make njs
+endef
+export MODULE_PREBUILD_njs
+
+define MODULE_PREINSTALL_njs
+	mkdir -p $$(INSTALLDIR)/usr/share/doc/nginx-module-njs
+	install -m644 $$(BUILDDIR_nginx)/extra/njs-$(MODULE_VERSION_njs)/CHANGES $$(INSTALLDIR)/usr/share/doc/nginx-module-njs/
+	mkdir -p $$(INSTALLDIR)/usr/bin
+	install -m755 -s $$(CURDIR)/debian/extra/njs-$(MODULE_VERSION_njs)/build/njs $$(INSTALLDIR)/usr/bin/
+endef
+export MODULE_PREINSTALL_njs
+
 define MODULE_POST_njs
 cat <<BANNER
 ----------------------------------------------------------------------
