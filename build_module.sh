@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# build_module.sh (c) NGINX, Inc. [v0.11 20-Jun-2017] Liam Crilly <liam.crilly@nginx.com>
+# build_module.sh (c) NGINX, Inc. [v0.12 30-Aug-2017] Liam Crilly <liam.crilly@nginx.com>
 #
 # This script supports apt(8) and yum(8) package managers. Installs the minimum
 # necessary prerequisite packages to build 3rd party modules for NGINX Plus.
@@ -9,6 +9,8 @@
 # Obtains pkg-oss tool, creates packaging files and copies in module source.
 #
 # CHANGELOG
+# v0.12 [30-Aug-2017] -o option to specify destination for package files
+#                     -y (--non-interactive) option for automated builds
 # v0.11 [20-Jun-2017] Enforces NGINX versions that support dynamic modules
 # v0.10 [27-Apr-2017] Fixed postinstall banner, improved .so filename detection,
 #                     -v option for specifying OSS build/version
@@ -43,9 +45,11 @@ if [ $# -eq 0 ]; then
 	echo " Options:"
 	echo " -n | --nickname <word>         # Used for packaging, lower case alphanumeric only"
 	echo " -s | --skip-depends            # Skip dependecies check/install"
+	echo " -y | --non-interactive         # Automatically install dependencies and overwrite files"
 	echo " -f | --force-dynamic           # Attempt to convert static configuration to dynamic module"
 	echo " -r <NGINX Plus release number> # Build against the corresponding OSS version for this release"
 	echo " -v [NGINX OSS version number]  # Build against this OSS version [current mainline] (default)"
+	echo " -o <package output directory>  # Create package(s) in this directory"
 	echo ""
         exit 1
 fi
@@ -54,13 +58,21 @@ fi
 # Process command line options
 #
 CHECK_DEPENDS=1
+SAY_YES=""
+COPY_CMD="cp -i"
 DO_DYNAMIC_CONVERT=0
 MODULE_NAME=""
 BUILD_PLATFORM=OSS
+OUTPUT_DIR=""
 while [ $# -gt 1 ]; do
 	case "$1" in
 		"-s" | "--skip-depends")
 			CHECK_DEPENDS=0
+			shift
+			;;
+		"-y" | "--non-interactive")
+			SAY_YES="-y"
+			COPY_CMD="cp -f"
 			shift
 			;;
 		"-f" | "--force-dynamic")
@@ -95,6 +107,14 @@ while [ $# -gt 1 ]; do
 			fi
 			shift
 			;;
+		"-o")
+			if [ ! -d $2 ]; then
+				echo "$ME: ERROR: Output directory $2 does not exist - quitting"
+				exit 1
+			fi
+			OUTPUT_DIR=$2
+			shift; shift
+			;;
 		*)
 			echo "$ME: ERROR: Invalid command line option ($1) - quitting"
 			exit 1
@@ -107,20 +127,22 @@ done
 #
 if [ `whereis yum | grep -c "^yum: /"` -eq 1 ]; then
         PKG_MGR=yum
+	PKG_FMT=rpm
 	NGINX_PACKAGES="pcre-devel zlib-devel openssl-devel"
 	DEVEL_PACKAGES="rpm-build"
+	PACKAGING_ROOT=${HOME}/rpmbuild/
 	PACKAGING_DIR=rpm/SPECS
 	PACKAGE_SOURCES_DIR=../SOURCES
-	FIND_PKGS_CMD="find ${HOME}/rpmbuild/RPMS/ -maxdepth 2 -type f -name "*.rpm" -print"
-	FIND_SO_CMD="find ${HOME}/rpmbuild/BUILD/ -type f -name "*.so" -print"
+	PACKAGE_OUTPUT_DIR=RPMS
 elif [ `whereis apt-get | grep -c "^apt-get: /"` -eq 1 ]; then
         PKG_MGR=apt-get
+	PKG_FMT=deb
 	NGINX_PACKAGES="libpcre3-dev zlib1g-dev libssl-dev"
 	DEVEL_PACKAGES="devscripts debhelper dpkg-dev quilt lsb-release"
+	PACKAGING_ROOT=${HOME}/debuild/
 	PACKAGING_DIR=debian
 	PACKAGE_SOURCES_DIR=extra
-	FIND_PKGS_CMD="find ${HOME}/debuild/ -maxdepth 1 -type f -name "*.deb" -print"
-	FIND_SO_CMD="find ${HOME}/debuild/ -maxdepth 9 -type f -name "*.so" -print"
+	PACKAGE_OUTPUT_DIR="*/debian"
 else
         echo "$ME: ERROR: Could not locate a supported package manager - quitting"
         exit 1
@@ -142,7 +164,7 @@ if [ $CHECK_DEPENDS = 1 ]; then
 	if [ "${1##*.}" == "git" ]; then
 		CORE_PACKAGES="$CORE_PACKAGES git"
 	fi
-	sudo $PKG_MGR install $CORE_PACKAGES $NGINX_PACKAGES $DEVEL_PACKAGES
+	sudo $PKG_MGR install $SAY_YES $CORE_PACKAGES $NGINX_PACKAGES $DEVEL_PACKAGES
 fi
 
 #
@@ -153,23 +175,36 @@ if [ "$MODULE_NAME" = "" ]; then
 	# Construct a reasonable nickname from the module source location
 	#
 	MODULE_NAME=`basename $1 | tr '[:blank:][:punct:]' '\n' | tr '[A-Z]' '[a-z]' | grep -ve nginx -e ngx -e http -e stream -e module -e plus -e tar -e zip -e gz -e git | tr -d '\n'`
-	read -p "$ME: INPUT: Enter module nickname [$MODULE_NAME]: "
-	if [ "$REPLY" != "" ]; then
-		MODULE_NAME=$REPLY
+	if [ -z "$SAY_YES" ]; then
+		read -p "$ME: INPUT: Enter module nickname [$MODULE_NAME]: "
+		if [ "$REPLY" != "" ]; then
+			MODULE_NAME=$REPLY
+		fi
+	else
+		echo "$ME: INFO: using \"$MODULE_NAME\" as module nickname"
 	fi
 fi
 
 #
 # Sanitize module nickname (this is a debbuild requirement, probably needs to check for more characters)
 #
-MODULE_NAME_CLEAN=`echo $MODULE_NAME | tr '[A-Z]' '[a-z]' | tr -d '[_\-\.\t ]'`
-if [ $MODULE_NAME_CLEAN != $MODULE_NAME ]; then
-	echo "$ME: WARNING: Removed illegal characters from module nickname - using $MODULE_NAME_CLEAN"
-	read -p "$ME: INPUT: Confirm module nickname [$MODULE_NAME_CLEAN]: " MODULE_NAME
-	if [ "$MODULE_NAME" = "" ]; then
-		MODULE_NAME=$MODULE_NAME_CLEAN
+while true; do
+	MODULE_NAME_CLEAN=`echo $MODULE_NAME | tr '[A-Z]' '[a-z]' | tr -d '[/_\-\.\t ]'`
+	if [ "$MODULE_NAME_CLEAN" != "$MODULE_NAME" ] || [ -z $MODULE_NAME ]; then
+		echo "$ME: WARNING: Removed illegal characters from module nickname - using \"$MODULE_NAME_CLEAN\""
+		if [ -z $SAY_YES ]; then
+			read -p "$ME: INPUT: Confirm module nickname [$MODULE_NAME_CLEAN]: " MODULE_NAME
+			if [ "$MODULE_NAME" = "" ]; then
+				MODULE_NAME=$MODULE_NAME_CLEAN
+			fi
+		else
+			MODULE_NAME=$MODULE_NAME_CLEAN
+			break
+		fi
+	else
+		break
 	fi
-fi
+done
 
 #
 # Create temporary build area, with working copy of module source
@@ -346,6 +381,9 @@ __EOF__
 # Build!
 #
 echo "$ME: INFO: Building"
+if [ -d $PACKAGING_ROOT -a "$SAY_YES" = "-y" ]; then
+        rm -fr $PACKAGING_ROOT
+fi
 make prepare-build-env
 if [ $? -ne 0 ]; then
 	echo "$ME: ERROR: Unable to prepare build environment - quitting"
@@ -366,10 +404,16 @@ fi
 if [ $? -ne 0 ]; then
 	echo "$ME: ERROR: Build failed"
 else
+	echo ""
 	echo "$ME: INFO: Module binaries created"
-	$FIND_SO_CMD
+	find $PACKAGING_ROOT -type f -name "*.so" -print
+
 	echo "$ME: INFO: Module packages created"
-	$FIND_PKGS_CMD
+	if [ "$OUTPUT_DIR" = "" ]; then
+		find $PACKAGING_ROOT$PACKAGE_OUTPUT_DIR -type f -name "*.$PKG_FMT" -print
+	else
+		find $PACKAGING_ROOT$PACKAGE_OUTPUT_DIR -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} $OUTPUT_DIR \;
+	fi
 	echo "$ME: INFO: Removing $BUILD_DIR"
 	rm -fr $BUILD_DIR
 fi
