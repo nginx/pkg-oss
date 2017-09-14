@@ -107,11 +107,13 @@ binary-indep: build post-build install
 		-e 's/%%DEFAULTSTOP%%/0 1 6/g' \
 		< debian/nginx.init.in > debian/nginx.init
 	dh_installinit -i -pnginx --no-restart-on-upgrade --no-start --name=nginx
+	dh_systemd_enable -pnginx --name=nginx nginx.service
 	sed -e 's/%%PROVIDES%%/nginx-debug/g' \
 		-e 's/%%DEFAULTSTART%%//g' \
 		-e 's/%%DEFAULTSTOP%%/0 1 2 3 4 5 6/g' \
 		< debian/nginx.init.in > debian/nginx-debug.init
 	dh_installinit -i -pnginx --no-restart-on-upgrade --no-start --noscripts --name=nginx-debug
+	dh_systemd_enable -pnginx --name=nginx-debug --no-enable nginx-debug.service
 	dh_installlogrotate -i -pnginx --name=nginx
 
 binary-arch: install build-dbg
