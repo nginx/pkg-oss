@@ -31,10 +31,17 @@ BuildRequires: openssl-devel >= 1.0.1
 Epoch: %{epoch}
 Requires(pre): shadow-utils
 Requires: systemd
-Requires: openssl >= 1.0.1
 BuildRequires: systemd
+%define openssl_version %(rpmquery openssl | cut -c 9-13)
+%if "%{openssl_version}" == "1.0.2"
+Requires: openssl >= 1.0.2
+BuildRequires: openssl-devel >= 1.0.2
+%define dist .el7.4
+%else
+Requires: openssl >= 1.0.1
 BuildRequires: openssl-devel >= 1.0.1
 %define dist .el7
+%endif
 %endif
 
 %if 0%{?suse_version} == 1315

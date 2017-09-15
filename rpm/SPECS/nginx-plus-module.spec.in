@@ -2,8 +2,6 @@
 %define nginx_user nginx
 %define nginx_group nginx
 
-%%MODULE_DEFINITIONS%%
-
 %if 0%{?rhel} || 0%{?amzn}
 %define _group System Environment/Daemons
 BuildRequires: openssl-devel
@@ -15,8 +13,15 @@ BuildRequires: libopenssl-devel
 %endif
 
 %if 0%{?rhel} == 7
+%define openssl_version %(rpmquery openssl | cut -c 9-13)
+%if "%{openssl_version}" == "1.0.2"
+%define dist .el7.4
+%else
 %define dist .el7
 %endif
+%endif
+
+%%MODULE_DEFINITIONS%%
 
 %define main_version %%MAIN_VERSION%%
 %define main_release %%MAIN_RELEASE%%%{?dist}.ngx
