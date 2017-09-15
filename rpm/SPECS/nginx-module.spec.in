@@ -17,7 +17,7 @@ BuildRequires: libopenssl-devel
 Epoch: %{epoch}
 %define openssl_version %(rpmquery openssl | cut -c 9-13)
 %if "%{openssl_version}" == "1.0.2"
-%define dist .el7.4
+%define dist .el7_4
 %else
 %define dist .el7
 %endif

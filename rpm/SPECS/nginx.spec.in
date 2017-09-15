@@ -36,7 +36,7 @@ BuildRequires: systemd
 %if "%{openssl_version}" == "1.0.2"
 Requires: openssl >= 1.0.2
 BuildRequires: openssl-devel >= 1.0.2
-%define dist .el7.4
+%define dist .el7_4
 %else
 Requires: openssl >= 1.0.1
 BuildRequires: openssl-devel >= 1.0.1
