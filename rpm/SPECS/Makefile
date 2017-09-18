@@ -163,7 +163,7 @@ export MODULE_POST_njs
 # perl
 
 define MODULE_DEFINITIONS_perl
-%if (0%{?rhel} \&\& 0%{?rhel} == 5) || (0%{?suse_version} == 1315)
+%if (0%{?suse_version} == 1315)
 BuildRequires: perl
 %else
 BuildRequires: perl-devel

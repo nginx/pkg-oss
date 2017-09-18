@@ -7,15 +7,6 @@
 # distribution specific definitions
 %define use_systemd (0%{?fedora} && 0%{?fedora} >= 18) || (0%{?rhel} && 0%{?rhel} >= 7) || (0%{?suse_version} == 1315)
 
-%if 0%{?rhel} == 5
-%define _group System Environment/Daemons
-Requires(pre): shadow-utils
-Requires: initscripts >= 8.36
-Requires(post): chkconfig
-Requires: openssl
-BuildRequires: openssl-devel
-%endif
-
 %if 0%{?rhel} == 6
 %define _group System Environment/Daemons
 Requires(pre): shadow-utils
