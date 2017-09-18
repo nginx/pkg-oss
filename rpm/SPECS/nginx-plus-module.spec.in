@@ -13,8 +13,9 @@ BuildRequires: libopenssl-devel
 %endif
 
 %if 0%{?rhel} == 7
-%define openssl_version %(rpmquery openssl | cut -c 9-13)
-%if "%{openssl_version}" == "1.0.2"
+BuildRequires: redhat-lsb-core
+%define os_minor %(lsb_release -rs | cut -d '.' -f 2)
+%if %{os_minor} >= 4
 %define dist .el7_4
 %else
 %define dist .el7
