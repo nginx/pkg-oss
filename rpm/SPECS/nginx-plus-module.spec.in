@@ -2,8 +2,6 @@
 %define nginx_user nginx
 %define nginx_group nginx
 
-%%MODULE_DEFINITIONS%%
-
 %if 0%{?rhel} || 0%{?amzn}
 %define _group System Environment/Daemons
 BuildRequires: openssl-devel
@@ -15,8 +13,16 @@ BuildRequires: libopenssl-devel
 %endif
 
 %if 0%{?rhel} == 7
+BuildRequires: redhat-lsb-core
+%define os_minor %(lsb_release -rs | cut -d '.' -f 2)
+%if %{os_minor} >= 4
+%define dist .el7_4
+%else
 %define dist .el7
 %endif
+%endif
+
+%%MODULE_DEFINITIONS%%
 
 %define main_version %%MAIN_VERSION%%
 %define main_release %%MAIN_RELEASE%%%{?dist}.ngx
