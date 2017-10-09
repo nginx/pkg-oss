@@ -1,6 +1,12 @@
 nginx-module-njs (%%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
-  * base version udpated to 1.13.5-2
+  * njs updated to 0.1.14
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Mon, 09 Oct 2017 20:44:09 +0300
+
+nginx-module-njs (1.13.5.0.1.13-2~%%CODENAME%%) %%CODENAME%%; urgency=low
+
+  * base version updated to 1.13.5-2
 
  -- Konstantin Pavlov <thresh@nginx.com>  Thu, 14 Sep 2017 19:31:17 +0300
 
