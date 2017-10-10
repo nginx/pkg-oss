@@ -1,6 +1,12 @@
 nginx-module-perl (%%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
-  * base version udpated to 1.13.5-2
+  * base version updated to 1.13.6-1
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 10 Oct 2017 17:14:52 +0300
+
+nginx-module-perl (1.13.5-2~%%CODENAME%%) %%CODENAME%%; urgency=low
+
+  * base version updated to 1.13.5-2
 
  -- Konstantin Pavlov <thresh@nginx.com>  Thu, 14 Sep 2017 19:31:59 +0300
 
