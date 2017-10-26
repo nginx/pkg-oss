@@ -345,7 +345,7 @@ if [ "$PKG_MGR" = "yum" ]; then
 	echo "- initial version of $MODULE_NAME module" >> nginx-module-$MODULE_NAME.changelog.in
 else
 	cat << __EOF__ > nginx-module-$MODULE_NAME.changelog.in
-nginx-module-$MODULE_NAME (${VERSION}) %%CODENAME%%; urgency=low
+nginx-module-$MODULE_NAME (${VERSION}-1~%%CODENAME%%) %%CODENAME%%; urgency=low
 
   * initial release of $MODULE_NAME module for nginx
 
