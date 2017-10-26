@@ -130,6 +130,11 @@ if [ `whereis yum | grep -c "^yum: /"` -eq 1 ]; then
 	PKG_FMT=rpm
 	NGINX_PACKAGES="pcre-devel zlib-devel openssl-devel"
 	DEVEL_PACKAGES="rpm-build"
+	case `rpm --eval '%{dist}'` in
+		.el7*)
+			DEVEL_PACKAGES="$DEVEL_PACKAGES redhat-lsb-core"
+			;;
+	esac
 	PACKAGING_ROOT=${HOME}/rpmbuild/
 	PACKAGING_DIR=rpm/SPECS
 	PACKAGE_SOURCES_DIR=../SOURCES
@@ -157,7 +162,7 @@ if [ $CHECK_DEPENDS = 1 ]; then
 	fi
 
 	echo "$ME: INFO: checking for dependent packages"
-	CORE_PACKAGES="gcc make unzip"
+	CORE_PACKAGES="gcc make unzip wget"
 	if [ "$BUILD_PLATFORM" = "OSS" ]; then
 		CORE_PACKAGES="$CORE_PACKAGES mercurial"
 	fi
