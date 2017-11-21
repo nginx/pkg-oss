@@ -1,5 +1,11 @@
 nginx-module-njs (%%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * njs updated to 0.1.15.
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 21 Nov 2017 17:25:30 +0300
+
+nginx-module-njs (1.13.6.0.1.14-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * njs updated to 0.1.14
 
  -- Konstantin Pavlov <thresh@nginx.com>  Mon, 09 Oct 2017 20:44:09 +0300

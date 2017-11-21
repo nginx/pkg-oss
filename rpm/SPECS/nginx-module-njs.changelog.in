@@ -1,3 +1,6 @@
+* Tue Nov 21 2017 Konstantin Pavlov <thresh@nginx.com>
+- njs module updated to 0.1.15
+
 * Mon Oct  9 2017 Konstantin Pavlov <thresh@nginx.com>
 - njs module updated to 0.1.14
 
