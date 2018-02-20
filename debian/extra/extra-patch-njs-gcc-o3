@@ -1,0 +1,30 @@
+
+# HG changeset patch
+# User Dmitry Volyntsev <xeioex@nginx.com>
+# Date 1511366157 -10800
+# Node ID 22cc52416e84135c52b5d8ab209c2d3121b3a318
+# Parent  5eb2620a9becc18b385b920a93c3f5d0233291b7
+Fixed building by GCC with -O3.
+
+diff -r 5eb2620a9bec -r 22cc52416e84 njs/njs_fs.c
+--- a/njs-0.1.15/njs/njs_fs.c	Mon Nov 20 20:08:56 2017 +0300
++++ b/njs-0.1.15/njs/njs_fs.c	Wed Nov 22 18:55:57 2017 +0300
+@@ -566,6 +566,8 @@
+     }
+ 
+     mode = NULL;
++    /* GCC complains about uninitialized flag.length. */
++    flag.length = 0;
+     flag.start = NULL;
+     encoding.length = 0;
+     encoding.start = NULL;
+@@ -753,6 +755,8 @@
+     }
+ 
+     mode = NULL;
++    /* GCC complains about uninitialized flag.length. */
++    flag.length = 0;
+     flag.start = NULL;
+     encoding.length = 0;
+     encoding.start = NULL;
+
