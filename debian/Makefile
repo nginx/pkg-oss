@@ -43,14 +43,13 @@ MODULE_VERSION_geoip=		$(BASE_VERSION)
 MODULE_RELEASE_geoip=		1
 MODULE_VERSION_image_filter=	$(BASE_VERSION)
 MODULE_RELEASE_image_filter=	1
-MODULE_VERSION_njs=		0.1.15
+MODULE_VERSION_njs=		0.2.0
 MODULE_RELEASE_njs=		1
 MODULE_VERSION_perl=		$(BASE_VERSION)
 MODULE_RELEASE_perl=		1
 MODULE_VERSION_xslt=		$(BASE_VERSION)
 MODULE_RELEASE_xslt=		1
 
-MODULE_PATCHES_njs=		extra-patch-njs-gcc-o3
 MODULE_SOURCES_njs=		njs-$(MODULE_VERSION_njs).tar.gz
 
 MODULE_CONFARGS_geoip=		--with-http_geoip_module=dynamic \
