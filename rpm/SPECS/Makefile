@@ -2,6 +2,7 @@ SHELL=		/bin/bash
 
 BASE_VERSION=	1.13.11
 BASE_RELEASE=	1
+PLUS_VERSION=	15
 BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
 SRCPATH?=	../SOURCES
 BUILD_ENV_PATH=	${HOME}/rpmbuild
@@ -373,6 +374,7 @@ nginx-module-%.spec:
 		-e "s#%%SHORT_SUMMARY%%#$(MODULE_SUMMARY_$(call modname, $@))#g" \
 		-e "s#%%MAIN_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%MAIN_RELEASE%%#$(BASE_RELEASE)#g" \
+		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
 		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $@))#g" \
 		-e "s#%%VERSION%%#$(MODULE_VERSION_$(call modname, $@))#g" \
 		-e "s#%%RELEASE%%#$(MODULE_RELEASE_$(call modname, $@))#g" \

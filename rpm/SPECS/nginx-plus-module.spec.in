@@ -48,7 +48,8 @@ License: %%MODULE_PACKAGE_LICENSE%%
 BuildRoot: %{_tmppath}/%{name}-%{main_version}-%{main_release}-root
 BuildRequires: zlib-devel
 BuildRequires: pcre-devel
-Requires: nginx-plus == %%MAIN_VERSION%%
+Requires: nginx-plus-r%%PLUS_VERSION%%
+Provides: %{name}-r%{plus_version}
 
 %description
 NGINX Plus: %%SHORT_SUMMARY%%.

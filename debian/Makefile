@@ -2,8 +2,7 @@ SHELL=		/bin/bash
 
 BASE_VERSION=	1.13.11
 BASE_RELEASE=	1
-BASE_PREV=	1.13.10
-BASE_NEXT=	1.13.12
+PLUS_VERSION=	15
 BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
 SRCDIR=		nginx-$(BASE_VERSION)
 SRCPATH?=	../..
@@ -354,8 +353,7 @@ rules-module-%: $(BASE_SRC)
 		-e "s#%%CODENAME%%#$(CODENAME)#g" \
 		-e "s#%%MAIN_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%MAIN_RELEASE%%#$(BASE_RELEASE)#g" \
-		-e "s#%%MAIN_PREV%%#$(BASE_PREV)#g" \
-		-e "s#%%MAIN_NEXT%%#$(BASE_NEXT)#g" \
+		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
 		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $@))#g" \
 		-e "s#%%MODULE_VERSION%%#$(MODULE_VERSION_$(call modname, $@))#g" \
 		-e "s#%%MODULE_RELEASE%%#$(MODULE_RELEASE_$(call modname, $@))#g" \
