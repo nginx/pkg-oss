@@ -16,7 +16,8 @@ Package: nginx-plus-module-%%MODULE%%
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         nginx-plus (>> %%MAIN_PREV%%), nginx-plus (<< %%MAIN_NEXT%%)%%MODULE_DEPENDS%%%%ADD_CONTROL_TAGS%%
+         nginx-plus-r%%PLUS_VERSION%%%%MODULE_DEPENDS%%%%ADD_CONTROL_TAGS%%
+Provides: nginx-plus-module-%%MODULE%%-r%%PLUS_VERSION%%
 Description: %%SUMMARY%%
  %%SHORT_SUMMARY%% for NGINX Plus
 
@@ -24,7 +25,7 @@ Package: nginx-plus-module-%%MODULE%%-dbg
 Architecture: any
 Section: debug
 Priority: extra
-Depends: nginx-plus (>> %%MAIN_PREV%%), nginx-plus (<< %%MAIN_NEXT%%),
+Depends: nginx-plus-r%%PLUS_VERSION%%,
          nginx-plus-module-%%MODULE%% (= %%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%),
          ${misc:Depends}
 Description: debug symbols for the nginx-plus-module-%%MODULE%%
