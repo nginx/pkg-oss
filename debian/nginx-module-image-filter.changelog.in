@@ -1,5 +1,11 @@
 nginx-module-image-filter (%%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * base version updated to 1.15.0-1
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 05 Jun 2018 15:00:18 +0300
+
+nginx-module-image-filter (1.13.12-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * base version updated to 1.13.12-1
 
  -- Konstantin Pavlov <thresh@nginx.com>  Mon, 09 Apr 2018 19:01:09 +0300
