@@ -34,7 +34,7 @@ MODULES=	geoip image-filter njs perl xslt
 
 MODULE_SUMMARY_geoip=		GeoIP dynamic modules
 MODULE_SUMMARY_image_filter=	image filter dynamic module
-MODULE_SUMMARY_njs=		nginScript dynamic modules
+MODULE_SUMMARY_njs=		njs dynamic modules
 MODULE_SUMMARY_perl=		Perl dynamic module
 MODULE_SUMMARY_xslt=		xslt dynamic module
 
