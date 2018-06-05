@@ -417,7 +417,7 @@ fi
 
 * Tue Mar 29 2016 Konstantin Pavlov <thresh@nginx.com>
 - 1.9.13
-- Added perl and nJScript dynamic modules
+- Added perl and njs dynamic modules
 - Fixed Requires section for dynamic modules on CentOS7/RHEL7
 
 * Wed Feb 24 2016 Sergey Budnevitch <sb@nginx.com>
