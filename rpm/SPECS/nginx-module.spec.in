@@ -7,7 +7,7 @@
 BuildRequires: openssl-devel
 %endif
 
-%if 0%{?suse_version} == 1315
+%if 0%{?suse_version} >= 1315
 %define _group Productivity/Networking/Web/Servers
 BuildRequires: libopenssl-devel
 %endif

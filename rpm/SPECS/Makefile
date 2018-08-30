@@ -56,7 +56,7 @@ MODULE_CONFARGS_xslt=		--with-http_xslt_module=dynamic
 # geoip
 
 define MODULE_DEFINITIONS_geoip
-%if 0%{?suse_version} == 1315
+%if 0%{?suse_version} >= 1315
 BuildRequires: libGeoIP-devel
 Requires: libGeoIP1
 %else
@@ -164,7 +164,7 @@ export MODULE_POST_njs
 # perl
 
 define MODULE_DEFINITIONS_perl
-%if (0%{?suse_version} == 1315)
+%if 0%{?suse_version} >= 1315
 BuildRequires: perl
 %else
 BuildRequires: perl-devel
