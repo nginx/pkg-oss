@@ -1,5 +1,8 @@
 # default changelog for module packages
 #
+* Tue Nov 06 2018 Konstantin Pavlov <thresh@nginx.com>
+- base version updated to 1.15.6
+
 * Tue Oct 02 2018 Konstantin Pavlov <thresh@nginx.com>
 - base version updated to 1.15.5
 
