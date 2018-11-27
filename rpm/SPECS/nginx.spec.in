@@ -312,6 +312,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Nov 27 2018 Konstantin Pavlov <thresh@nginx.com>
+- 1.15.7
+
 * Tue Nov 06 2018 Konstantin Pavlov <thresh@nginx.com>
 - 1.15.6
 - Fixes CVE-2018-16843
