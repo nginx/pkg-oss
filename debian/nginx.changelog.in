@@ -1,5 +1,11 @@
 nginx (%%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * 1.14.2
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 04 Dec 2018 17:44:49 +0300
+
+nginx (1.14.1-2~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * 1.14.1
   * Fixes CVE-2018-16843
   * Fixes CVE-2018-16844

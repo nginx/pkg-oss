@@ -1,7 +1,7 @@
 SHELL=		/bin/bash
 
-BASE_VERSION=	1.14.1
-BASE_RELEASE=	2
+BASE_VERSION=	1.14.2
+BASE_RELEASE=	1
 PLUS_VERSION=	15
 BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
 SRCDIR=		nginx-$(BASE_VERSION)
@@ -283,8 +283,6 @@ rules-base: $(BASE_SRC)
 	mkdir -p debuild-base/$(SRCDIR)/debian/source ; \
 	echo "3.0 (quilt)" > debuild-base/$(SRCDIR)/debian/source/format ; \
 	echo "9" > debuild-base/$(SRCDIR)/debian/compat ; \
-	mkdir -p debuild-base/$(SRCDIR)/debian/patches; \
-	cp patches/* debuild-base/$(SRCDIR)/debian/patches/ ; \
 	cat nginx.rules.in | sed \
 		-e 's#%%CODENAME%%#$(CODENAME)#g' \
 		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
