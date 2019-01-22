@@ -1,0 +1,94 @@
+# Maintainer: Andrei Belov <defan@nginx.com>
+# Contributor: Andrei Belov <defan@nginx.com>
+#
+
+_main_version=%%MAIN_VERSION%%
+_main_release=%%MAIN_RELEASE%%
+
+pkgname=nginx-module-%%MODULE%%
+pkgver=%%MODULE_VERSION_PREFIX%%%%MODULE_VERSION%%
+pkgrel=%%MODULE_RELEASE%%
+pkgdesc="%%SUMMARY%%"
+url="http://nginx.org/"
+arch="all"
+license="2-clause BSD-like license"
+depends="nginx=$_main_version-r$_main_release %%MODULE_DEPENDS%%"
+makedepends="linux-headers openssl-dev pcre-dev zlib-dev %%MODULE_BUILD_DEPENDS%%"
+provides=""
+%%ADD_CONTROL_TAGS%%
+
+options="!check"
+
+pkgusers=""
+pkggroups=""
+install="$pkgname.post-install"
+
+# we would like to ship all docs/licenses in the base package
+#subpackages="$pkgname-doc"
+
+source="nginx-module-%%MODULE%%-$_main_version.tar.gz
+	%%MODULE_SOURCES%%
+	COPYRIGHT
+	"
+builddir="$srcdir/%%MODULE_SRCDIR%%"
+
+_modules_dir="usr/lib/nginx/modules"
+
+prepare() {
+	local file; for file in $source; do
+		case $file in
+		*~*.patch)
+			msg $file
+			cd "$srcdir"/${file%%~*}-*
+			patch -p 1 -i "$srcdir/$file"
+			;;
+		*.patch)
+			msg $file
+			cd "$builddir"
+			patch -p 1 -i "$srcdir/$file"
+			;;
+		extra-patch*)
+			msg $file
+			cd "$builddir/../"
+			patch -p 1 -i "$srcdir/$file"
+			;;
+		esac
+	done
+}
+
+build() {
+	cd "$builddir"
+
+	_nproc=`getconf _NPROCESSORS_ONLN`
+	if [ $_nproc -gt 1 ]; then
+		_make_opts="-j$_nproc"
+	fi
+
+	%%MODULE_PREBUILD%%
+
+	cd "$builddir"
+
+	CFLAGS= %%MODULE_ENV%% ./configure %%BASE_MODULE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$CFLAGS %%MODULE_CC_OPT_DEBUG%%" --with-ld-opt="$LDFLAGS" --with-debug
+	make $_make_opts modules
+	for so in `find objs/ -maxdepth 1 -type f -name "*.so"`; do \
+		debugso=`echo ${so} | sed -e "s|.so|-debug.so|"` ; \
+		mv ${so} ${debugso} ; \
+        done
+	CFLAGS= %%MODULE_ENV%% ./configure %%BASE_MODULE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$CFLAGS %%MODULE_CC_OPT_NODEBUG%%" --with-ld-opt="$LDFLAGS"
+	make $_make_opts modules
+}
+
+package() {
+	cd "$builddir"
+
+	%%MODULE_PREINSTALL%%
+
+	mkdir -p "$pkgdir"/usr/lib/nginx/modules
+	for so in `find objs/ -maxdepth 1 -type f -name "*.so"`; do \
+		install -m755 ${so} "$pkgdir"/usr/lib/nginx/modules/ ; \
+	done
+
+	cd "$pkgdir"
+
+	install -Dm644 "$srcdir"/COPYRIGHT ./usr/share/licenses/$pkgname/COPYRIGHT
+}

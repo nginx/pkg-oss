@@ -1,0 +1,25 @@
+#!/bin/sh
+
+cat <<BANNER
+----------------------------------------------------------------------
+
+Thanks for using nginx!
+
+Please find the official documentation for nginx here:
+* http://nginx.org/en/docs/
+
+Please subscribe to nginx-announce mailing list to get
+the most important news about nginx:
+* http://nginx.org/en/support.html
+
+Commercial subscriptions for nginx are available on:
+* http://nginx.com/products/
+
+----------------------------------------------------------------------
+BANNER
+
+if [ ! -d /var/cache/nginx ]; then
+	mkdir -p /var/cache/nginx
+fi
+
+exit 0

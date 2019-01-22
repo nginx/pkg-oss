@@ -1,0 +1,101 @@
+# Maintainer: Andrei Belov <defan@nginx.com>
+# Contributor: Andrei Belov <defan@nginx.com>
+#
+
+_main_version=%%MAIN_VERSION%%
+_main_release=%%MAIN_RELEASE%%
+
+pkgname=nginx
+pkgver=$_main_version
+pkgrel=$_main_release
+pkgdesc="High performance web server"
+url="http://nginx.org/"
+arch="all"
+license="2-clause BSD-like license"
+provides=""
+depends=""
+makedepends="linux-headers openssl-dev pcre-dev zlib-dev"
+
+options="!check"
+
+pkgusers=""
+pkggroups=""
+install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgname.post-upgrade"
+
+# we would like to ship all docs/licenses in the base package
+#subpackages="$pkgname-doc"
+
+replaces="nginx-common nginx-initscripts nginx-lua nginx-rtmp"
+source="nginx-$_main_version.tar.gz
+	nginx.conf
+	default.conf
+	nginx.logrotate
+	nginx.initd
+	nginx-debug.initd
+	COPYRIGHT
+	"
+builddir="$srcdir/nginx-$_main_version"
+
+_modules_dir="usr/lib/nginx/modules"
+
+prepare() {
+	local file; for file in $source; do
+		case $file in
+		*~*.patch)
+			msg $file
+			cd "$srcdir"/${file%%~*}-*
+			patch -p 1 -i "$srcdir/$file"
+			;;
+		*.patch)
+			msg $file
+			cd "$builddir"
+			patch -p 1 -i "$srcdir/$file"
+			;;
+		esac
+	done
+}
+
+build() {
+	cd "$builddir"
+
+	_nproc=`getconf _NPROCESSORS_ONLN`
+	if [ $_nproc -gt 1 ]; then
+		_make_opts="-j$_nproc"
+	fi
+
+	CFLAGS= ./configure %%BASE_CONFIGURE_ARGS%% --with-cc-opt="$CFLAGS" --with-ld-opt="$LDFLAGS" --with-debug
+	make $_make_opts
+	mv objs/nginx objs/nginx-debug
+	CFLAGS= ./configure %%BASE_CONFIGURE_ARGS%% --with-cc-opt="$CFLAGS" --with-ld-opt="$LDFLAGS"
+	make $_make_opts
+}
+
+package() {
+	cd "$builddir"
+
+	make DESTDIR="$pkgdir" install
+	install -m755 objs/nginx-debug "$pkgdir"/usr/sbin/nginx-debug
+
+	install -Dm644 objs/nginx.8 "$pkgdir"/usr/share/man/man8/nginx.8
+	if [ -z "`echo $subpackages | grep -- -doc`" ]; then
+		gzip "$pkgdir"/usr/share/man/man8/nginx.8
+	fi
+
+	cd "$pkgdir"
+
+	install -Dm644 "$srcdir"/nginx.conf ./etc/nginx/nginx.conf
+	install -Dm644 "$srcdir"/default.conf ./etc/nginx/conf.d/default.conf
+	install -Dm755 "$srcdir"/$pkgname.initd ./etc/init.d/nginx
+	install -Dm755 "$srcdir"/$pkgname-debug.initd ./etc/init.d/nginx-debug
+	install -Dm644 "$srcdir"/$pkgname.logrotate ./etc/logrotate.d/nginx
+
+	install -Dm644 "$srcdir"/COPYRIGHT ./usr/share/licenses/$pkgname/COPYRIGHT
+
+	mkdir -p ./usr/share/nginx
+	mv ./etc/nginx/html ./usr/share/nginx/
+
+	mkdir -p ./$_modules_dir
+	ln -sf /$_modules_dir ./etc/nginx/modules
+
+	rm -rf ./etc/nginx/*.default
+}

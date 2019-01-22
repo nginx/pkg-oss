@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -x /etc/init.d/nginx -a -e /var/run/nginx.pid ]; then
+    service nginx stop
+fi
+
+exit 0

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+
+if ! getent group nginx >/dev/null; then
+    addgroup -S nginx 2>/dev/null
+fi
+
+if ! getent group www-data >/dev/null; then
+    addgroup -Sg 82 www-data 2>/dev/null
+fi
+
+if ! getent passwd nginx >/dev/null; then
+    adduser -SDH \
+	-h /var/lib/nginx \
+	-s /sbin/nologin \
+	-G nginx \
+	-g nginx \
+	nginx 2>/dev/null
+
+    addgroup nginx www-data 2>/dev/null
+fi
+
+exit 0

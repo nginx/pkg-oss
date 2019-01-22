@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ -x /etc/init.d/nginx ]; then
+    if [ -f /var/run/nginx.pid ]; then
+        NGX_PID=`cat /var/run/nginx.pid`
+        if kill -s 0 $NGX_PID 2>/dev/null; then
+            service nginx upgrade || true
+        fi
+    fi
+fi
