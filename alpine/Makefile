@@ -76,7 +76,7 @@ export MODULE_POST_geoip
 
 # image-filter
 
-MODULE_DEPENDS_image_filter=gd
+MODULE_DEPENDS_image_filter=libgd
 MODULE_BUILD_DEPENDS_image_filter=gd-dev
 
 define MODULE_ADD_CONTROL_TAGS_image_filter
