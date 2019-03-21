@@ -314,10 +314,14 @@ nginx.spec:
 		> nginx.spec ; \
 	}
 
-module-%: nginx-module-%.spec $(SRCPATH)/$(BASE_SRC)
-	@echo "===> Building nginx-$@ package" ; \
-	$(SHELL) -c "time -p rpmbuild -ba nginx-$@.spec" && \
-	ln -s ../BUILD/nginx-$@-$(BASE_VERSION)/objs $@
+module-%: nginx-module-%.spec check-compat-% $(SRCPATH)/$(BASE_SRC)
+	@if [ -e nginx-$@.skip ]; then \
+	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
+	else \
+	    echo "===> Building nginx-$@ package" ; \
+	    $(SHELL) -c "time -p rpmbuild -ba nginx-$@.spec" && \
+	    ln -s ../BUILD/nginx-$@-$(BASE_VERSION)/objs $@ ; \
+	fi
 
 nginx-module-%.spec:
 	@echo "===> Creating $@"
@@ -398,6 +402,18 @@ nginx-module-%.spec:
 	mv $@.tmp $@ ; \
 	}
 
+check-compat-%:
+	@module=`echo $@ | cut -d '-' -f 3 | tr '-' '_'` ; \
+	case "$${module}" in \
+	    geoip) \
+		if [ `rpm --eval '0%{?rhel}'` -ge 8 ]; then \
+		    echo "GeoIP can not be build on RHEL/CentOS >= 8" > \
+		    nginx-module-$${module}.skip ; \
+		    exit ; \
+		fi ; \
+		;; \
+	esac
+
 nginx-tests:
 	@{ \
 	if [ -d "../nginx-tests" ]; then \
@@ -465,7 +481,7 @@ prepare-build-env: $(BASE_SRC)
 
 clean:
 	@rm -f base module-*
-	@rm -f nginx.spec nginx-module-*.spec
+	@rm -f nginx.spec nginx-module-*.spec nginx-module-*.skip
 	@rm -rf nginx-tests
 	@rm -f $(BASE_SRC)
 
