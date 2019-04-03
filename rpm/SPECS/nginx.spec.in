@@ -24,21 +24,13 @@ BuildRequires: openssl-devel >= 1.0.1
 %endif
 
 %if 0%{?rhel} == 7
-BuildRequires: redhat-lsb-core
 %define _group System Environment/Daemons
 %define epoch 1
 Epoch: %{epoch}
 Requires(pre): shadow-utils
-%define os_minor %(lsb_release -rs | cut -d '.' -f 2)
-%if %{os_minor} >= 4
 Requires: openssl >= 1.0.2
 BuildRequires: openssl-devel >= 1.0.2
-%define dist .el7_4
-%else
-Requires: openssl >= 1.0.1
-BuildRequires: openssl-devel >= 1.0.1
 %define dist .el7
-%endif
 %endif
 
 %if 0%{?suse_version} >= 1315

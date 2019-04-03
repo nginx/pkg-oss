@@ -130,11 +130,6 @@ if [ `whereis yum | grep -c "^yum: /"` -eq 1 ]; then
 	PKG_FMT=rpm
 	NGINX_PACKAGES="pcre-devel zlib-devel openssl-devel"
 	DEVEL_PACKAGES="rpm-build"
-	case `rpm --eval '%{dist}'` in
-		.el7*)
-			DEVEL_PACKAGES="$DEVEL_PACKAGES redhat-lsb-core"
-			;;
-	esac
 	PACKAGING_ROOT=${HOME}/rpmbuild/
 	PACKAGING_DIR=rpm/SPECS
 	PACKAGE_SOURCES_DIR=../SOURCES
