@@ -18,6 +18,12 @@ Epoch: %{epoch}
 %define dist .el7
 %endif
 
+%if 0%{?rhel} == 8
+%define epoch 1
+Epoch: %{epoch}
+%define _debugsource_template %{nil}
+%endif
+
 %%MODULE_DEFINITIONS%%
 
 %define main_version %%MAIN_VERSION%%

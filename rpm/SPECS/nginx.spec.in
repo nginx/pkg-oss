@@ -14,8 +14,11 @@ Requires(preun): systemd
 Requires(postun): systemd
 %endif
 
-%if 0%{?rhel} == 6
+%if 0%{?rhel}
 %define _group System Environment/Daemons
+%endif
+
+%if 0%{?rhel} == 6
 Requires(pre): shadow-utils
 Requires: initscripts >= 8.36
 Requires(post): chkconfig
@@ -24,13 +27,20 @@ BuildRequires: openssl-devel >= 1.0.1
 %endif
 
 %if 0%{?rhel} == 7
-%define _group System Environment/Daemons
 %define epoch 1
 Epoch: %{epoch}
 Requires(pre): shadow-utils
 Requires: openssl >= 1.0.2
 BuildRequires: openssl-devel >= 1.0.2
 %define dist .el7
+%endif
+
+%if 0%{?rhel} == 8
+%define epoch 1
+Epoch: %{epoch}
+Requires(pre): shadow-utils
+BuildRequires: openssl-devel >= 1.1.1
+%define _debugsource_template %{nil}
 %endif
 
 %if 0%{?suse_version} >= 1315
