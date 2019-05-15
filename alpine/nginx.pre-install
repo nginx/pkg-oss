@@ -12,7 +12,7 @@ fi
 
 if ! getent passwd nginx >/dev/null; then
     adduser -SDH \
-	-h /var/lib/nginx \
+	-h /var/cache/nginx \
 	-s /sbin/nologin \
 	-G nginx \
 	-g nginx \
