@@ -48,6 +48,7 @@ BuildRequires: openssl-devel >= 1.1.1
 %define nginx_loggroup trusted
 Requires(pre): shadow
 BuildRequires: libopenssl-devel
+%define _debugsource_template %{nil}
 %endif
 
 # end of distribution specific definitions
@@ -190,6 +191,15 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
 
 %{__install} -m755 %{bdir}/objs/nginx-debug \
     $RPM_BUILD_ROOT%{_sbindir}/nginx-debug
+
+%check
+%{__rm} -rf $RPM_BUILD_ROOT/usr/src
+cd %{bdir}
+grep -v 'usr/src' debugfiles.list > debugfiles.list.new && mv debugfiles.list.new debugfiles.list
+cat /dev/null > debugsources.list
+%if 0%{?suse_version} >= 1500
+cat /dev/null > debugsourcefiles.list
+%endif
 
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
