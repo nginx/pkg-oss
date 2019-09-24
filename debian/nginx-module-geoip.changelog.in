@@ -1,5 +1,11 @@
 nginx-module-geoip (%%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * base version updated to 1.17.4-1
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 24 Sep 2019 17:49:10 +0300
+
+nginx-module-geoip (1.17.3-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * base version updated to 1.17.3-1
 
  -- Andrei Belov <defan@nginx.com>  Tue, 13 Aug 2019 11:50:00 +0300
