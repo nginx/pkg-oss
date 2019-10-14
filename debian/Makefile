@@ -120,7 +120,7 @@ define MODULE_PREINSTALL_njs
 	mkdir -p $$(INSTALLDIR)/usr/share/doc/nginx-module-njs
 	install -m644 $$(BUILDDIR_nginx)/extra/njs-$(MODULE_VERSION_njs)/CHANGES $$(INSTALLDIR)/usr/share/doc/nginx-module-njs/
 	mkdir -p $$(INSTALLDIR)/usr/bin
-	install -m755 -s $$(CURDIR)/debian/extra/njs-$(MODULE_VERSION_njs)/build/njs $$(INSTALLDIR)/usr/bin/
+	install -m755 $$(CURDIR)/debian/extra/njs-$(MODULE_VERSION_njs)/build/njs $$(INSTALLDIR)/usr/bin/
 endef
 export MODULE_PREINSTALL_njs
 
