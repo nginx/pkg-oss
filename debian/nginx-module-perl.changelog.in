@@ -1,5 +1,11 @@
 nginx-module-perl (%%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * base version updated to 1.17.5-1
+
+ -- Andrei Belov <defan@nginx.com>  Tue, 22 Oct 2019 17:30:00 +0300
+
+nginx-module-perl (1.17.4-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * base version updated to 1.17.4-1
 
  -- Konstantin Pavlov <thresh@nginx.com>  Tue, 24 Sep 2019 17:49:10 +0300
