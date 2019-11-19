@@ -1,3 +1,6 @@
+* Tue Nov 19 2019 Konstantin Pavlov <thresh@nginx.com>
+- njs module updated to 0.3.7
+
 * Tue Nov 05 2019 Andrei Belov <defan@nginx.com>
 - njs module updated to 0.3.6
 
