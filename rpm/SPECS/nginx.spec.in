@@ -327,6 +327,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Dec 24 2019 Konstantin Pavlov <thresh@nginx.com>
+- 1.17.7
+
 * Tue Nov 19 2019 Konstantin Pavlov <thresh@nginx.com>
 - 1.17.6
 
