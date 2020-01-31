@@ -18,10 +18,11 @@ BuildRequires: libopenssl-devel
 
 %%MODULE_DEFINITIONS%%
 
-%define main_version %%MAIN_VERSION%%
-%define main_release %%MAIN_RELEASE%%%{?dist}.ngx
+%define base_version %%BASE_VERSION%%
+%define base_release %%BASE_RELEASE%%%{?dist}.ngx
+%define plus_version %%PLUS_VERSION%%
 
-%define bdir %{_builddir}/%{name}-%{main_version}
+%define bdir %{_builddir}/%{name}-%{base_version}
 
 Summary: %%SUMMARY%%
 Name: %%NAME%%
@@ -31,7 +32,7 @@ Vendor: %%MODULE_PACKAGE_VENDOR%%
 URL: %%MODULE_PACKAGE_URL%%
 Group: %{_group}
 
-Source0: http://nginx.org/download/nginx-%{main_version}.tar.gz
+Source0: http://nginx.org/download/nginx-%{base_version}.tar.gz
 Source1: %%COPYRIGHT_SOURCE%%
 %%MODULE_SOURCES%%
 
@@ -39,10 +40,10 @@ Source1: %%COPYRIGHT_SOURCE%%
 
 License: %%MODULE_PACKAGE_LICENSE%%
 
-BuildRoot: %{_tmppath}/%{name}-%{main_version}-%{main_release}-root
+BuildRoot: %{_tmppath}/%{name}-%{base_version}-%{base_release}-root
 BuildRequires: zlib-devel
 BuildRequires: pcre-devel
-Requires: nginx-plus-r%%PLUS_VERSION%%
+Requires: nginx-plus-r%{plus_version}
 Provides: %{name}-r%{plus_version}
 
 %description
@@ -59,7 +60,7 @@ NGINX Plus: %%SHORT_SUMMARY%%.
 %define MODULE_CONFIGURE_ARGS $(echo "%%MODULE_CONFIGURE_ARGS%%")
 
 %prep
-%setup -qcTn %{name}-%{main_version}
+%setup -qcTn %{name}-%{base_version}
 tar --strip-components=1 -zxf %{SOURCE0}
 %%MODULE_PREP_SOURCES%%
 %%MODULE_PREP_PATCHES%%
