@@ -53,8 +53,8 @@ BuildRequires: libopenssl-devel
 
 # end of distribution specific definitions
 
-%define main_version %%MAIN_VERSION%%
-%define main_release %%MAIN_RELEASE%%%{?dist}.ngx
+%define main_version %%BASE_VERSION%%
+%define main_release %%BASE_RELEASE%%%{?dist}.ngx
 
 %define bdir %{_builddir}/%{name}-%{main_version}
 
