@@ -51,7 +51,7 @@ License: %%MODULE_PACKAGE_LICENSE%%
 BuildRoot: %{_tmppath}/%{name}-%{base_version}-%{base_release}-root
 BuildRequires: zlib-devel
 BuildRequires: pcre-devel
-Requires: nginx == %{?epoch:%{epoch}:}%{base_version}-%{base_release}%{?dist}.ngx
+Requires: nginx == %{?epoch:%{epoch}:}%{base_version}-%{base_release}
 
 %description
 nginx %%SHORT_SUMMARY%%.
