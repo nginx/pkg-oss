@@ -116,6 +116,8 @@ export MODULE_POST_image_filter
 
 MODULE_VERSION_PREFIX_njs=$(BASE_VERSION).
 
+MODULE_PATCHES_njs=njs-fix-integer-constant.patch
+
 define MODULE_DEFINITIONS_njs
 BuildRequires: libedit-devel
 endef
