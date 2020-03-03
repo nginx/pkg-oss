@@ -1,3 +1,6 @@
+* Tue Mar 03 2020 Konstantin Pavlov <thresh@nginx.com>
+- njs module updated to 0.3.9
+
 * Tue Jan 21 2020 Konstantin Pavlov <thresh@nginx.com>
 - base version updated to 1.17.8
 - njs module updated to 0.3.8
