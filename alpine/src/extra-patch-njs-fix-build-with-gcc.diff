@@ -1,0 +1,22 @@
+# HG changeset patch
+# User Dmitry Volyntsev <xeioex@nginx.com>
+# Date 1583255688 -10800
+#      Tue Mar 03 20:14:48 2020 +0300
+# Node ID 65f4b11e3302358ac965857fb744c72316d45952
+# Parent  c5c6aab76bb43ad36fc9f06e48a2ccbb3fc6d02a
+Fixed compilation with gcc.
+
+diff --git a/src/njs_fs.c b/src/njs_fs.c
+--- a/njs-0.3.9/src/njs_fs.c
++++ b/njs-0.3.9/src/njs_fs.c
+@@ -818,6 +818,9 @@ njs_fs_mode(njs_vm_t *vm, njs_value_t *v
+     uint32_t   u32;
+     njs_int_t  ret;
+ 
++    /* GCC complains about uninitialized u32. */
++    u32 = 0;
++
+     if (njs_is_undefined(value)) {
+         return default_mode;
+     }
+
