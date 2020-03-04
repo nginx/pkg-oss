@@ -70,7 +70,7 @@ cd %{bdir}
 %%MODULE_ENV%%
 ./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
 	--with-cc-opt="%{WITH_CC_OPT} %%MODULE_CC_OPT_DEBUG%%" \
-	--with-ld-opt="%{WITH_LD_OPT}" \
+	--with-ld-opt="%{WITH_LD_OPT} %%MODULE_LD_OPT_DEBUG%%" \
 	--with-debug
 make %{?_smp_mflags} modules
 for so in `find %{bdir}/objs/ -type f -name "*.so"`; do
@@ -79,8 +79,8 @@ mv $so $debugso
 done
 %%MODULE_ENV%%
 ./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
-	--with-cc-opt="%{WITH_CC_OPT} %%MODULE_CC_OPT_NODEBUG%%" \
-	--with-ld-opt="%{WITH_LD_OPT}"
+	--with-cc-opt="%{WITH_CC_OPT} %%MODULE_CC_OPT%%" \
+	--with-ld-opt="%{WITH_LD_OPT} %%MODULE_LD_OPT%%"
 make %{?_smp_mflags} modules
 
 %install

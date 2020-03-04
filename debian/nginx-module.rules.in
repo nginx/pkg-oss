@@ -46,12 +46,12 @@ config.pre.nginx_debug: config.pre.nginx
 
 config.status.nginx: config.env.nginx config.pre.nginx
 	cd $(BUILDDIR_nginx) && \
-	CFLAGS="" ./configure %%BASE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS)" --with-ld-opt="$(LDFLAGS)"
+	CFLAGS="" %%MODULE_ENV%% ./configure %%BASE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS) %%MODULE_CC_OPT%%" --with-ld-opt="$(LDFLAGS) %%MODULE_LD_OPT%%"
 	touch $@
 
 config.status.nginx_debug: config.env.nginx_debug config.pre.nginx_debug
 	cd $(BUILDDIR_nginx_debug) && \
-	CFLAGS="" ./configure %%BASE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS)" --with-ld-opt="$(LDFLAGS)" --with-debug
+	CFLAGS="" %%MODULE_ENV%% ./configure %%BASE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS) %%MODULE_CC_OPT_DEBUG%%" --with-ld-opt="$(LDFLAGS) %%MODULE_LD_OPT_DEBUG%%" --with-debug
 	touch $@
 
 build-arch.%: config.status.%
