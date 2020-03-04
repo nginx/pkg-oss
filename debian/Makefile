@@ -290,8 +290,8 @@ rules-base: $(BASE_SRC)
 		> debuild-base/$(SRCDIR)/debian/rules ; \
 	cat nginx.changelog.in | sed \
 		-e 's#%%CODENAME%%#$(CODENAME)#g' \
-		-e 's#%%MAIN_VERSION%%#$(BASE_VERSION)#g' \
-		-e 's#%%MAIN_RELEASE%%#$(BASE_RELEASE)#g' \
+		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
+		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
 		> debuild-base/$(SRCDIR)/debian/changelog ; \
 	cp nginx.control.in debuild-base/$(SRCDIR)/debian/control ; \
 	cp copyright ../CHANGES ../CHANGES.ru nginx.* nginx-debug.default nginx-debug.service debuild-base/$(SRCDIR)/debian/ ; \
@@ -313,8 +313,15 @@ rules-module-%: $(BASE_SRC)
 	module_asis=`echo $@ | cut -d '-' -f 3-` ; \
 	builddir=`echo debuild-module-$${module_asis}` ; \
 	mkdir -p $${builddir} ; \
-	cp $(BASE_SRC) $${builddir}/nginx-module-$${module_asis}_$(MODULE_VERSION_PREFIX_$(call modname, $@))$(MODULE_VERSION_$(call modname, $@)).orig.tar.gz ; \
-	tar -C $${builddir} -xf $${builddir}/nginx-module-$${module_asis}_$(MODULE_VERSION_PREFIX_$(call modname, $@))$(MODULE_VERSION_$(call modname, $@)).orig.tar.gz ; \
+	if [ "$(MODULE_TARGET)" = "oss" ]; then \
+		module_version="$(MODULE_VERSION_PREFIX_$(call modname, $@))$(MODULE_VERSION_$(call modname, $@))" ; \
+		orig_name="nginx-module-$${module_asis}_$${module_version}.orig.tar.gz" ; \
+	else \
+		module_version="$(PLUS_VERSION)+$(MODULE_VERSION_$(call modname, $@))" ; \
+		orig_name="nginx-plus-module-$${module_asis}_$${module_version}.orig.tar.gz" ; \
+	fi ; \
+	cp $(BASE_SRC) $${builddir}/$${orig_name} ; \
+	tar -C $${builddir} -xf $${builddir}/$${orig_name} ; \
 	mkdir -p $${builddir}/$(SRCDIR)/debian/extra ; \
 	mkdir -p $${builddir}/$(SRCDIR)/debian/source ; \
 	echo "3.0 (quilt)" > $${builddir}/$(SRCDIR)/debian/source/format ; \
@@ -332,11 +339,10 @@ rules-module-%: $(BASE_SRC)
 	else \
 		copyright_source=copyright ; \
 	fi ; \
-	changelog_file="nginx-module-$${module_asis}.changelog.in" ; \
-	if [ -f $${changelog_file} ]; then \
-		changelog_tmpl=$${changelog_file} ; \
+	if [ "$(MODULE_TARGET)" = "oss" ]; then \
+		changelog_tmpl="nginx-module-$${module_asis}.changelog.in" ; \
 	else \
-		changelog_tmpl=nginx-module.changelog.in ; \
+		changelog_tmpl="nginx-plus-module-$${module_asis}.changelog.in" ; \
 	fi ; \
 	cp $${copyright_source} $${builddir}/$(SRCDIR)/debian/copyright ; \
 	definitions=`echo "$$MODULE_DEFINITIONS_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
@@ -352,8 +358,8 @@ rules-module-%: $(BASE_SRC)
 		-e "s#%%SUMMARY%%#$(MODULE_SUMMARY_PREFIX) $(MODULE_SUMMARY_$(call modname, $@))#g" \
 		-e "s#%%SHORT_SUMMARY%%#$(MODULE_SUMMARY_$(call modname, $@))#g" \
 		-e "s#%%CODENAME%%#$(CODENAME)#g" \
-		-e "s#%%MAIN_VERSION%%#$(BASE_VERSION)#g" \
-		-e "s#%%MAIN_RELEASE%%#$(BASE_RELEASE)#g" \
+		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
+		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \
 		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
 		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $@))#g" \
 		-e "s#%%MODULE_VERSION%%#$(MODULE_VERSION_$(call modname, $@))#g" \
@@ -363,6 +369,9 @@ rules-module-%: $(BASE_SRC)
 		-e "s#%%ADD_CONTROL_TAGS%%#$${addcontroltags}#g" \
 	> $${builddir}/$(SRCDIR)/debian/control ; \
 	cat $${changelog_tmpl} | sed \
+		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
+		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \
+		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
 		-e "s#%%MODULE%%#$${module_asis}#g" \
 		-e "s#%%CODENAME%%#$(CODENAME)#g" \
 		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $@))#g" \
@@ -372,8 +381,8 @@ rules-module-%: $(BASE_SRC)
 	cat nginx-module.rules.in | sed \
 		-e "s#%%MODULE%%#$${module_asis}#g" \
 		-e "s#%%CODENAME%%#$(CODENAME)#g" \
-		-e "s#%%MAIN_VERSION%%#$(BASE_VERSION)#g" \
-		-e "s#%%MAIN_RELEASE%%#$(BASE_RELEASE)#g" \
+		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
+		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \
 		-e "s#%%TARGET_SUFFIX%%#$(TARGET_SUFFIX)#g" \
 		-e "s#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g" \
 		-e "s#%%MODULE_CONFIGURE_ARGS%%#$(MODULE_CONFARGS_$(call modname, $@))#g" \
