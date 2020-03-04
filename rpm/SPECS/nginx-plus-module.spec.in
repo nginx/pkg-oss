@@ -25,7 +25,7 @@ BuildRequires: libopenssl-devel
 
 Summary: %%SUMMARY%%
 Name: %%NAME%%
-Version: %%VERSION%%
+Version: %%PLUS_VERSION%%+%%VERSION%%
 Release: %%RELEASE%%%{?dist}.ngx
 Vendor: %%MODULE_PACKAGE_VENDOR%%
 URL: %%MODULE_PACKAGE_URL%%

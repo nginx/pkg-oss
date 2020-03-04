@@ -1,4 +1,4 @@
-Source: nginx-module-%%MODULE%%
+Source: nginx-plus-module-%%MODULE%%
 Section: httpd
 Priority: optional
 Maintainer: %%MODULE_PACKAGE_VENDOR%%
