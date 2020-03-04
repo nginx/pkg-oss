@@ -1,4 +1,4 @@
-nginx (%%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
+nginx (%%BASE_VERSION%%-%%BASE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
   * 1.17.9
 
