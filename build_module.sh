@@ -346,6 +346,8 @@ nginx-module-$MODULE_NAME (${VERSION}-1~%%CODENAME%%) %%CODENAME%%; urgency=low
 
  -- Build Script <build.script@example.com>  `date -R`
 __EOF__
+	sed -e "s,nginx-module-,nginx-plus-module-,g" \
+	-e "s,(,(${PLUS_REL}+," < nginx-module-$MODULE_NAME.changelog.in > nginx-plus-module-$MODULE_NAME.changelog.in
 fi
 
 echo "$ME: INFO: Creating module Makefile"
