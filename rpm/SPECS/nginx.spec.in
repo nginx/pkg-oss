@@ -51,6 +51,14 @@ BuildRequires: libopenssl-devel
 %define _debugsource_template %{nil}
 %endif
 
+%if 0%{?fedora}
+%define _debugsource_template %{nil}
+%global _hardened_build 1
+%define _group System Environment/Daemons
+BuildRequires: openssl-devel
+Requires(pre): shadow-utils
+%endif
+
 # end of distribution specific definitions
 
 %define main_version %%BASE_VERSION%%
