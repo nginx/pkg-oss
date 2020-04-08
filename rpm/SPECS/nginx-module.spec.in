@@ -2,7 +2,7 @@
 %define nginx_user nginx
 %define nginx_group nginx
 
-%if 0%{?rhel} || 0%{?amzn}
+%if 0%{?rhel} || 0%{?amzn} || 0%{?fedora}
 %define _group System Environment/Daemons
 BuildRequires: openssl-devel
 %endif
@@ -23,6 +23,11 @@ Epoch: %{epoch}
 %define epoch 1
 Epoch: %{epoch}
 %define _debugsource_template %{nil}
+%endif
+
+%if 0%{?fedora}
+%define _debugsource_template %{nil}
+%global _hardened_build 1
 %endif
 
 %%MODULE_DEFINITIONS%%
