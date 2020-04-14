@@ -1,3 +1,9 @@
+nginx (%%MAIN_VERSION%%-%%MAIN_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
+
+  * 1.17.10
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Tue, 14 Apr 2020 17:34:25 +0300
+
 nginx (%%BASE_VERSION%%-%%BASE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
   * 1.17.9
