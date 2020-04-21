@@ -335,6 +335,9 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+* Tue Apr 21 2020 Konstantin Pavlov <thresh@nginx.com>
+- 1.18.0
+
 * Tue Apr 14 2020 Konstantin Pavlov <thresh@nginx.com>
 - 1.17.10
 
