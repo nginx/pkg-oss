@@ -27,7 +27,7 @@ MODULE_VERSION_geoip=		$(BASE_VERSION)
 MODULE_RELEASE_geoip=		1
 MODULE_VERSION_image_filter=	$(BASE_VERSION)
 MODULE_RELEASE_image_filter=	1
-MODULE_VERSION_njs=		0.3.9
+MODULE_VERSION_njs=		0.4.0
 MODULE_RELEASE_njs=		1
 MODULE_VERSION_perl=		$(BASE_VERSION)
 MODULE_RELEASE_perl=		1
@@ -106,7 +106,6 @@ export MODULE_POST_image_filter
 
 MODULE_VERSION_PREFIX_njs=$(BASE_VERSION).
 MODULE_BUILD_DEPENDS_njs=libedit-dev
-MODULE_PATCHES_njs=extra-patch-njs-fix-build-with-gcc.diff
 
 define MODULE_ADD_CONTROL_TAGS_njs
 replaces="nginx-mod-http-js"
