@@ -106,7 +106,6 @@ export MODULE_POST_image_filter
 
 MODULE_VERSION_PREFIX_njs=$(BASE_VERSION).
 MODULE_BUILD_DEPENDS_njs=libedit-dev
-MODULE_PATCHES_njs=extra-patch-njs-fix-build-with-gcc.diff
 
 define MODULE_ADD_CONTROL_TAGS_njs
 replaces="nginx-mod-http-js"
