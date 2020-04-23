@@ -1,5 +1,11 @@
 nginx-module-njs (%%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%) %%CODENAME%%; urgency=low
 
+  * njs updated to 0.4.0
+
+ -- Konstantin Pavlov <thresh@nginx.com>  Thu, 23 Apr 2020 15:11:31 +0300
+
+nginx-module-njs (1.18.0.0.3.9-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+
   * base version updated to 1.18.0-1
 
  -- Konstantin Pavlov <thresh@nginx.com>  Tue, 21 Apr 2020 15:43:12 +0300

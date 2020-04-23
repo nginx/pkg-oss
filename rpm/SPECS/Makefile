@@ -37,7 +37,7 @@ MODULE_VERSION_geoip=		$(BASE_VERSION)
 MODULE_RELEASE_geoip=		1
 MODULE_VERSION_image_filter=	$(BASE_VERSION)
 MODULE_RELEASE_image_filter=	1
-MODULE_VERSION_njs=		0.3.9
+MODULE_VERSION_njs=		0.4.0
 MODULE_RELEASE_njs=		1
 MODULE_VERSION_perl=		$(BASE_VERSION)
 MODULE_RELEASE_perl=		1
@@ -115,8 +115,6 @@ export MODULE_POST_image_filter
 # njs
 
 MODULE_VERSION_PREFIX_njs=$(BASE_VERSION).
-
-MODULE_PATCHES_njs=njs-fix-integer-constant.patch
 
 define MODULE_DEFINITIONS_njs
 BuildRequires: libedit-devel
