@@ -1,5 +1,8 @@
 # default changelog for module packages
 #
+* Tue Aug 11 2020 Konstantin Pavlov <thresh@nginx.com>
+- base version updated to 1.19.2
+
 * Tue Jul 07 2020 Konstantin Pavlov <thresh@nginx.com>
 - base version updated to 1.19.1
 
