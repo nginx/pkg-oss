@@ -10,10 +10,20 @@ BuildRequires: openssl-devel
 %if 0%{?suse_version} >= 1315
 %define _group Productivity/Networking/Web/Servers
 BuildRequires: libopenssl-devel
+%define _debugsource_template %{nil}
 %endif
 
 %if 0%{?rhel} == 7
 %define dist .el7
+%endif
+
+%if 0%{?rhel} == 8
+%define _debugsource_template %{nil}
+%endif
+
+%if 0%{?fedora}
+%define _debugsource_template %{nil}
+%global _hardened_build 1
 %endif
 
 %%MODULE_DEFINITIONS%%
@@ -26,7 +36,7 @@ BuildRequires: libopenssl-devel
 
 Summary: %%SUMMARY%%
 Name: %%NAME%%
-Version: %%PLUS_VERSION%%+%%VERSION%%
+Version: %%VERSION_PREFIX%%%%VERSION%%
 Release: %%RELEASE%%%{?dist}.ngx
 Vendor: %%MODULE_PACKAGE_VENDOR%%
 URL: %%MODULE_PACKAGE_URL%%
@@ -84,12 +94,21 @@ done
 	--with-ld-opt="%{WITH_LD_OPT} %%MODULE_LD_OPT%%"
 make %{?_smp_mflags} modules
 
+%check
+%{__rm} -rf $RPM_BUILD_ROOT/usr/src
+cd %{bdir}
+grep -v 'usr/src' debugfiles.list > debugfiles.list.new && mv debugfiles.list.new debugfiles.list
+cat /dev/null > debugsources.list
+%if 0%{?suse_version} >= 1500
+cat /dev/null > debugsourcefiles.list
+%endif
+
 %install
 cd %{bdir}
 %{__rm} -rf $RPM_BUILD_ROOT
 %{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/%%NAME%%
 %{__install} -m 644 -p %{SOURCE1} \
-    $RPM_BUILD_ROOT%{_datadir}/doc/%%NAME%%/
+    $RPM_BUILD_ROOT%{_datadir}/doc/%%NAME%%/COPYRIGHT
 
 %%MODULE_PREINSTALL%%
 

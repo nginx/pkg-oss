@@ -1,0 +1,38 @@
+MODULES+=	perl
+
+MODULE_SUMMARY_perl=	Perl dynamic module
+
+MODULE_VERSION_perl=	$(TARGET_VERSION)
+MODULE_RELEASE_perl=	1
+
+MODULE_CONFARGS_perl=	--with-http_perl_module=dynamic
+
+MODULE_BUILD_DEPENDS_perl=, libperl-dev
+MODULE_DEPENDS_perl=, $$\{perl:Depends\}
+
+define MODULE_PREINSTALL_perl
+	cd $$(BUILDDIR_nginx) \&\& $$(MAKE) DESTDIR=$$(INSTALLDIR) INSTALLDIRS=vendor -f objs/Makefile install_perl_modules
+	find $$(INSTALLDIR)/ -type f -name .packlist -exec rm -f '{}' \\;
+	find $$(INSTALLDIR)/ -type f -name perllocal.pod -exec rm -f '{}' \\;
+	find $$(INSTALLDIR)/ -type f -empty -exec rm -f '{}' \\;
+	find $$(INSTALLDIR)/ -type f -iname '*.so' -exec chmod 0755 '{}' \\;
+endef
+export MODULE_PREINSTALL_perl
+
+define MODULE_POST_perl
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_perl) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_perl_module.so;
+
+Please refer to the module documentation for further details:
+http://nginx.org/en/docs/http/ngx_http_perl_module.html
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_perl

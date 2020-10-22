@@ -16,7 +16,7 @@ Homepage: http://nginx.org
 Package: nginx
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base (>= 3.0-6), adduser
-Provides: httpd
+Provides: httpd, nginx, nginx-r%%BASE_VERSION%%
 Conflicts: nginx-common, nginx-core
 Replaces: nginx-common, nginx-core
 Description: high performance web server

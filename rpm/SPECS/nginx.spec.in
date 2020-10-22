@@ -61,10 +61,10 @@ Requires(pre): shadow-utils
 
 # end of distribution specific definitions
 
-%define main_version %%BASE_VERSION%%
-%define main_release %%BASE_RELEASE%%%{?dist}.ngx
+%define base_version %%BASE_VERSION%%
+%define base_release %%BASE_RELEASE%%%{?dist}.ngx
 
-%define bdir %{_builddir}/%{name}-%{main_version}
+%define bdir %{_builddir}/%{name}-%{base_version}
 
 %define WITH_CC_OPT $(echo %{optflags} $(pcre-config --cflags)) -fPIC
 %define WITH_LD_OPT -Wl,-z,relro -Wl,-z,now -pie
@@ -73,8 +73,8 @@ Requires(pre): shadow-utils
 
 Summary: High performance web server
 Name: nginx
-Version: %{main_version}
-Release: %{main_release}
+Version: %{base_version}
+Release: %{base_release}
 Vendor: Nginx, Inc.
 URL: http://nginx.org/
 Group: %{_group}
@@ -90,16 +90,17 @@ Source8: nginx.service
 Source9: nginx.upgrade.sh
 Source10: nginx.suse.logrotate
 Source11: nginx-debug.service
-Source12: COPYRIGHT
+Source12: nginx.copyright
 Source13: nginx.check-reload.sh
 
 License: 2-clause BSD-like license
 
-BuildRoot: %{_tmppath}/%{name}-%{main_version}-%{main_release}-root
+BuildRoot: %{_tmppath}/%{name}-%{base_version}-%{base_release}-root
 BuildRequires: zlib-devel
 BuildRequires: pcre-devel
 
 Provides: webserver
+Provides: nginx-r%{base_version}
 
 %description
 nginx [engine x] is an HTTP and reverse proxy server, as well as
@@ -148,9 +149,9 @@ make %{?_smp_mflags}
 cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
     %{__ln_s} ../..%{_libdir}/nginx/modules modules && cd -
 
-%{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/%{name}-%{main_version}
+%{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/%{name}-%{base_version}
 %{__install} -m 644 -p %{SOURCE12} \
-    $RPM_BUILD_ROOT%{_datadir}/doc/%{name}-%{main_version}/
+    $RPM_BUILD_ROOT%{_datadir}/doc/%{name}-%{base_version}/COPYRIGHT
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/nginx/conf.d
 %{__rm} $RPM_BUILD_ROOT%{_sysconfdir}/nginx/nginx.conf
@@ -254,8 +255,8 @@ cat /dev/null > debugsourcefiles.list
 %attr(0755,root,root) %dir %{_localstatedir}/cache/nginx
 %attr(0755,root,root) %dir %{_localstatedir}/log/nginx
 
-%dir %{_datadir}/doc/%{name}-%{main_version}
-%doc %{_datadir}/doc/%{name}-%{main_version}/COPYRIGHT
+%dir %{_datadir}/doc/%{name}-%{base_version}
+%doc %{_datadir}/doc/%{name}-%{base_version}/COPYRIGHT
 %{_mandir}/man8/nginx.8*
 
 %pre
@@ -335,6 +336,7 @@ if [ $1 -ge 1 ]; then
 fi
 
 %changelog
+<<<<<<< local
 * Tue Apr 21 2020 Konstantin Pavlov <thresh@nginx.com>
 - 1.18.0
 
@@ -728,3 +730,5 @@ fi
 
 * Wed Aug 10 2011 Sergey Budnevitch
 - Initial release
+=======
+>>>>>>> graft

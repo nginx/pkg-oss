@@ -4,17 +4,18 @@
 
 _base_version=%%BASE_VERSION%%
 _base_release=%%BASE_RELEASE%%
+_plus_version=%%PLUS_VERSION%%
 
-pkgname=nginx-module-%%MODULE%%
+pkgname=nginx-plus-module-%%MODULE%%
 pkgver=%%MODULE_VERSION_PREFIX%%%%MODULE_VERSION%%
 pkgrel=%%MODULE_RELEASE%%
 pkgdesc="%%SUMMARY%%"
-url="http://nginx.org/"
+url="https://www.nginx.com/"
 arch="all"
-license="2-clause BSD-like license"
-depends="nginx-r$_base_version %%MODULE_DEPENDS%%"
+license="Proprietary (EULA included)"
+depends="nginx-plus-r$_plus_version %%MODULE_DEPENDS%%"
 makedepends="linux-headers openssl-dev pcre-dev zlib-dev %%MODULE_BUILD_DEPENDS%%"
-provides="$pkgname-r$_base_version %%MODULE_PROVIDES%%"
+provides="$pkgname-r$_plus_version %%MODULE_PROVIDES%%"
 %%ADD_CONTROL_TAGS%%
 
 options="!check"

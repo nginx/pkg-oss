@@ -1,0 +1,34 @@
+MODULES+=	xslt
+
+MODULE_SUMMARY_xslt=		xslt dynamic module
+
+MODULE_VERSION_xslt=		$(TARGET_VERSION)
+MODULE_RELEASE_xslt=		1
+
+MODULE_CONFARGS_xslt=		--with-http_xslt_module=dynamic
+
+MODULE_DEPENDS_xslt=libxslt
+MODULE_BUILD_DEPENDS_xslt=libxslt-dev
+
+define MODULE_ADD_CONTROL_TAGS_xslt
+replaces="nginx-mod-http-xslt-filter"
+endef
+export MODULE_ADD_CONTROL_TAGS_xslt
+
+define MODULE_POST_xslt
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_xslt) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_xslt_filter_module.so;
+
+Please refer to the module documentation for further details:
+http://nginx.org/en/docs/http/ngx_http_xslt_module.html
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_xslt

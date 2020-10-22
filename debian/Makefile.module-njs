@@ -1,0 +1,48 @@
+MODULES+=	njs
+
+MODULE_SUMMARY_njs=	njs dynamic modules
+
+MODULE_VERSION_njs=	0.4.4
+MODULE_RELEASE_njs=	1
+
+MODULE_SOURCES_njs=	njs-$(MODULE_VERSION_njs).tar.gz
+
+MODULE_CONFARGS_njs=	--add-dynamic-module=$(MODSRC_PREFIX)njs-$(MODULE_VERSION_njs)/nginx
+
+MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
+
+MODULE_BUILD_DEPENDS_njs=,libedit-dev
+
+define MODULE_PREBUILD_njs
+	cd debian/extra/njs-$(MODULE_VERSION_njs) \&\& ./configure \&\& make njs
+endef
+export MODULE_PREBUILD_njs
+
+define MODULE_PREINSTALL_njs
+	mkdir -p $$(INSTALLDIR)/usr/share/doc/nginx-module-njs
+	install -m644 $$(BUILDDIR_nginx)/extra/njs-$(MODULE_VERSION_njs)/CHANGES $$(INSTALLDIR)/usr/share/doc/nginx-module-njs/
+	mkdir -p $$(INSTALLDIR)/usr/bin
+	install -m755 $$(CURDIR)/debian/extra/njs-$(MODULE_VERSION_njs)/build/njs $$(INSTALLDIR)/usr/bin/
+endef
+export MODULE_PREINSTALL_njs
+
+define MODULE_POST_njs
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_njs) for $(MODULE_SUMMARY_PREFIX) have been installed.
+To enable these modules, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_js_module.so;
+    load_module modules/ngx_stream_js_module.so;
+
+Please refer to the modules documentation for further details:
+http://nginx.org/en/docs/njs/
+http://nginx.org/en/docs/http/ngx_http_js_module.html
+http://nginx.org/en/docs/stream/ngx_stream_js_module.html
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_njs
