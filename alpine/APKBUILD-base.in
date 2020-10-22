@@ -2,17 +2,17 @@
 # Contributor: Andrei Belov <defan@nginx.com>
 #
 
-_main_version=%%MAIN_VERSION%%
-_main_release=%%MAIN_RELEASE%%
+_base_version=%%BASE_VERSION%%
+_base_release=%%BASE_RELEASE%%
 
 pkgname=nginx
-pkgver=$_main_version
-pkgrel=$_main_release
+pkgver=$_base_version
+pkgrel=$_base_release
 pkgdesc="High performance web server"
 url="http://nginx.org/"
 arch="all"
 license="2-clause BSD-like license"
-provides=""
+provides="nginx-r$_base_version"
 depends=""
 makedepends="linux-headers openssl-dev pcre-dev zlib-dev"
 
@@ -26,7 +26,7 @@ install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgn
 #subpackages="$pkgname-doc"
 
 replaces="nginx-common nginx-initscripts nginx-lua nginx-rtmp"
-source="nginx-$_main_version.tar.gz
+source="nginx-$_base_version.tar.gz
 	nginx.conf
 	default.conf
 	nginx.logrotate
@@ -34,7 +34,7 @@ source="nginx-$_main_version.tar.gz
 	nginx-debug.initd
 	COPYRIGHT
 	"
-builddir="$srcdir/nginx-$_main_version"
+builddir="$srcdir/nginx-$_base_version"
 
 _modules_dir="usr/lib/nginx/modules"
 

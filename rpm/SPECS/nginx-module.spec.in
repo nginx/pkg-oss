@@ -56,7 +56,9 @@ License: %%MODULE_PACKAGE_LICENSE%%
 BuildRoot: %{_tmppath}/%{name}-%{base_version}-%{base_release}-root
 BuildRequires: zlib-devel
 BuildRequires: pcre-devel
-Requires: nginx == %{?epoch:%{epoch}:}%{base_version}-%{base_release}
+#Requires: nginx == %{?epoch:%{epoch}:}%{base_version}-%{base_release}
+Requires: nginx-r%{base_version}
+Provides: %{name}-r%{base_version}
 
 %description
 nginx %%SHORT_SUMMARY%%.
@@ -101,7 +103,7 @@ cd %{bdir}
 %{__rm} -rf $RPM_BUILD_ROOT
 %{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/%%NAME%%
 %{__install} -m 644 -p %{SOURCE1} \
-    $RPM_BUILD_ROOT%{_datadir}/doc/%%NAME%%/
+    $RPM_BUILD_ROOT%{_datadir}/doc/%%NAME%%/COPYRIGHT
 
 %%MODULE_PREINSTALL%%
 

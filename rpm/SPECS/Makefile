@@ -10,232 +10,29 @@ MODULE_TARGET?=	oss
 MODSRC_PREFIX=
 MODSRC_PATH=	$(SRCPATH)
 BUILD_DIR=	%{bdir}
+DOCS?=		../../docs
 
 ifeq ($(MODULE_TARGET), plus)
 MODULE_SPEC_TEMPLATE=	nginx-plus-module.spec.in
 MODULE_SUMMARY_PREFIX=	NGINX Plus
+TARGET_VERSION=$(PLUS_VERSION)
+MODULE_PACKAGE_PREFIX=nginx-plus-module
 else
 MODULE_SPEC_TEMPLATE=	nginx-module.spec.in
 MODULE_SUMMARY_PREFIX=	nginx
+TARGET_VERSION=$(BASE_VERSION)
+MODULE_PACKAGE_PREFIX=nginx-module
 endif
+
+MODULE_TARGET_PREFIX=$(TARGET_VERSION)+
 
 MODULE_PACKAGE_VENDOR=	Nginx, Inc.
 MODULE_PACKAGE_URL=	http://nginx.org/
 MODULE_PACKAGE_LICENSE=2-clause BSD-like license
 
-MODULES=	geoip image-filter njs perl xslt
+MODULES=
 
 -include Makefile.module-*
-
-MODULE_SUMMARY_geoip=		GeoIP dynamic modules
-MODULE_SUMMARY_image_filter=	image filter dynamic module
-MODULE_SUMMARY_njs=		njs dynamic modules
-MODULE_SUMMARY_perl=		Perl dynamic module
-MODULE_SUMMARY_xslt=		xslt dynamic module
-
-MODULE_VERSION_geoip=		$(BASE_VERSION)
-MODULE_RELEASE_geoip=		1
-MODULE_VERSION_image_filter=	$(BASE_VERSION)
-MODULE_RELEASE_image_filter=	1
-MODULE_VERSION_njs=		0.4.4
-MODULE_RELEASE_njs=		1
-MODULE_VERSION_perl=		$(BASE_VERSION)
-MODULE_RELEASE_perl=		1
-MODULE_VERSION_xslt=		$(BASE_VERSION)
-MODULE_RELEASE_xslt=		1
-
-MODULE_SOURCES_njs=		njs-$(MODULE_VERSION_njs).tar.gz
-
-MODULE_CONFARGS_geoip=		--with-http_geoip_module=dynamic \
-				--with-stream_geoip_module=dynamic
-MODULE_CONFARGS_image_filter=	--with-http_image_filter_module=dynamic
-MODULE_CONFARGS_njs=		--add-dynamic-module=njs-$(MODULE_VERSION_njs)/nginx
-MODULE_CONFARGS_perl=		--with-http_perl_module=dynamic
-MODULE_CONFARGS_xslt=		--with-http_xslt_module=dynamic
-
-# geoip
-
-define MODULE_DEFINITIONS_geoip
-%if 0%{?suse_version} >= 1315
-BuildRequires: libGeoIP-devel
-Requires: libGeoIP1
-%else
-BuildRequires: GeoIP-devel
-Requires: GeoIP
-%endif
-endef
-export MODULE_DEFINITIONS_geoip
-
-define MODULE_POST_geoip
-cat <<BANNER
-----------------------------------------------------------------------
-
-The $(MODULE_SUMMARY_geoip) for nginx have been installed.
-To enable these modules, add the following to /etc/nginx/nginx.conf
-and reload nginx:
-
-    load_module modules/ngx_http_geoip_module.so;
-    load_module modules/ngx_stream_geoip_module.so;
-
-Please refer to the modules documentation for further details:
-http://nginx.org/en/docs/http/ngx_http_geoip_module.html
-http://nginx.org/en/docs/stream/ngx_stream_geoip_module.html
-
-----------------------------------------------------------------------
-BANNER
-endef
-export MODULE_POST_geoip
-
-# image-filter
-
-define MODULE_DEFINITIONS_image_filter
-BuildRequires: gd-devel
-Requires: gd
-endef
-export MODULE_DEFINITIONS_image_filter
-
-define MODULE_POST_image_filter
-cat <<BANNER
-----------------------------------------------------------------------
-
-The $(MODULE_SUMMARY_image_filter) for nginx has been installed.
-To enable this module, add the following to /etc/nginx/nginx.conf
-and reload nginx:
-
-    load_module modules/ngx_http_image_filter_module.so;
-
-Please refer to the module documentation for further details:
-http://nginx.org/en/docs/http/ngx_http_image_filter_module.html
-
-----------------------------------------------------------------------
-BANNER
-endef
-export MODULE_POST_image_filter
-
-# njs
-
-MODULE_VERSION_PREFIX_njs=$(BASE_VERSION).
-
-define MODULE_DEFINITIONS_njs
-BuildRequires: libedit-devel
-endef
-export MODULE_DEFINITIONS_njs
-
-define MODULE_PREBUILD_njs
-cd %{bdir}/njs-$(MODULE_VERSION_njs) \&\& ./configure \&\& make njs
-endef
-export MODULE_PREBUILD_njs
-
-define MODULE_PREINSTALL_njs
-%{__install} -m644 %{bdir}/njs-$(MODULE_VERSION_njs)/CHANGES \
-	$$RPM_BUILD_ROOT%{_datadir}/doc/nginx-module-njs/
-%{__mkdir} -p $$RPM_BUILD_ROOT%{_bindir}
-%{__install} -m755 %{bdir}/njs-$(MODULE_VERSION_njs)/build/njs \
-	$$RPM_BUILD_ROOT%{_bindir}/
-endef
-export MODULE_PREINSTALL_njs
-
-define MODULE_FILES_njs
-%{_bindir}/njs
-endef
-export MODULE_FILES_njs
-
-define MODULE_POST_njs
-cat <<BANNER
-----------------------------------------------------------------------
-
-The $(MODULE_SUMMARY_njs) for nginx have been installed.
-To enable these modules, add the following to /etc/nginx/nginx.conf
-and reload nginx:
-
-    load_module modules/ngx_http_js_module.so;
-    load_module modules/ngx_stream_js_module.so;
-
-Please refer to the modules documentation for further details:
-http://nginx.org/en/docs/njs/
-http://nginx.org/en/docs/http/ngx_http_js_module.html
-http://nginx.org/en/docs/stream/ngx_stream_js_module.html
-
-----------------------------------------------------------------------
-BANNER
-endef
-export MODULE_POST_njs
-
-# perl
-
-define MODULE_DEFINITIONS_perl
-%if 0%{?suse_version} >= 1315
-BuildRequires: perl
-%else
-BuildRequires: perl-devel
-BuildRequires: perl-ExtUtils-Embed
-%endif
-Requires: perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $$version))
-endef
-export MODULE_DEFINITIONS_perl
-
-define MODULE_PREINSTALL_perl
-%{__make} DESTDIR=$$RPM_BUILD_ROOT INSTALLDIRS=vendor -f objs/Makefile install_perl_modules
-find %{buildroot} -type f -name .packlist -exec rm -f '{}' \\;
-find %{buildroot} -type f -name perllocal.pod -exec rm -f '{}' \\;
-find %{buildroot} -type f -empty -exec rm -f '{}' \\;
-find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \\;
-endef
-export MODULE_PREINSTALL_perl
-
-define MODULE_FILES_perl
-%dir %{perl_vendorarch}/auto/nginx
-%{perl_vendorarch}/nginx.pm
-%{perl_vendorarch}/auto/nginx/nginx.so
-%{perl_vendorarch}/auto/nginx/nginx-debug.so
-%{_mandir}/man3/nginx.3pm*
-endef
-export MODULE_FILES_perl
-
-define MODULE_POST_perl
-cat <<BANNER
-----------------------------------------------------------------------
-
-The $(MODULE_SUMMARY_perl) for nginx has been installed.
-To enable this module, add the following to /etc/nginx/nginx.conf
-and reload nginx:
-
-    load_module modules/ngx_http_perl_module.so;
-
-Please refer to the module documentation for further details:
-http://nginx.org/en/docs/http/ngx_http_perl_module.html
-
-----------------------------------------------------------------------
-BANNER
-endef
-export MODULE_POST_perl
-
-# xslt
-
-define MODULE_DEFINITIONS_xslt
-BuildRequires: libxslt-devel
-Requires: libxslt
-endef
-export MODULE_DEFINITIONS_xslt
-
-define MODULE_POST_xslt
-cat <<BANNER
-----------------------------------------------------------------------
-
-The $(MODULE_SUMMARY_xslt) for nginx has been installed.
-To enable this module, add the following to /etc/nginx/nginx.conf
-and reload nginx:
-
-    load_module modules/ngx_http_xslt_filter_module.so;
-
-Please refer to the module documentation for further details:
-http://nginx.org/en/docs/http/ngx_http_xslt_module.html
-
-----------------------------------------------------------------------
-BANNER
-endef
-export MODULE_POST_xslt
-
 
 BASE_CONFIGURE_ARGS=\
 	--prefix=%{_sysconfdir}/nginx \
@@ -300,10 +97,14 @@ $(SRCPATH)/$(BASE_SRC):
 
 base:	nginx.spec $(SRCPATH)/$(BASE_SRC)
 	@echo "===> Building base package" ; \
-	$(SHELL) -c "time -p rpmbuild -ba nginx.spec" && \
+	$(SHELL) -c "time -p rpmbuild -D \"_topdir `pwd`/../\" -ba nginx.spec" && \
 	ln -s ../BUILD/nginx-$(BASE_VERSION)/objs base
 
-nginx.spec:
+nginx.rpm-changelog:
+	@echo "===> Generating $@"
+	@cd $(DOCS) && DEST=$(CURDIR) VERSIONMASK=1 make $(CURDIR)/nginx.rpm-changelog
+
+nginx.spec: nginx.rpm-changelog
 	@echo "===> Creating $@"
 	@{ \
 	set -e ; \
@@ -312,6 +113,11 @@ nginx.spec:
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
 		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
 		> nginx.spec ; \
+	cat nginx.rpm-changelog | sed \
+		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
+		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
+	>> nginx.spec ; \
+	cp -p $(DOCS)/nginx.copyright ../SOURCES/ ; \
 	}
 
 module-%: nginx-module-%.spec check-compat-% $(SRCPATH)/$(BASE_SRC)
@@ -319,11 +125,15 @@ module-%: nginx-module-%.spec check-compat-% $(SRCPATH)/$(BASE_SRC)
 	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
 	else \
 	    echo "===> Building nginx-$@ package" ; \
-	    $(SHELL) -c "time -p rpmbuild -ba nginx-$@.spec" && \
-	    ln -s ../BUILD/nginx-$@-$(BASE_VERSION)/objs $@ ; \
+	    $(SHELL) -c "time -p rpmbuild -D \"_topdir `pwd`/../\" -ba nginx-$@.spec" && \
+	    ln -s ../BUILD/$(MODULE_PACKAGE_PREFIX)-$*-$(BASE_VERSION)/objs $@ ; \
 	fi
 
-nginx-module-%.spec:
+nginx-module-%.rpm-changelog:
+	@echo "===> Generating $@"
+	@cd $(DOCS) && DEST=$(CURDIR) VERSIONMASK=1 make $(CURDIR)/nginx-module-$*.rpm-changelog
+
+nginx-module-%.spec: nginx-module-%.rpm-changelog
 	@echo "===> Creating $@"
 	@{ \
 	set -e ; \
@@ -348,17 +158,7 @@ nginx-module-%.spec:
 		i=$$(($${i}+1)) ; \
 	done ; \
 	module_copyright=`echo $@ | sed -e "s#.spec#.copyright#"` ; \
-	if [ -f ../SOURCES/$${module_copyright} ]; then \
-		copyright_source=$${module_copyright} ; \
-	else \
-		copyright_source=COPYRIGHT ; \
-	fi ; \
-	module_changelog=`echo $@ | sed -e "s#.spec#.changelog.in#"` ; \
-	if [ -f $${module_changelog} ]; then \
-		changelog_file=$${module_changelog} ; \
-	else \
-		changelog_file=nginx-module.changelog.in ; \
-	fi ; \
+	cp -p $(DOCS)/$${module_copyright} ../SOURCES/ ; \
 	pkgname=$(shell echo $@ | cut -d '.' -f 1) ; \
 	if [ "$(MODULE_TARGET)" = "plus" ]; then \
 		pkgname=`echo $${pkgname} | sed -e "s#^nginx-#nginx-plus-#"` ; \
@@ -376,6 +176,7 @@ nginx-module-%.spec:
 		-e "s#%%MODULE_PACKAGE_LICENSE%%#$(MODULE_PACKAGE_LICENSE)#g" \
 		-e "s#%%SUMMARY%%#$(MODULE_SUMMARY_PREFIX) $(MODULE_SUMMARY_$(call modname, $@))#g" \
 		-e "s#%%SHORT_SUMMARY%%#$(MODULE_SUMMARY_$(call modname, $@))#g" \
+		-e "s#%%TARGET_VERSION%%#$(TARGET_VERSION)#g" \
 		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \
 		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
@@ -384,7 +185,7 @@ nginx-module-%.spec:
 		-e "s#%%RELEASE%%#$(MODULE_RELEASE_$(call modname, $@))#g" \
 		-e "s#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g" \
 		-e "s#%%MODULE_CONFIGURE_ARGS%%#$(MODULE_CONFARGS_$(call modname, $@))#g" \
-		-e "s#%%COPYRIGHT_SOURCE%%#$${copyright_source}#g" \
+		-e "s#%%COPYRIGHT_SOURCE%%#$${module_copyright}#g" \
 		-e "s#%%MODULE_SOURCES%%#$${sources}#g" \
 		-e "s#%%MODULE_PATCHES%%#$${patches}#g" \
 		-e "s#%%MODULE_PREP_SOURCES%%#$${prepsources}#g" \
@@ -400,7 +201,13 @@ nginx-module-%.spec:
 		-e "s#%%MODULE_FILES%%#$${files}#g" \
 		-e "s#%%MODULE_POST%%#$${post}#g" \
 		> $@.tmp && \
-	cat $${changelog_file} | grep -v "^#" >> $@.tmp && \
+	cat nginx-module-$*.rpm-changelog | sed \
+		-e 's#%%TARGET_VERSION%%#$(TARGET_VERSION)#g' \
+		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
+		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
+		-e "s#%%MODULE_VERSION%%#$(MODULE_VERSION_$(call modname, $@))#g" \
+		-e "s#%%MODULE_RELEASE%%#$(MODULE_RELEASE_$(call modname, $@))#g" \
+		>> $@.tmp && \
 	mv $@.tmp $@ ; \
 	}
 
@@ -432,12 +239,15 @@ test: base nginx-tests
 	@{ \
 	pwd=`pwd` ; \
 	globals= ; \
-	for so in `find module-*/ -maxdepth 1 -type f -name "*module.so"`; do \
+	for so in `find module-*/ -maxdepth 1 -type f -name "*module.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
+	if [ -d $$pwd/module-opentracing ]; then \
+		export LD_LIBRARY_PATH=$$pwd/module-opentracing/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
+	fi ;  \
 	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$globals" prove . ; \
 	}
 
@@ -446,12 +256,15 @@ test-debug: base nginx-tests
 	@{ \
 	pwd=`pwd` ; \
 	globals= ; \
-	for so in `find module-*/ -maxdepth 1 -type f -name "*module-debug.so"`; do \
+	for so in `find module-*/ -maxdepth 1 -type f -name "*module-debug.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
+	if [ -d $$pwd/module-opentracing ]; then \
+		export LD_LIBRARY_PATH=$$pwd/module-opentracing/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
+	fi ;  \
 	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx-debug TEST_NGINX_GLOBALS="$$globals" prove . ; \
 	}
 
@@ -474,6 +287,7 @@ prepare-build-env: $(BASE_SRC)
 	cp -rP $${pd}/SPECS $(BUILD_ENV_PATH)/ ; \
 	cp -rP $${pd}/SOURCES $(BUILD_ENV_PATH)/ ; \
 	cp $(BASE_SRC) $(BUILD_ENV_PATH)/SOURCES/ ; \
+	cp -pr $(DOCS) $(BUILD_ENV_PATH); \
 	echo "Build environment has been created in: $(BUILD_ENV_PATH)" ; \
 	echo ; \
 	echo "Please do the following in order to get available build targets:" ; \
@@ -485,7 +299,8 @@ clean:
 	@rm -f base module-*
 	@rm -f nginx.spec nginx-module-*.spec nginx-module-*.skip
 	@rm -rf nginx-tests
-	@rm -f $(BASE_SRC)
+	@rm -f $(BASE_SRC) $(SRCPATH)/$(BASE_SRC)
+	@rm -f nginx.rpm-changelog nginx-module-*.rpm-changelog
 
 .PHONY:	default all modules specs test test-debug clean
 

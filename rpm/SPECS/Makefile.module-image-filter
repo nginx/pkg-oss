@@ -1,0 +1,32 @@
+MODULES+=	image-filter
+
+MODULE_SUMMARY_image_filter=	image filter dynamic module
+
+MODULE_VERSION_image_filter=	$(TARGET_VERSION)
+MODULE_RELEASE_image_filter=	1
+
+MODULE_CONFARGS_image_filter=	--with-http_image_filter_module=dynamic
+
+define MODULE_DEFINITIONS_image_filter
+BuildRequires: gd-devel
+Requires: gd
+endef
+export MODULE_DEFINITIONS_image_filter
+
+define MODULE_POST_image_filter
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_image_filter) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_image_filter_module.so;
+
+Please refer to the module documentation for further details:
+http://nginx.org/en/docs/http/ngx_http_image_filter_module.html
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_image_filter

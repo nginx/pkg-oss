@@ -1,0 +1,55 @@
+MODULES+=	perl
+
+MODULE_SUMMARY_perl=	Perl dynamic module
+
+MODULE_VERSION_perl=	$(TARGET_VERSION)
+MODULE_RELEASE_perl=	1
+
+MODULE_CONFARGS_perl=	--with-http_perl_module=dynamic
+
+define MODULE_DEFINITIONS_perl
+%if 0%{?suse_version} >= 1315
+BuildRequires: perl
+%else
+BuildRequires: perl-devel
+BuildRequires: perl-ExtUtils-Embed
+%endif
+Requires: perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $$version))
+endef
+export MODULE_DEFINITIONS_perl
+
+define MODULE_PREINSTALL_perl
+%{__make} DESTDIR=$$RPM_BUILD_ROOT INSTALLDIRS=vendor -f objs/Makefile install_perl_modules
+find %{buildroot} -type f -name .packlist -exec rm -f '{}' \\;
+find %{buildroot} -type f -name perllocal.pod -exec rm -f '{}' \\;
+find %{buildroot} -type f -empty -exec rm -f '{}' \\;
+find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \\;
+endef
+export MODULE_PREINSTALL_perl
+
+define MODULE_FILES_perl
+%dir %{perl_vendorarch}/auto/nginx
+%{perl_vendorarch}/nginx.pm
+%{perl_vendorarch}/auto/nginx/nginx.so
+%{perl_vendorarch}/auto/nginx/nginx-debug.so
+%{_mandir}/man3/nginx.3pm*
+endef
+export MODULE_FILES_perl
+
+define MODULE_POST_perl
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_perl) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_perl_module.so;
+
+Please refer to the module documentation for further details:
+http://nginx.org/en/docs/http/ngx_http_perl_module.html
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_perl

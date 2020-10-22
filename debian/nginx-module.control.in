@@ -16,7 +16,8 @@ Package: nginx-module-%%MODULE%%
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         nginx (= %%BASE_VERSION%%-%%BASE_RELEASE%%~%%CODENAME%%)%%MODULE_DEPENDS%%%%ADD_CONTROL_TAGS%%
+         nginx-r%%BASE_VERSION%%%%MODULE_DEPENDS%%%%ADD_CONTROL_TAGS%%
+Provides: nginx-module-%%MODULE%%-r%%BASE_VERSION%%
 Description: %%SUMMARY%%
  %%SHORT_SUMMARY%% for nginx
 
