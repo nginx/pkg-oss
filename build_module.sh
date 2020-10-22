@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# build_module.sh (c) NGINX, Inc. [v0.12 30-Aug-2017] Liam Crilly <liam.crilly@nginx.com>
+# build_module.sh (c) NGINX, Inc. [v0.13 12-Oct-2020] Liam Crilly <liam.crilly@nginx.com>
 #
 # This script supports apt(8) and yum(8) package managers. Installs the minimum
 # necessary prerequisite packages to build 3rd party modules for NGINX Plus.
@@ -9,6 +9,8 @@
 # Obtains pkg-oss tool, creates packaging files and copies in module source.
 #
 # CHANGELOG
+# v0.13 [12-Oct-2020] adjusted for refactored package tooling
+                      -o option made de-facto mandatory with preconfigured default
 # v0.12 [30-Aug-2017] -o option to specify destination for package files
 #                     -y (--non-interactive) option for automated builds
 # v0.11 [20-Jun-2017] Enforces NGINX versions that support dynamic modules
@@ -18,6 +20,8 @@
 # v0.8  [30-Mar-2017] Package version is now tied to base OSS version instead of 0.01
 # v0.7  [29-Mar-2017] Added RPM packaging, flexible command line options with defaults
 # v0.6  [16-Feb-2017] Using pkg-oss tool instead of only compiling .so files
+
+OUTPUT_DIR="`pwd`/build-module-artifacts"
 
 cat << __EOF__
 
@@ -49,7 +53,7 @@ if [ $# -eq 0 ]; then
 	echo " -f | --force-dynamic           # Attempt to convert static configuration to dynamic module"
 	echo " -r <NGINX Plus release number> # Build against the corresponding OSS version for this release"
 	echo " -v [NGINX OSS version number]  # Build against this OSS version [current mainline] (default)"
-	echo " -o <package output directory>  # Create package(s) in this directory"
+	echo " -o <package output directory>  # Create package(s) in this directory (default: $OUTPUT_DIR)"
 	echo ""
         exit 1
 fi
@@ -63,7 +67,6 @@ COPY_CMD="cp -i"
 DO_DYNAMIC_CONVERT=0
 MODULE_NAME=""
 BUILD_PLATFORM=OSS
-OUTPUT_DIR=""
 while [ $# -gt 1 ]; do
 	case "$1" in
 		"-s" | "--skip-depends")
@@ -108,11 +111,11 @@ while [ $# -gt 1 ]; do
 			shift
 			;;
 		"-o")
-			if [ ! -d $2 ]; then
-				echo "$ME: ERROR: Output directory $2 does not exist - quitting"
+			OUTPUT_DIR=`realpath $2`
+			if [ $? -ne 0 ]; then
+				echo "$ME: ERROR: Could not access output directory $2 - quitting"
 				exit 1
 			fi
-			OUTPUT_DIR=$2
 			shift; shift
 			;;
 		*)
@@ -123,6 +126,17 @@ while [ $# -gt 1 ]; do
 done
 
 #
+# Create package output directory
+#
+if [ ! -d $OUTPUT_DIR ]; then
+	mkdir -p $OUTPUT_DIR
+	if [ $? -ne 0 ]; then
+		echo "$ME: ERROR: Could not create output directory $OUTPUT_DIR - quitting"
+		exit 1
+	fi
+fi
+
+#
 # Locate/select package manager and configure
 #
 if [ `whereis yum | grep -c "^yum: /"` -eq 1 ]; then
@@ -130,7 +144,7 @@ if [ `whereis yum | grep -c "^yum: /"` -eq 1 ]; then
 	PKG_FMT=rpm
 	NGINX_PACKAGES="pcre-devel zlib-devel openssl-devel"
 	DEVEL_PACKAGES="rpm-build"
-	PACKAGING_ROOT=${HOME}/rpmbuild/
+	PACKAGING_ROOT=pkg-oss/rpm/
 	PACKAGING_DIR=rpm/SPECS
 	PACKAGE_SOURCES_DIR=../SOURCES
 	PACKAGE_OUTPUT_DIR=RPMS
@@ -139,10 +153,10 @@ elif [ `whereis apt-get | grep -c "^apt-get: /"` -eq 1 ]; then
 	PKG_FMT=deb
 	NGINX_PACKAGES="libpcre3-dev zlib1g-dev libssl-dev"
 	DEVEL_PACKAGES="devscripts debhelper dpkg-dev quilt lsb-release"
-	PACKAGING_ROOT=${HOME}/debuild/
+	PACKAGING_ROOT=pkg-oss/debian/
 	PACKAGING_DIR=debian
 	PACKAGE_SOURCES_DIR=extra
-	PACKAGE_OUTPUT_DIR="*/debian"
+	PACKAGE_OUTPUT_DIR="debuild-module-*/"
 else
         echo "$ME: ERROR: Could not locate a supported package manager - quitting"
         exit 1
@@ -335,20 +349,34 @@ tar cf - $MODULE_NAME-$VERSION | gzip -1 > $OLDPWD/$PACKAGE_SOURCES_DIR/$MODULE_
 cd -
 
 echo "$ME: INFO: Creating changelog"
-if [ "$PKG_MGR" = "yum" ]; then
-	echo "* `date '+%a %b %d %Y'` Build Script <build.script@example.com>" > nginx-module-$MODULE_NAME.changelog.in
-	echo "- initial version of $MODULE_NAME module" >> nginx-module-$MODULE_NAME.changelog.in
-else
-	cat << __EOF__ > nginx-module-$MODULE_NAME.changelog.in
-nginx-module-$MODULE_NAME (${VERSION}-1~%%CODENAME%%) %%CODENAME%%; urgency=low
+cd $BUILD_DIR
+cat << __EOF__ >pkg-oss/docs/nginx-module-$MODULE_NAME.xml
+<?xml version="1.0" ?>
+<!DOCTYPE change_log SYSTEM "changes.dtd" >
 
-  * initial release of $MODULE_NAME module for nginx
 
- -- Build Script <build.script@example.com>  `date -R`
+<change_log title="nginx_module_$MODULE_NAME">
+
+
+<changes apply="nginx-module-$MODULE_NAME" ver="$VERSION" rev="1"
+         date="`date '+%Y-%m-%d'`" time="`date '+%H:%M:%S %z'`"
+         packager="Build Script &lt;build.script@example.com&gt;">
+
+<change>
+<para>
+initial release of $MODULE_NAME module for nginx
+</para>
+</change>
+
+</changes>
+
+
+</change_log>
 __EOF__
-	sed -e "s,nginx-module-,nginx-plus-module-,g" \
-	-e "s,(,(${PLUS_REL}+," < nginx-module-$MODULE_NAME.changelog.in > nginx-plus-module-$MODULE_NAME.changelog.in
-fi
+
+cat << __EOF__ >pkg-oss/docs/nginx-module-$MODULE_NAME.copyright
+placeholder for nginx-module-$MODULE_NAME license / copyrights
+__EOF__
 
 echo "$ME: INFO: Creating module Makefile"
 cat << __EOF__ > Makefile.module-$MODULE_NAME
@@ -379,23 +407,18 @@ endef
 export MODULE_POST_$MODULE_NAME
 __EOF__
 
+cp Makefile.module-$MODULE_NAME $BUILD_DIR/pkg-oss/rpm/SPECS/
+cp Makefile.module-$MODULE_NAME $BUILD_DIR/pkg-oss/debian/
+
 #
 # Build!
 #
 echo "$ME: INFO: Building"
-if [ -d $PACKAGING_ROOT -a "$SAY_YES" = "-y" ]; then
-        rm -fr $PACKAGING_ROOT
-fi
-make prepare-build-env
-if [ $? -ne 0 ]; then
-	echo "$ME: ERROR: Unable to prepare build environment - quitting"
-	exit 1
-fi
 
 if [ "$PKG_MGR" = "yum" ]; then
-	cd ~/rpmbuild/SPECS
+	cd $BUILD_DIR/pkg-oss/rpm/SPECS
 else
-	cd ~/debuild/nginx-$VERSION/debian
+	cd $BUILD_DIR/pkg-oss/debian
 fi
 
 if [ "$BUILD_PLATFORM" = "Plus" ]; then
@@ -408,14 +431,10 @@ if [ $? -ne 0 ]; then
 else
 	echo ""
 	echo "$ME: INFO: Module binaries created"
-	find $PACKAGING_ROOT -type f -name "*.so" -print
+	find $BUILD_DIR/$PACKAGING_ROOT -type f -name "*.so" -print
 
 	echo "$ME: INFO: Module packages created"
-	if [ "$OUTPUT_DIR" = "" ]; then
-		find $PACKAGING_ROOT$PACKAGE_OUTPUT_DIR -type f -name "*.$PKG_FMT" -print
-	else
-		find $PACKAGING_ROOT$PACKAGE_OUTPUT_DIR -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} $OUTPUT_DIR \;
-	fi
+	find $BUILD_DIR/$PACKAGING_ROOT$PACKAGE_OUTPUT_DIR -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} $OUTPUT_DIR/ \;
 	echo "$ME: INFO: Removing $BUILD_DIR"
 	rm -fr $BUILD_DIR
 fi
