@@ -5,6 +5,18 @@
 <change_log title="nginx">
 
 
+<changes apply="nginx" ver="1.19.4" rev="1"
+         date="2020-10-27" time="18:25:30 +0300"
+         packager="Andrei Belov &lt;defan@nginx.com&gt;">
+<change>
+<para>
+1.19.4-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx" ver="1.19.3" rev="1"
          date="2020-09-29" time="17:12:31 +0300"
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
