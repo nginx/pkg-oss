@@ -10,7 +10,7 @@
 #
 # CHANGELOG
 # v0.13 [12-Oct-2020] adjusted for refactored package tooling
-                      -o option made de-facto mandatory with preconfigured default
+#                     -o option made de-facto mandatory with preconfigured default
 # v0.12 [30-Aug-2017] -o option to specify destination for package files
 #                     -y (--non-interactive) option for automated builds
 # v0.11 [20-Jun-2017] Enforces NGINX versions that support dynamic modules
