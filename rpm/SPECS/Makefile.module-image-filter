@@ -3,7 +3,7 @@ MODULES+=	image-filter
 MODULE_SUMMARY_image_filter=	image filter dynamic module
 
 MODULE_VERSION_image_filter=	$(TARGET_VERSION)
-MODULE_RELEASE_image_filter=	1
+MODULE_RELEASE_image_filter=	2
 
 MODULE_CONFARGS_image_filter=	--with-http_image_filter_module=dynamic
 

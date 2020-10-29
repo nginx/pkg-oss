@@ -3,7 +3,7 @@ MODULES+=	geoip
 MODULE_SUMMARY_geoip=	GeoIP dynamic modules
 
 MODULE_VERSION_geoip=	$(TARGET_VERSION)
-MODULE_RELEASE_geoip=	1
+MODULE_RELEASE_geoip=	2
 
 MODULE_CONFARGS_geoip=	--with-http_geoip_module=dynamic \
 			--with-stream_geoip_module=dynamic
