@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# build_module.sh (c) NGINX, Inc. [v0.13 12-Oct-2020] Liam Crilly <liam.crilly@nginx.com>
+# build_module.sh (c) NGINX, Inc. [v0.14 02-Nov-2020] Liam Crilly <liam.crilly@nginx.com>
 #
 # This script supports apt(8) and yum(8) package managers. Installs the minimum
 # necessary prerequisite packages to build 3rd party modules for NGINX Plus.
@@ -9,6 +9,11 @@
 # Obtains pkg-oss tool, creates packaging files and copies in module source.
 #
 # CHANGELOG
+# v0.14 [02-Nov-2020] sudo is not mandatory anymore
+#                     update repo caches prior to dependencies installs
+#                     do not install suggested/recommended packages on debian-based distros
+#                     xmllint/xsltproc are added to build dependencies
+#                     exit with code 1 when module build failed
 # v0.13 [12-Oct-2020] adjusted for refactored package tooling
 #                     -o option made de-facto mandatory with preconfigured default
 # v0.12 [30-Aug-2017] -o option to specify destination for package files
@@ -140,19 +145,21 @@ fi
 # Locate/select package manager and configure
 #
 if [ `whereis yum | grep -c "^yum: /"` -eq 1 ]; then
-        PKG_MGR=yum
+	PKG_MGR=yum
+	PKG_MGR_UP="yum makecache"
 	PKG_FMT=rpm
 	NGINX_PACKAGES="pcre-devel zlib-devel openssl-devel"
-	DEVEL_PACKAGES="rpm-build"
+	DEVEL_PACKAGES="rpm-build libxml2 libxslt"
 	PACKAGING_ROOT=pkg-oss/rpm/
 	PACKAGING_DIR=rpm/SPECS
 	PACKAGE_SOURCES_DIR=../SOURCES
 	PACKAGE_OUTPUT_DIR=RPMS
 elif [ `whereis apt-get | grep -c "^apt-get: /"` -eq 1 ]; then
-        PKG_MGR=apt-get
+	PKG_MGR="apt-get --no-install-suggests --no-install-recommends"
+	PKG_MGR_UP="apt-get update"
 	PKG_FMT=deb
 	NGINX_PACKAGES="libpcre3-dev zlib1g-dev libssl-dev"
-	DEVEL_PACKAGES="devscripts debhelper dpkg-dev quilt lsb-release"
+	DEVEL_PACKAGES="devscripts debhelper dpkg-dev quilt lsb-release build-essential libxml2-utils xsltproc"
 	PACKAGING_ROOT=pkg-oss/debian/
 	PACKAGING_DIR=debian
 	PACKAGE_SOURCES_DIR=extra
@@ -163,11 +170,15 @@ else
 fi
 
 if [ $CHECK_DEPENDS = 1 ]; then
-	echo "$ME: INFO: testing sudo"
-	sudo pwd > /dev/null
-	if [ $? -ne 0 ]; then
-	        echo "ERROR: sudo failed. If you do not have sudo credentials then try using the '--skip-depends' option. Quitting."
-	        exit 1
+	if [ `id -u` -ne 0 ]; then
+		echo "$ME: INFO: testing sudo"
+		sudo pwd > /dev/null
+		if [ $? -ne 0 ]; then
+			echo "ERROR: sudo failed. If you do not have sudo credentials then try using the '--skip-depends' option. Quitting."
+			exit 1
+		else
+			SUDO=sudo
+		fi
 	fi
 
 	echo "$ME: INFO: checking for dependent packages"
@@ -178,7 +189,8 @@ if [ $CHECK_DEPENDS = 1 ]; then
 	if [ "${1##*.}" == "git" ]; then
 		CORE_PACKAGES="$CORE_PACKAGES git"
 	fi
-	sudo $PKG_MGR install $SAY_YES $CORE_PACKAGES $NGINX_PACKAGES $DEVEL_PACKAGES
+	$SUDO $PKG_MGR_UP
+	$SUDO $PKG_MGR install $SAY_YES $CORE_PACKAGES $NGINX_PACKAGES $DEVEL_PACKAGES
 fi
 
 #
@@ -428,6 +440,7 @@ else
 fi
 if [ $? -ne 0 ]; then
 	echo "$ME: ERROR: Build failed"
+	exit 1
 else
 	echo ""
 	echo "$ME: INFO: Module binaries created"
