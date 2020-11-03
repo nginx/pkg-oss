@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# build_module.sh (c) NGINX, Inc. [v0.14 02-Nov-2020] Liam Crilly <liam.crilly@nginx.com>
+# build_module.sh (c) NGINX, Inc. [v0.15 03-Nov-2020] Liam Crilly <liam.crilly@nginx.com>
 #
 # This script supports apt(8) and yum(8) package managers. Installs the minimum
 # necessary prerequisite packages to build 3rd party modules for NGINX Plus.
@@ -9,6 +9,8 @@
 # Obtains pkg-oss tool, creates packaging files and copies in module source.
 #
 # CHANGELOG
+# v0.15 [03-Nov-2020] use latest version tag if -v is specified
+#                     use HTTPS while fetching sources
 # v0.14 [02-Nov-2020] sudo is not mandatory anymore
 #                     update repo caches prior to dependencies installs
 #                     do not install suggested/recommended packages on debian-based distros
@@ -336,13 +338,13 @@ fi
 echo "$ME: INFO: Downloading NGINX packaging tool"
 cd $BUILD_DIR
 if [ "$BUILD_PLATFORM" = "OSS" ]; then
+	hg clone https://hg.nginx.org/pkg-oss
 	if [ "$OSS_VER" != "" ]; then
-		MERCURIAL_TAG="-r $OSS_VER-1"
+		( cd pkg-oss && hg update `hg tags | grep "^$OSS_VER" | head -1 | awk '{print $1}'` )
 	fi
-	hg clone $MERCURIAL_TAG http://hg.nginx.org/pkg-oss
 	cd pkg-oss/$PACKAGING_DIR
 else
-	wget -O - http://hg.nginx.org/pkg-oss/archive/target-plus-r$PLUS_REL.tar.gz  | tar xfz -
+	wget -O - https://hg.nginx.org/pkg-oss/archive/target-plus-r$PLUS_REL.tar.gz | tar xfz -
 	cd pkg-oss-target-plus-r$PLUS_REL/$PACKAGING_DIR
 fi
 if [ $? -ne 0 ]; then
