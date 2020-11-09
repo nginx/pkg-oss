@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# build_module.sh (c) NGINX, Inc. [v0.15 03-Nov-2020] Liam Crilly <liam.crilly@nginx.com>
+# build_module.sh (c) NGINX, Inc., Liam Crilly <liam.crilly@nginx.com>
 #
 # This script supports apt(8) and yum(8) package managers. Installs the minimum
 # necessary prerequisite packages to build 3rd party modules for NGINX Plus.
@@ -9,6 +9,7 @@
 # Obtains pkg-oss tool, creates packaging files and copies in module source.
 #
 # CHANGELOG
+# v0.16 [09-Nov-2020] Added Alpine Linux packaging
 # v0.15 [03-Nov-2020] use latest version tag if -v is specified
 #                     use HTTPS while fetching sources
 # v0.14 [02-Nov-2020] sudo is not mandatory anymore
@@ -146,9 +147,9 @@ fi
 #
 # Locate/select package manager and configure
 #
-if [ `whereis yum | grep -c "^yum: /"` -eq 1 ]; then
-	PKG_MGR=yum
-	PKG_MGR_UP="yum makecache"
+if [ `whereis yum 2>/dev/null | grep -c "^yum: /"` -eq 1 ]; then
+	PKG_MGR_INSTALL="yum install $SAY_YES"
+	PKG_MGR_UPDATE="yum makecache"
 	PKG_FMT=rpm
 	NGINX_PACKAGES="pcre-devel zlib-devel openssl-devel"
 	DEVEL_PACKAGES="rpm-build libxml2 libxslt"
@@ -156,9 +157,9 @@ if [ `whereis yum | grep -c "^yum: /"` -eq 1 ]; then
 	PACKAGING_DIR=rpm/SPECS
 	PACKAGE_SOURCES_DIR=../SOURCES
 	PACKAGE_OUTPUT_DIR=RPMS
-elif [ `whereis apt-get | grep -c "^apt-get: /"` -eq 1 ]; then
-	PKG_MGR="apt-get --no-install-suggests --no-install-recommends"
-	PKG_MGR_UP="apt-get update"
+elif [ `whereis apt-get 2>/dev/null | grep -c "^apt-get: /"` -eq 1 ]; then
+	PKG_MGR_INSTALL="apt-get --no-install-suggests --no-install-recommends install $SAY_YES"
+	PKG_MGR_UPDATE="apt-get update"
 	PKG_FMT=deb
 	NGINX_PACKAGES="libpcre3-dev zlib1g-dev libssl-dev"
 	DEVEL_PACKAGES="devscripts debhelper dpkg-dev quilt lsb-release build-essential libxml2-utils xsltproc"
@@ -166,6 +167,15 @@ elif [ `whereis apt-get | grep -c "^apt-get: /"` -eq 1 ]; then
 	PACKAGING_DIR=debian
 	PACKAGE_SOURCES_DIR=extra
 	PACKAGE_OUTPUT_DIR="debuild-module-*/"
+elif [ `apk --version | grep -c "^apk-tools"` -eq 1 ]; then
+	PKG_MGR_INSTALL="apk add"
+	PKG_MGR_UPDATE="apk update"
+	PKG_FMT=apk
+	NGINX_PACKAGES="linux-headers openssl-dev pcre-dev zlib-dev"
+	DEVEL_PACKAGES="openssl abuild musl-dev"
+	PACKAGING_ROOT=pkg-oss/alpine/
+	PACKAGING_DIR=alpine
+	PACKAGE_SOURCES_DIR=src
 else
         echo "$ME: ERROR: Could not locate a supported package manager - quitting"
         exit 1
@@ -191,8 +201,8 @@ if [ $CHECK_DEPENDS = 1 ]; then
 	if [ "${1##*.}" == "git" ]; then
 		CORE_PACKAGES="$CORE_PACKAGES git"
 	fi
-	$SUDO $PKG_MGR_UP
-	$SUDO $PKG_MGR install $SAY_YES $CORE_PACKAGES $NGINX_PACKAGES $DEVEL_PACKAGES
+	$SUDO $PKG_MGR_UPDATE
+	$SUDO $PKG_MGR_INSTALL $CORE_PACKAGES $NGINX_PACKAGES $DEVEL_PACKAGES
 fi
 
 #
@@ -259,7 +269,7 @@ else
 		"zip")
 			echo "$ME: INFO Downloading module source"
 			wget -O $BUILD_DIR/module.zip $1
-			ARCHIVE_DIR=`zipinfo -1 $BUILD_DIR/module.zip | head --lines=1 | cut -f1 -d/`
+			ARCHIVE_DIR=`zipinfo -1 $BUILD_DIR/module.zip | head -n 1 | cut -f1 -d/`
 			unzip $BUILD_DIR/module.zip -d $BUILD_DIR
 			mv $BUILD_DIR/$ARCHIVE_DIR $MODULE_DIR
 			;;
@@ -267,7 +277,7 @@ else
 			echo "$ME: INFO Downloading module source"
 			# Assume tarball of some kind
 			wget -O $BUILD_DIR/module.tgz $1
-			ARCHIVE_DIR=`tar tfz $BUILD_DIR/module.tgz | head --lines=1 | cut -f1 -d/`
+			ARCHIVE_DIR=`tar tfz $BUILD_DIR/module.tgz | head -n 1 | cut -f1 -d/`
 			cd $BUILD_DIR
 			tar xfz module.tgz
 			mv $ARCHIVE_DIR $MODULE_DIR
@@ -423,16 +433,19 @@ __EOF__
 
 cp Makefile.module-$MODULE_NAME $BUILD_DIR/pkg-oss/rpm/SPECS/
 cp Makefile.module-$MODULE_NAME $BUILD_DIR/pkg-oss/debian/
+cp Makefile.module-$MODULE_NAME $BUILD_DIR/pkg-oss/alpine/
 
 #
 # Build!
 #
 echo "$ME: INFO: Building"
 
-if [ "$PKG_MGR" = "yum" ]; then
+if [ "$PKG_FMT" = "rpm" ]; then
 	cd $BUILD_DIR/pkg-oss/rpm/SPECS
-else
+elif [ "$PKG_FMT" = "deb" ]; then
 	cd $BUILD_DIR/pkg-oss/debian
+else
+	cd $BUILD_DIR/pkg-oss/alpine
 fi
 
 if [ "$BUILD_PLATFORM" = "Plus" ]; then
@@ -449,7 +462,11 @@ else
 	find $BUILD_DIR/$PACKAGING_ROOT -type f -name "*.so" -print
 
 	echo "$ME: INFO: Module packages created"
-	find $BUILD_DIR/$PACKAGING_ROOT$PACKAGE_OUTPUT_DIR -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} $OUTPUT_DIR/ \;
+	if [ "$PKG_FMT" = "apk" ]; then
+		find ~/packages -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} $OUTPUT_DIR/ \;
+	else
+		find $BUILD_DIR/$PACKAGING_ROOT$PACKAGE_OUTPUT_DIR -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} $OUTPUT_DIR/ \;
+	fi
 	echo "$ME: INFO: Removing $BUILD_DIR"
 	rm -fr $BUILD_DIR
 fi
