@@ -1,4 +1,4 @@
-SHELL=		/bin/bash
+SHELL=		/bin/sh
 
 BASE_VERSION=	1.19.4
 BASE_RELEASE=	1
