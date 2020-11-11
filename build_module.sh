@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 #
 # build_module.sh (c) NGINX, Inc., Liam Crilly <liam.crilly@nginx.com>
 #
@@ -9,6 +9,7 @@
 # Obtains pkg-oss tool, creates packaging files and copies in module source.
 #
 # CHANGELOG
+# v0.17 [11-Nov-2020] Fixed bashisms and made /bin/sh default interpreter
 # v0.16 [09-Nov-2020] Added Alpine Linux packaging
 # v0.15 [03-Nov-2020] use latest version tag if -v is specified
 #                     use HTTPS while fetching sources
@@ -99,7 +100,7 @@ while [ $# -gt 1 ]; do
 			if [ `echo -n $2 | tr -d '[0-9p]' | wc -c` -gt 0 ]; then
 				echo "$ME: ERROR: NGINX Plus release must be in the format NN[pN] - quitting"
 				exit 1
-			elif [ "`echo "10^$2" | tr '^' '\n' | sort -nr | head -1`" == "10" ]; then
+			elif [ "`echo "10^$2" | tr '^' '\n' | sort -nr | head -1`" = "10" ]; then
 				echo "$ME: ERROR: NGINX Plus release must be at least 11 to support dynamic modules - quitting"
 				exit 1
 			fi
@@ -112,7 +113,7 @@ while [ $# -gt 1 ]; do
 				OSS_VER=$2
 				shift
 			fi
-			if [ `echo "1.11.4^$OSS_VER" | tr '^' '\n' | tr '.' ',' | sort -nr | head -1` == "1,11,4" ]; then
+			if [ `echo "1.11.4^$OSS_VER" | tr '^' '\n' | tr '.' ',' | sort -nr | head -1` = "1,11,4" ]; then
 				echo "$ME: ERROR: NGINX version must be at least 1.11.5 to support dynamic modules - quitting"
 				exit 1
 			fi
@@ -198,7 +199,7 @@ if [ $CHECK_DEPENDS = 1 ]; then
 	if [ "$BUILD_PLATFORM" = "OSS" ]; then
 		CORE_PACKAGES="$CORE_PACKAGES mercurial"
 	fi
-	if [ "${1##*.}" == "git" ]; then
+	if [ "${1##*.}" = "git" ]; then
 		CORE_PACKAGES="$CORE_PACKAGES git"
 	fi
 	$SUDO $PKG_MGR_UPDATE
@@ -214,7 +215,8 @@ if [ "$MODULE_NAME" = "" ]; then
 	#
 	MODULE_NAME=`basename $1 | tr '[:blank:][:punct:]' '\n' | tr '[A-Z]' '[a-z]' | grep -ve nginx -e ngx -e http -e stream -e module -e plus -e tar -e zip -e gz -e git | tr -d '\n'`
 	if [ -z "$SAY_YES" ]; then
-		read -p "$ME: INPUT: Enter module nickname [$MODULE_NAME]: "
+		echo -n "$ME: INPUT: Enter module nickname [$MODULE_NAME]: "
+		read -r REPLY
 		if [ "$REPLY" != "" ]; then
 			MODULE_NAME=$REPLY
 		fi
@@ -231,7 +233,8 @@ while true; do
 	if [ "$MODULE_NAME_CLEAN" != "$MODULE_NAME" ] || [ -z $MODULE_NAME ]; then
 		echo "$ME: WARNING: Removed illegal characters from module nickname - using \"$MODULE_NAME_CLEAN\""
 		if [ -z $SAY_YES ]; then
-			read -p "$ME: INPUT: Confirm module nickname [$MODULE_NAME_CLEAN]: " MODULE_NAME
+			echo -n "$ME: INPUT: Confirm module nickname [$MODULE_NAME_CLEAN]: "
+			read -r MODULE_NAME
 			if [ "$MODULE_NAME" = "" ]; then
 				MODULE_NAME=$MODULE_NAME_CLEAN
 			fi
