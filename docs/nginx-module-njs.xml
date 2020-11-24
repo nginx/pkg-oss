@@ -5,6 +5,24 @@
 <change_log title="nginx_module_njs">
 
 
+<changes apply="nginx-module-njs" ver="0.4.4" rev="1" basever="1.19.5"
+         date="2020-11-24" time="16:02:03 +0300"
+         packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
+<change>
+<para>
+base version updated to 1.19.5-1
+</para>
+</change>
+
+<change>
+<para>
+Added a patch to fix promise subrequest with error_page redirect
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-njs" ver="0.4.4" rev="1" basever="1.19.4"
          date="2020-10-27" time="18:25:30 +0300"
          packager="Andrei Belov &lt;defan@nginx.com&gt;">
