@@ -7,7 +7,6 @@ MODULE_RELEASE_njs=	1
 
 MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
 
-MODULE_PATCHES_njs=1568-fix-subrequest-error-page.patch
 MODULE_SOURCES_njs=	njs-$(MODULE_VERSION_njs).tar.gz
 
 MODULE_CONFARGS_njs=	--add-dynamic-module=njs-$(MODULE_VERSION_njs)/nginx

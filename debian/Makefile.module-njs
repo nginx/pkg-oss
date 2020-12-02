@@ -5,7 +5,6 @@ MODULE_SUMMARY_njs=	njs dynamic modules
 MODULE_VERSION_njs=	0.4.4
 MODULE_RELEASE_njs=	1
 
-MODULE_PATCHES_njs=	1568-fix-subrequest-error-page.patch
 MODULE_SOURCES_njs=	njs-$(MODULE_VERSION_njs).tar.gz
 
 MODULE_CONFARGS_njs=	--add-dynamic-module=$(MODSRC_PREFIX)njs-$(MODULE_VERSION_njs)/nginx
