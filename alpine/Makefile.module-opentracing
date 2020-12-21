@@ -1,0 +1,94 @@
+MODULES+=	opentracing
+
+MODULE_SUMMARY_opentracing=	3rd-party OpenTracing dynamic module
+
+include $(CONTRIB)/src/opentracing-cpp/version
+include $(CONTRIB)/src/nginx-opentracing/version
+include $(CONTRIB)/src/jaeger-client-cpp/version
+
+MODULE_VERSION_opentracing=	$(NGINX_OPENTRACING_VERSION)
+MODULE_RELEASE_opentracing=	1
+
+MODULE_VERSION_PREFIX_opentracing=$(MODULE_TARGET_PREFIX)
+
+MODULE_SOURCES_opentracing=	opentracing-cpp-$(OPENTRACING_CPP_VERSION).tar.gz \
+				nginx-opentracing-$(NGINX_OPENTRACING_VERSION).tar.gz \
+				jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION).tar.gz
+
+MODULE_PATCHES_opentracing=	$(CONTRIB)/src/opentracing-cpp/CMakeLists.txt.patch \
+				$(CONTRIB)/src/jaeger-client-cpp/CMakeLists.txt.patch
+
+MODULE_CONFARGS_opentracing=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-opentracing-$(NGINX_OPENTRACING_VERSION)/opentracing
+
+.deps-module-opentracing:
+	cd $(CONTRIB) && make \
+		.sum-opentracing-cpp \
+		.sum-nginx-opentracing \
+		.sum-jaeger-client-cpp
+	touch $@
+
+prerequisites-for-module-opentracing:
+
+MODULE_BUILD_DEPENDS_opentracing=cmake yaml-cpp-dev
+
+define MODULE_PREBUILD_opentracing
+	( cd ../opentracing-cpp-$(OPENTRACING_CPP_VERSION) \&\& \
+		mkdir .build \&\& \
+		cd .build \&\& \
+		cmake .. \&\& \
+		DESTDIR=`pwd`/.. make $$_make_opts install )
+	( cd ../jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION) \&\& \
+		mkdir .build \&\& \
+		cd .build \&\& \
+		OpenTracing_DIR=$$builddir/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/.build cmake -DCMAKE_BUILD_TYPE=Release -DJAEGERTRACING_PLUGIN=ON -DHUNTER_CONFIGURATION_TYPES=Release -DBUILD_TESTING=OFF ../ -DOPENTRACING_INC=$$builddir/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include \&\& \
+		DESTDIR=`pwd`/.. make $$_make_opts )
+endef
+export MODULE_PREBUILD_opentracing
+
+MODULE_CC_OPT_opentracing=-I../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include
+MODULE_CC_OPT_DEBUG_opentracing=$(MODULE_CC_OPT_opentracing)
+MODULE_LD_OPT_opentracing=-L../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib
+MODULE_LD_OPT_DEBUG_opentracing=$(MODULE_LD_OPT_opentracing)
+
+define MODULE_PREINSTALL_opentracing
+	mkdir -p "$$pkgdir"/usr/lib
+	install -m755 ../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib/libopentracing.so.$(OPENTRACING_CPP_VERSION) "$$pkgdir"/usr/lib/
+	ln -fs libopentracing.so.$(OPENTRACING_CPP_VERSION) "$$pkgdir"/usr/lib/libopentracing.so.1
+	ln -fs libopentracing.so.1 "$$pkgdir"/usr/lib/libopentracing.so
+	install -m755 ../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib/libopentracing_mocktracer.so.$(OPENTRACING_CPP_VERSION) "$$pkgdir"/usr/lib/
+	ln -fs libopentracing_mocktracer.so.$(OPENTRACING_CPP_VERSION) "$$pkgdir"/usr/lib/libopentracing_mocktracer.so.1
+	ln -fs libopentracing_mocktracer.so.1 "$$pkgdir"/usr/lib/libmodsecurity_mocktracer.so
+	mkdir -p "$$pkgdir"/usr/include
+	cp -pr ../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include/opentracing "$$pkgdir"/usr/include/
+	mkdir -p "$$pkgdir"/usr/libexec/opentracing
+	install -m755 ../jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION)/.build/libjaegertracing_plugin.so "$$pkgdir"/usr/libexec/opentracing/
+endef
+export MODULE_PREINSTALL_opentracing
+
+define MODULE_POST_opentracing
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_opentracing) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_opentracing_module.so;
+
+Note that additional tracer plugins are required in order
+to communicate with corresponding services (e.g. Zipkin, Jaeger).
+This package includes the Jaeger dynamic tracer plugin:
+
+    /usr/libexec/opentracing/libjaegertracing_plugin.so
+
+Please refer to the module documentation for further details:
+https://github.com/opentracing-contrib/nginx-opentracing
+https://github.com/opentracing-contrib/nginx-opentracing/blob/master/doc/Reference.md
+
+OpenTracing project site (general info and documentation):
+http://opentracing.io/
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_opentracing

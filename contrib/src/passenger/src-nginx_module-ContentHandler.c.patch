@@ -1,0 +1,14 @@
+# see https://github.com/phusion/passenger/pull/1841
+--- a/src/nginx_module/ContentHandler.c	2013-10-27 00:00:00.000000000 +0000
++++ b/src/nginx_module/ContentHandler.c	2020-12-17 14:10:27.556476564 +0000
+@@ -656,7 +656,9 @@
+         state->content_length.len = ngx_snprintf(state->content_length.data,
+             sizeof("4294967295") - 1, "%O", r->headers_in.content_length_n)
+             - state->content_length.data;
+-    } // else: content_length not used
++    } else { // else: content_length not used
++        state->content_length.len = 0;
++    }
+
+     state->core_password.data = (u_char *) psg_watchdog_launcher_get_core_password(
+         psg_watchdog_launcher, &len);

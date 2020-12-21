@@ -1,0 +1,23 @@
+--- a/Makefile	2017-09-14 14:20:50.000000000 +0300
++++ b/Makefile	2017-09-14 14:22:39.000000000 +0300
+@@ -25,7 +25,7 @@
+ # Change the installation path as needed. This automatically adjusts
+ # the paths in src/luaconf.h, too. Note: PREFIX must be an absolute path!
+ #
+-export PREFIX= /usr/local
++export PREFIX= /usr
+ export MULTILIB= lib
+ ##############################################################################
+ 
+@@ -33,9 +33,9 @@
+ INSTALL_BIN=   $(DPREFIX)/bin
+ INSTALL_LIB=   $(DPREFIX)/$(MULTILIB)
+ INSTALL_SHARE= $(DPREFIX)/share
+-INSTALL_INC=   $(DPREFIX)/include/luajit-$(MAJVER).$(MINVER)
++INSTALL_INC=   $(DPREFIX)/include/nginx-luajit-$(MAJVER).$(MINVER)
+ 
+-INSTALL_LJLIBD= $(INSTALL_SHARE)/luajit-$(VERSION)
++INSTALL_LJLIBD= $(INSTALL_SHARE)/nginx-luajit-2.1
+ INSTALL_JITLIB= $(INSTALL_LJLIBD)/jit
+ INSTALL_LMODD= $(INSTALL_SHARE)/lua
+ INSTALL_LMOD= $(INSTALL_LMODD)/$(ABIVER)

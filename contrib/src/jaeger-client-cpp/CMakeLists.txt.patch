@@ -1,0 +1,44 @@
+--- a/CMakeLists.txt	2020-06-08 15:24:23.000000000 +0000
++++ b/CMakeLists.txt	2020-12-10 14:06:50.510344080 +0000
+@@ -69,18 +69,11 @@
+ list(APPEND package_deps thrift)
+ 
+ 
+-hunter_add_package(opentracing-cpp)
+-# Not `${hunter_config}` because OpenTracing provides its own
+-# OpenTracingConfig.cmake file
++# use our own prebuilt version of opentracing-cpp
++include_directories(${OPENTRACING_INC})
+ find_package(OpenTracing CONFIG REQUIRED)
+-# Under Windows, link dynamically with OpenTracing
+-if (WIN32)
+-  list(APPEND LIBS OpenTracing::opentracing)
+-  set(OPENTRACING_LIB OpenTracing::opentracing)
+-else()
+-  list(APPEND LIBS OpenTracing::opentracing-static)
+-  set(OPENTRACING_LIB OpenTracing::opentracing-static)
+-endif()
++list(APPEND LIBS OpenTracing::opentracing-static)
++set(OPENTRACING_LIB OpenTracing::opentracing-static)
+ list(APPEND package_deps OpenTracing)
+ 
+ hunter_add_package(nlohmann_json)
+@@ -97,16 +90,8 @@
+   "NOT JAEGERTRACING_BUILD_CROSSDOCK" ON)
+ 
+ if(JAEGERTRACING_WITH_YAML_CPP)
+-  hunter_add_package(yaml-cpp)
+-  # Not `${hunter_config}` because yaml-cpp provides its own
+-  # yaml-cpp-config.cmake file
+-  find_package(yaml-cpp CONFIG REQUIRED)
+-  if(HUNTER_ENABLED)
+-      list(APPEND LIBS yaml-cpp::yaml-cpp)
+-  else()
+-      list(APPEND LIBS yaml-cpp)
+-  endif()
+-  list(APPEND package_deps yaml-cpp)
++  # rely on yaml-cpp provided by OS vendor
++  list(APPEND LIBS yaml-cpp)
+ endif()
+ 
+ include(CTest)

@@ -1,0 +1,26 @@
+--- a/config	2015-12-20 05:43:48.000000000 +0000
++++ b/config	2015-12-25 08:01:04.138004474 +0000
+@@ -45,9 +45,9 @@
+         NGX_TEST_LD_OPT="$ngx_lua_opt_L $NGX_TEST_LD_OPT"
+ 
+         if [ $NGX_RPATH = YES ]; then
+-            ngx_feature_libs="-R$LUAJIT_LIB $ngx_lua_opt_L -lluajit-5.1 $luajit_ld_opt"
++            ngx_feature_libs="$LUAJIT_LIB/libluajit-5.1.a -R$LUAJIT_LIB $luajit_ld_opt"
+         else
+-            ngx_feature_libs="$ngx_lua_opt_L -lluajit-5.1 $luajit_ld_opt"
++            ngx_feature_libs="$LUAJIT_LIB/libluajit-5.1.a $ngx_lua_opt_L $luajit_ld_opt"
+         fi
+ 
+         . auto/feature
+@@ -71,9 +71,9 @@
+             NGX_TEST_LD_OPT="$ngx_lua_opt_L $NGX_TEST_LD_OPT"
+ 
+             if [ $NGX_RPATH = YES ]; then
+-                ngx_feature_libs="-R$LUAJIT_LIB $ngx_lua_opt_L -lluajit-5.1 $luajit_ld_opt"
++                ngx_feature_libs="$LUAJIT_LIB/libluajit-5.1.a -R$LUAJIT_LIB $luajit_ld_opt"
+             else
+-                ngx_feature_libs="$ngx_lua_opt_L -lluajit-5.1 $luajit_ld_opt"
++                ngx_feature_libs="$LUAJIT_LIB/libluajit-5.1.a $luajit_ld_opt"
+             fi
+ 
+             . auto/feature

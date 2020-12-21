@@ -5,10 +5,22 @@ VERSIONMASK?=	0
 XSLS?=	xslscript.pl
 
 PACKAGES=	nginx							\
+		nginx-module-brotli					\
+		nginx-module-encrypted-session				\
 		nginx-module-geoip					\
+		nginx-module-geoip2					\
+		nginx-module-headers-more				\
 		nginx-module-image-filter				\
+		nginx-module-lua					\
+		nginx-module-modsecurity				\
+		nginx-module-ndk					\
 		nginx-module-njs					\
+		nginx-module-opentracing				\
+		nginx-module-passenger					\
 		nginx-module-perl					\
+		nginx-module-rtmp					\
+		nginx-module-set-misc					\
+		nginx-module-subs-filter				\
 		nginx-module-xslt
 
 all:		changes changelogs

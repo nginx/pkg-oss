@@ -1,0 +1,126 @@
+MODULES+=	opentracing
+
+MODULE_SUMMARY_opentracing=	3rd-party OpenTracing dynamic module
+
+include $(CONTRIB)/src/opentracing-cpp/version
+include $(CONTRIB)/src/nginx-opentracing/version
+include $(CONTRIB)/src/jaeger-client-cpp/version
+
+MODULE_VERSION_opentracing=	$(NGINX_OPENTRACING_VERSION)
+MODULE_RELEASE_opentracing=	1
+
+MODULE_VERSION_PREFIX_opentracing=$(MODULE_TARGET_PREFIX)
+
+MODULE_SOURCES_opentracing=	opentracing-cpp-$(OPENTRACING_CPP_VERSION).tar.gz \
+				nginx-opentracing-$(NGINX_OPENTRACING_VERSION).tar.gz \
+				jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION).tar.gz
+
+MODULE_PATCHES_opentracing=	$(CONTRIB)/src/opentracing-cpp/CMakeLists.txt.patch \
+				$(CONTRIB)/src/jaeger-client-cpp/CMakeLists.txt.patch
+
+MODULE_CONFARGS_opentracing=	--add-dynamic-module=nginx-opentracing-$(NGINX_OPENTRACING_VERSION)/opentracing
+
+.deps-module-opentracing:
+	cd $(CONTRIB) && make \
+		.sum-opentracing-cpp \
+		.sum-nginx-opentracing \
+		.sum-jaeger-client-cpp
+	touch $@
+
+define MODULE_DEFINITIONS_opentracing
+%if (0%{?rhel} > 0) || (0%{?amzn} > 0)
+%if (0%{?rhel} >= 8)
+BuildRequires: cmake
+%define _cmake_cmd %{__cmake}
+%else
+BuildRequires: cmake3
+%define _cmake_cmd %{__cmake3}
+%endif
+%endif
+
+%if (0%{?suse_version} >= 1500) || (0%{?fedora} > 0)
+BuildRequires: cmake
+%define _cmake_cmd %{__cmake}
+%endif
+BuildRequires: libstdc++-static
+BuildRequires: yaml-cpp-devel
+endef
+export MODULE_DEFINITIONS_opentracing
+
+MODULE_CC_OPT_opentracing=-I%{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include
+MODULE_CC_OPT_DEBUG_opentracing=$(MODULE_CC_OPT_opentracing)
+MODULE_LD_OPT_opentracing=-L%{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib
+MODULE_LD_OPT_DEBUG_opentracing=$(MODULE_LD_OPT_opentracing)
+
+define MODULE_PREBUILD_opentracing
+cd %{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION) \&\& \
+mkdir .build \&\& \
+cd .build \&\& \
+%{_cmake_cmd} ../ \&\& \
+DESTDIR=%{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION) make %{?_smp_mflags} install || exit 1
+cd %{bdir}/jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION) \&\& \
+mkdir .build \&\& \
+cd .build \&\& \
+OpenTracing_DIR=%{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/.build %{_cmake_cmd} -DCMAKE_BUILD_TYPE=Release -DJAEGERTRACING_PLUGIN=ON -DHUNTER_CONFIGURATION_TYPES=Release -DBUILD_TESTING=OFF ../ -DOPENTRACING_INC=%{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include \&\& \
+make %{?_smp_mflags} || exit 1
+endef
+export MODULE_PREBUILD_opentracing
+
+define MODULE_PREINSTALL_opentracing
+%{__mkdir} -p $$RPM_BUILD_ROOT%{_libdir}
+%{__install} -m755 %{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib/libopentracing.so.$(OPENTRACING_CPP_VERSION) \
+   $$RPM_BUILD_ROOT%{_libdir}/
+%{__install} -m755 %{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib/libopentracing_mocktracer.so.$(OPENTRACING_CPP_VERSION) \
+   $$RPM_BUILD_ROOT%{_libdir}/
+%{__ln_s} -f libopentracing.so.$(OPENTRACING_CPP_VERSION) $$RPM_BUILD_ROOT%{_libdir}/libopentracing.so.1
+%{__ln_s} -f libopentracing.so.1 $$RPM_BUILD_ROOT%{_libdir}/libopentracing.so
+%{__ln_s} -f libopentracing_mocktracer.so.$(OPENTRACING_CPP_VERSION) $$RPM_BUILD_ROOT%{_libdir}/libopentracing_mocktracer.so.1
+%{__ln_s} -f libopentracing_mocktracer.so.1 $$RPM_BUILD_ROOT%{_libdir}/libopentracing_mocktracer.so
+%{__mkdir} -p $$RPM_BUILD_ROOT%{_includedir}
+%{__cp} -rp %{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include/opentracing $$RPM_BUILD_ROOT%{_includedir}/
+%{__mkdir} -p $$RPM_BUILD_ROOT%{_libexecdir}/opentracing
+%{__install} -m755 %{bdir}/jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION)/.build/libjaegertracing_plugin.so $$RPM_BUILD_ROOT%{_libexecdir}/opentracing/
+endef
+export MODULE_PREINSTALL_opentracing
+
+define MODULE_FILES_opentracing
+%{_libdir}/libopentracing.so.$(OPENTRACING_CPP_VERSION)
+%{_libdir}/libopentracing.so.1
+%{_libdir}/libopentracing.so
+%{_libdir}/libopentracing_mocktracer.so.$(OPENTRACING_CPP_VERSION)
+%{_libdir}/libopentracing_mocktracer.so.1
+%{_libdir}/libopentracing_mocktracer.so
+%dir %{_libexecdir}/opentracing
+%{_libexecdir}/opentracing/libjaegertracing_plugin.so
+%dir %{_includedir}/opentracing
+%{_includedir}/opentracing/*
+endef
+export MODULE_FILES_opentracing
+
+define MODULE_POST_opentracing
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_opentracing) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_opentracing_module.so;
+
+Note that additional tracer plugins are required in order
+to communicate with corresponding services (e.g. Zipkin, Jaeger).
+This package includes the Jaeger dynamic tracer plugin:
+
+    /usr/libexec/opentracing/libjaegertracing_plugin.so
+
+Please refer to the module documentation for further details:
+https://github.com/opentracing-contrib/nginx-opentracing
+https://github.com/opentracing-contrib/nginx-opentracing/blob/master/doc/Reference.md
+
+OpenTracing project site (general info and documentation):
+https://opentracing.io/
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_opentracing

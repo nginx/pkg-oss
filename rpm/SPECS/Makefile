@@ -8,9 +8,10 @@ SRCPATH?=	../SOURCES
 BUILD_ENV_PATH=	${HOME}/rpmbuild
 MODULE_TARGET?=	oss
 MODSRC_PREFIX=
-MODSRC_PATH=	$(SRCPATH)
 BUILD_DIR=	%{bdir}
 DOCS?=		../../docs
+CONTRIB?=	../../contrib
+CONTRIB:=	$(abspath $(CONTRIB))
 
 ifeq ($(MODULE_TARGET), plus)
 MODULE_SPEC_TEMPLATE=	nginx-plus-module.spec.in
@@ -27,8 +28,10 @@ endif
 MODULE_TARGET_PREFIX=$(TARGET_VERSION)+
 
 MODULE_PACKAGE_VENDOR=	Nginx, Inc.
-MODULE_PACKAGE_URL=	http://nginx.org/
+MODULE_PACKAGE_URL=	https://nginx.org/
 MODULE_PACKAGE_LICENSE=2-clause BSD-like license
+
+BASE_MODULES=	geoip image-filter njs perl xslt
 
 MODULES=
 
@@ -77,23 +80,35 @@ BASE_CONFIGURE_ARGS=\
 
 export CR=\\n
 
-modname = $(shell echo $1 | cut -c 14- | cut -d '.' -f 1 | tr '-' '_')
+modname = $(shell echo $1 | tr '-' '_')
 
 default:
 	@echo "valid targets: all base $(addprefix module-, $(MODULES)) test test-debug"
 
-all:	base modules
+list-base:
+	@printf "%-20s\t%s\n" nginx $(BASE_VERSION)-$(BASE_RELEASE)
+
+list-module-%:
+	@printf "%-20s\t%s\n" $* $(MODULE_VERSION_$(call modname, $*))-$(MODULE_RELEASE_$(call modname, $*))
+
+list-all-modules: $(addprefix list-module-, $(MODULES))
+
+list-base-modules: $(addprefix list-module-, $(BASE_MODULES))
+
+list: list-base list-all-modules
+
+all:	base base-modules
 	@echo "===> all done"
+
+base-modules:	$(addprefix module-, $(BASE_MODULES))
 
 modules:	$(addprefix module-, $(MODULES))
 
 specs:	nginx.spec $(addsuffix .spec, $(addprefix nginx-module-, $(MODULES)))
 
-$(BASE_SRC):
-	wget http://nginx.org/download/$(BASE_SRC)
-
 $(SRCPATH)/$(BASE_SRC):
-	@cd $(SRCPATH) && wget http://nginx.org/download/$(BASE_SRC)
+	cd $(CONTRIB) && make .sum-nginx
+	cd $(SRCPATH) && ln -s $(CONTRIB)/tarballs/$(BASE_SRC) $(BASE_SRC)
 
 base:	nginx.spec $(SRCPATH)/$(BASE_SRC)
 	@echo "===> Building base package" ; \
@@ -120,7 +135,10 @@ nginx.spec: nginx.rpm-changelog
 	cp -p $(DOCS)/nginx.copyright ../SOURCES/ ; \
 	}
 
-module-%: nginx-module-%.spec check-compat-% $(SRCPATH)/$(BASE_SRC)
+.deps-module-%:
+	touch $@
+
+module-%: nginx-module-%.spec check-compat-% $(SRCPATH)/$(BASE_SRC) .deps-module-%
 	@if [ -e nginx-$@.skip ]; then \
 	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
 	else \
@@ -140,19 +158,42 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 	i=100 ; \
 	sources= ; \
 	prepsources= ; \
-	for src in $(MODULE_SOURCES_$(call modname, $@)); do \
+	for src in $(MODULE_SOURCES_$(call modname, $*)); do \
+		if [ -h ../SOURCES/$${src} ] ; then rm ../SOURCES/$${src} ; fi ; \
+		ln -s $(CONTRIB)/tarballs/$${src} ../SOURCES/$${src} ; \
 		s="`printf "Source%d: %s\n" $${i} $${src}`" ; \
 		sources="$${sources}\n$${s}" ; \
-		s="`printf "tar zxf %%{SOURCE%d\}" $${i}`" ; \
+		case "$${src}" in \
+			*.tar.xz) \
+				taropts="xvJfo" ; \
+				;; \
+			*) \
+				taropts="xvzfo" ; \
+				;; \
+		esac ; \
+		s="`printf "tar $${taropts} %%{SOURCE%d\}" $${i}`" ; \
+		prepsources="$${prepsources}\n$${s}" ; \
+		sn=`echo $${src} | sed -e 's/-[0-9].*$$//'` ; \
+		if [ "$${sn}" = "$${src}" ] ; then \
+			sn=$${src%-*} ; \
+		fi ; \
+		s="`printf "ln -s $${sn}-* $${sn}"`" ; \
 		prepsources="$${prepsources}\n$${s}" ; \
 		i=$$(($${i}+1)) ; \
 	done ; \
 	i=100 ; \
 	patches= ; \
 	preppatches= ; \
-	for src in $(MODULE_PATCHES_$(call modname, $@)); do \
-		s="`printf "Patch%d: %s\n" $${i} $${src}`" ; \
+	for src in $(MODULE_PATCHES_$(call modname, $*)); do \
+		dn=`dirname $${src}` ; \
+		bdn=`basename $${dn}` ; \
+		pn="$${bdn}_`basename $${src}`" ; \
+		if [ -h ../SOURCES/$${pn} ] ; then rm ../SOURCES/$${pn} ; fi ; \
+		ln -s $${src} ../SOURCES/$${pn} ; \
+		s="`printf "Patch%d: %s\n" $${i} $${pn}`" ; \
 		patches="$${patches}\n$${s}" ; \
+		s="`printf "cd %%{bdir}/$${bdn}"`" ; \
+		preppatches="$${preppatches}\n$${s}" ; \
 		s="`printf "%%patch%d -p1" $${i}`" ; \
 		preppatches="$${preppatches}\n$${s}" ; \
 		i=$$(($${i}+1)) ; \
@@ -163,28 +204,28 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 	if [ "$(MODULE_TARGET)" = "plus" ]; then \
 		pkgname=`echo $${pkgname} | sed -e "s#^nginx-#nginx-plus-#"` ; \
 	fi ; \
-	definitions=`echo "$$MODULE_DEFINITIONS_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
-	prebuild=`echo "$$MODULE_PREBUILD_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
-	preinstall=`echo "$$MODULE_PREINSTALL_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
-	buildenv=`echo "$$MODULE_ENV_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
-	files=`echo "$$MODULE_FILES_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
-	post=`echo "$$MODULE_POST_$(call modname, $@)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
+	definitions=`echo "$$MODULE_DEFINITIONS_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
+	prebuild=`echo "$$MODULE_PREBUILD_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
+	preinstall=`echo "$$MODULE_PREINSTALL_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
+	buildenv=`echo "$$MODULE_ENV_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
+	files=`echo "$$MODULE_FILES_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
+	post=`echo "$$MODULE_POST_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	cat $(MODULE_SPEC_TEMPLATE) | sed \
 		-e "s#%%NAME%%#$${pkgname}#g" \
 		-e "s#%%MODULE_PACKAGE_VENDOR%%#$(MODULE_PACKAGE_VENDOR)#g" \
 		-e "s#%%MODULE_PACKAGE_URL%%#$(MODULE_PACKAGE_URL)#g" \
 		-e "s#%%MODULE_PACKAGE_LICENSE%%#$(MODULE_PACKAGE_LICENSE)#g" \
-		-e "s#%%SUMMARY%%#$(MODULE_SUMMARY_PREFIX) $(MODULE_SUMMARY_$(call modname, $@))#g" \
-		-e "s#%%SHORT_SUMMARY%%#$(MODULE_SUMMARY_$(call modname, $@))#g" \
+		-e "s#%%SUMMARY%%#$(MODULE_SUMMARY_PREFIX) $(MODULE_SUMMARY_$(call modname, $*))#g" \
+		-e "s#%%SHORT_SUMMARY%%#$(MODULE_SUMMARY_$(call modname, $*))#g" \
 		-e "s#%%TARGET_VERSION%%#$(TARGET_VERSION)#g" \
 		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \
 		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
-		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $@))#g" \
-		-e "s#%%VERSION%%#$(MODULE_VERSION_$(call modname, $@))#g" \
-		-e "s#%%RELEASE%%#$(MODULE_RELEASE_$(call modname, $@))#g" \
+		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $*))#g" \
+		-e "s#%%VERSION%%#$(MODULE_VERSION_$(call modname, $*))#g" \
+		-e "s#%%RELEASE%%#$(MODULE_RELEASE_$(call modname, $*))#g" \
 		-e "s#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g" \
-		-e "s#%%MODULE_CONFIGURE_ARGS%%#$(MODULE_CONFARGS_$(call modname, $@))#g" \
+		-e "s#%%MODULE_CONFIGURE_ARGS%%#$(MODULE_CONFARGS_$(call modname, $*))#g" \
 		-e "s#%%COPYRIGHT_SOURCE%%#$${module_copyright}#g" \
 		-e "s#%%MODULE_SOURCES%%#$${sources}#g" \
 		-e "s#%%MODULE_PATCHES%%#$${patches}#g" \
@@ -193,10 +234,10 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		-e "s#%%MODULE_DEFINITIONS%%#$${definitions}#g" \
 		-e "s#%%MODULE_PREBUILD%%#$${prebuild}#g" \
 		-e "s#%%MODULE_ENV%%#$${buildenv}#g" \
-		-e "s#%%MODULE_CC_OPT%%#$(MODULE_CC_OPT_$(call modname, $@))#g" \
-		-e "s#%%MODULE_CC_OPT_DEBUG%%#$(MODULE_CC_OPT_DEBUG_$(call modname, $@))#g" \
-		-e "s#%%MODULE_LD_OPT%%#$(MODULE_LD_OPT_$(call modname, $@))#g" \
-		-e "s#%%MODULE_LD_OPT_DEBUG%%#$(MODULE_LD_OPT_DEBUG_$(call modname, $@))#g" \
+		-e "s#%%MODULE_CC_OPT%%#$(MODULE_CC_OPT_$(call modname, $*))#g" \
+		-e "s#%%MODULE_CC_OPT_DEBUG%%#$(MODULE_CC_OPT_DEBUG_$(call modname, $*))#g" \
+		-e "s#%%MODULE_LD_OPT%%#$(MODULE_LD_OPT_$(call modname, $*))#g" \
+		-e "s#%%MODULE_LD_OPT_DEBUG%%#$(MODULE_LD_OPT_DEBUG_$(call modname, $*))#g" \
 		-e "s#%%MODULE_PREINSTALL%%#$${preinstall}#g" \
 		-e "s#%%MODULE_FILES%%#$${files}#g" \
 		-e "s#%%MODULE_POST%%#$${post}#g" \
@@ -205,8 +246,8 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		-e 's#%%TARGET_VERSION%%#$(TARGET_VERSION)#g' \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
-		-e "s#%%MODULE_VERSION%%#$(MODULE_VERSION_$(call modname, $@))#g" \
-		-e "s#%%MODULE_RELEASE%%#$(MODULE_RELEASE_$(call modname, $@))#g" \
+		-e "s#%%MODULE_VERSION%%#$(MODULE_VERSION_$(call modname, $*))#g" \
+		-e "s#%%MODULE_RELEASE%%#$(MODULE_RELEASE_$(call modname, $*))#g" \
 		>> $@.tmp && \
 	mv $@.tmp $@ ; \
 	}
@@ -230,7 +271,7 @@ nginx-tests:
 		cp -rP ../nginx-tests nginx-tests ; \
 	else \
 		echo "===> Cloning tests" ; \
-		hg clone http://hg.nginx.org/nginx-tests ; \
+		hg clone https://hg.nginx.org/nginx-tests ; \
 	fi ; \
 	}
 
@@ -239,6 +280,8 @@ test: base nginx-tests
 	@{ \
 	pwd=`pwd` ; \
 	globals= ; \
+	globals_http= ; \
+	globals_stream= ; \
 	for so in `find module-*/ -maxdepth 1 -type f -name "*module.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
@@ -248,7 +291,11 @@ test: base nginx-tests
 	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$pwd/module-opentracing/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ;  \
-	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$globals" prove . ; \
+	if [ -d $$pwd/module-lua ]; then \
+		globals_http="lua_package_path '$$pwd/../BUILD/nginx-module-lua-$(BASE_VERSION)/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/../BUILD/nginx-module-lua-$(BASE_VERSION)/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
+		globals_stream="$$globals_http" ; \
+	fi ; \
+	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$globals" TEST_NGINX_GLOBALS_HTTP="$$globals_http" TEST_NGINX_GLOBALS_STREAM="$$globals_stream" prove $$PROVE_ARGS . ; \
 	}
 
 test-debug: base nginx-tests
@@ -256,6 +303,8 @@ test-debug: base nginx-tests
 	@{ \
 	pwd=`pwd` ; \
 	globals= ; \
+	globals_http= ; \
+	globals_stream= ; \
 	for so in `find module-*/ -maxdepth 1 -type f -name "*module-debug.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
@@ -265,34 +314,33 @@ test-debug: base nginx-tests
 	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$pwd/module-opentracing/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ;  \
-	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx-debug TEST_NGINX_GLOBALS="$$globals" prove . ; \
+	if [ -d $$pwd/module-lua ]; then \
+		globals_http="lua_package_path '$$pwd/../BUILD/nginx-module-lua-$(BASE_VERSION)/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/../BUILD/nginx-module-lua-$(BASE_VERSION)/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
+		globals_stream="$$globals_http" ; \
+	fi ; \
+	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx-debug TEST_NGINX_GLOBALS="$$globals" TEST_NGINX_GLOBALS_HTTP="$$globals_http" TEST_NGINX_GLOBALS_STREAM="$$globals_stream" prove $$PROVE_ARGS . ; \
 	}
 
-prepare-build-env: $(BASE_SRC)
+test-modules: $(addprefix test-module-, $(MODULES))
+
+test-module-%: base nginx-tests module-%
 	@{ \
-	set -e ; \
-	cwd=`pwd` ; \
-	case $$cwd in $(BUILD_ENV_PATH)*) \
-		echo "You are in $(BUILD_ENV_PATH), skipping" >&2 ; \
-		exit 1 ; \
-	esac ; \
-	if [ -e $(BUILD_ENV_PATH) ]; then \
-		echo "$(BUILD_ENV_PATH) is already exists and going to be removed." ; \
-		echo "Press Enter to continue or Ctrl+C to exit" ; \
-		read ; \
-		rm -rf $(BUILD_ENV_PATH) ; \
+	module=`echo $@ | cut -d '-' -f 3-` ; \
+	testdir="$(MODULE_TESTS_$(shell echo $@ | cut -d '-' -f 3-))" ; \
+	if [ -z "$$testdir" ]; then \
+		echo "---> Skipping, no tests defined for $$module module" ; \
+		exit 0 ; \
 	fi ; \
-	mkdir -p $(BUILD_ENV_PATH) ; \
-	pd=`dirname $${cwd}` ; \
-	cp -rP $${pd}/SPECS $(BUILD_ENV_PATH)/ ; \
-	cp -rP $${pd}/SOURCES $(BUILD_ENV_PATH)/ ; \
-	cp $(BASE_SRC) $(BUILD_ENV_PATH)/SOURCES/ ; \
-	cp -pr $(DOCS) $(BUILD_ENV_PATH); \
-	echo "Build environment has been created in: $(BUILD_ENV_PATH)" ; \
-	echo ; \
-	echo "Please do the following in order to get available build targets:" ; \
-	echo "    cd $(BUILD_ENV_PATH)/SPECS" ; \
-	echo "    make" ; \
+	pwd=`pwd` ; \
+	globals= ; \
+	for so in `find module-$${module}/ -maxdepth 1 -type f -name "*module.so"`; do \
+		globals="$$globals load_module $$pwd/$$so;" ; \
+	done ; \
+	if [ ! -d nginx-tests/module-$${module} ]; then \
+		cp -r $${pwd}/module-$${module}/../$${testdir} nginx-tests/module-$${module} ; \
+		ln -fs ../lib nginx-tests/module-$${module}/lib ; \
+	fi ; \
+	cd nginx-tests/module-$${module} && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$globals" prove $$PROVE_ARGS . ; \
 	}
 
 clean:
@@ -301,7 +349,9 @@ clean:
 	@rm -rf nginx-tests
 	@rm -f $(BASE_SRC) $(SRCPATH)/$(BASE_SRC)
 	@rm -f nginx.rpm-changelog nginx-module-*.rpm-changelog
+	@rm -f .deps-module-*
+	@find ../SOURCES/ -type l -delete
 
-.PHONY:	default all modules specs test test-debug clean
+.PHONY:	default list list-base list-all-modules list-base-modules all modules specs test test-debug clean
 
 .SECONDARY:

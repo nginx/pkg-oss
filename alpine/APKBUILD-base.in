@@ -9,7 +9,7 @@ pkgname=nginx
 pkgver=$_base_version
 pkgrel=$_base_release
 pkgdesc="High performance web server"
-url="http://nginx.org/"
+url="https://nginx.org/"
 arch="all"
 license="2-clause BSD-like license"
 provides="nginx-r$_base_version"
@@ -22,8 +22,7 @@ pkgusers=""
 pkggroups=""
 install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgname.post-upgrade"
 
-# we would like to ship all docs/licenses in the base package
-#subpackages="$pkgname-doc"
+subpackages="$pkgname-dbg"
 
 replaces="nginx-common nginx-initscripts nginx-lua nginx-rtmp"
 source="nginx-$_base_version.tar.gz

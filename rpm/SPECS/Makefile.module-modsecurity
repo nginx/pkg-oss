@@ -1,0 +1,100 @@
+MODULES+=	modsecurity
+
+MODULE_SUMMARY_modsecurity=	3rd-party ModSecurity dynamic module
+
+include $(CONTRIB)/src/modsecurity/version
+include $(CONTRIB)/src/modsecurity-nginx/version
+
+MODULE_VERSION_modsecurity=	$(MODSECURITY_NGINX_VERSION)
+MODULE_RELEASE_modsecurity=	1
+LIBMODSECURITY_SOVER=		$(MODSECURITY_VERSION)
+
+MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
+
+MODULE_SOURCES_modsecurity=	modsecurity-v$(MODSECURITY_VERSION).tar.gz \
+				modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH).tar.xz
+
+MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/PR2348.patch \
+				$(CONTRIB)/src/modsecurity-nginx/PR165.patch
+
+MODULE_CONFARGS_modsecurity=	--add-dynamic-module=modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH)
+
+.deps-module-modsecurity:
+	cd $(CONTRIB) && make \
+		.sum-modsecurity \
+		.sum-modsecurity-nginx
+	touch $@
+
+define MODULE_DEFINITIONS_modsecurity
+BuildRequires: gcc-c++
+BuildRequires: yajl-devel
+BuildRequires: libcurl-devel
+BuildRequires: libxml2-devel
+endef
+export MODULE_DEFINITIONS_modsecurity
+
+define MODULE_PREBUILD_modsecurity
+cd %{bdir}/modsecurity-v$(MODSECURITY_VERSION) \&\& \
+./configure --prefix %{bdir}/modsecurity-v$(MODSECURITY_VERSION)/local --without-lmdb --without-lua \&\& \
+make %{?_smp_mflags} install \&\& TERM=foo make check-TESTS
+rm -f /tmp/audit_test.log /tmp/audit_test_parallel.log
+rm -rf /tmp/test
+endef
+export MODULE_PREBUILD_modsecurity
+
+define MODULE_ENV_modsecurity
+MODSECURITY_INC="%{bdir}/modsecurity-v$(MODSECURITY_VERSION)/local/include" \\
+MODSECURITY_LIB="%{bdir}/modsecurity-v$(MODSECURITY_VERSION)/local/lib" \\
+NGX_IGNORE_RPATH=yes \\
+endef
+export MODULE_ENV_modsecurity
+
+MODULE_CC_OPT_DEBUG_modsecurity=-DMODSECURITY_DDEBUG=1
+
+define MODULE_PREINSTALL_modsecurity
+%{__mkdir} -p $$RPM_BUILD_ROOT%{_bindir}
+%{__install} -m755 -s %{bdir}/modsecurity-v$(MODSECURITY_VERSION)/local/bin/modsec-rules-check \
+   $$RPM_BUILD_ROOT%{_bindir}/
+%{__mkdir} -p $$RPM_BUILD_ROOT%{_libdir}
+%{__install} -m755 %{bdir}/modsecurity-v$(MODSECURITY_VERSION)/local/lib/libmodsecurity.so.$(LIBMODSECURITY_SOVER) \
+   $$RPM_BUILD_ROOT%{_libdir}/
+%{__ln_s} -f libmodsecurity.so.$(LIBMODSECURITY_SOVER) $$RPM_BUILD_ROOT%{_libdir}/libmodsecurity.so.3
+%{__ln_s} -f libmodsecurity.so.$(LIBMODSECURITY_SOVER) $$RPM_BUILD_ROOT%{_libdir}/libmodsecurity.so
+%{__mkdir} -p $$RPM_BUILD_ROOT%{_sysconfdir}/nginx/modsec
+%{__install} -m644 %{bdir}/modsecurity-v$(MODSECURITY_VERSION)/modsecurity.conf-recommended \
+   $$RPM_BUILD_ROOT%{_sysconfdir}/nginx/modsec/modsecurity.conf
+%{__install} -m644 %{bdir}/modsecurity-v$(MODSECURITY_VERSION)/unicode.mapping \
+   $$RPM_BUILD_ROOT%{_sysconfdir}/nginx/modsec/
+endef
+export MODULE_PREINSTALL_modsecurity
+
+define MODULE_FILES_modsecurity
+%dir %{_sysconfdir}/nginx/modsec
+%config(noreplace) %{_sysconfdir}/nginx/modsec/modsecurity.conf
+%config(noreplace) %{_sysconfdir}/nginx/modsec/unicode.mapping
+%{_bindir}/modsec-rules-check
+%{_libdir}/libmodsecurity.so.$(LIBMODSECURITY_SOVER)
+%{_libdir}/libmodsecurity.so.3
+%{_libdir}/libmodsecurity.so
+endef
+export MODULE_FILES_modsecurity
+
+MODULE_TESTS_modsecurity=modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH)/tests
+
+define MODULE_POST_modsecurity
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_modsecurity) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_modsecurity_module.so;
+
+Please refer to the module documentation for further details:
+https://github.com/SpiderLabs/ModSecurity-nginx
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_modsecurity

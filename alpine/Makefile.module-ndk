@@ -1,0 +1,47 @@
+MODULES+=	ndk
+
+MODULE_SUMMARY_ndk=	3rd-party NDK dynamic module
+
+include $(CONTRIB)/src/ngx_devel_kit/version
+
+MODULE_VERSION_ndk=	$(NGX_DEVEL_KIT_VERSION)
+MODULE_RELEASE_ndk=	1
+
+MODULE_VERSION_PREFIX_ndk=$(MODULE_TARGET_PREFIX)
+
+MODULE_SOURCES_ndk=	ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION).tar.gz
+
+MODULE_CONFARGS_ndk=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION)
+
+.deps-module-ndk:
+	cd $(CONTRIB) && make .sum-ngx_devel_kit
+	touch $@
+
+prerequisites-for-module-ndk:
+
+MODULE_CC_OPT_ndk=-DNDK_SET_VAR -DNDK_UPSTREAM_LIST
+MODULE_CC_OPT_DEBUG_ndk=$(MODULE_CC_OPT_ndk)
+
+ifeq ($(MODULE_TARGET), plus)
+NDK_DEPENDENCY_TAG=nginx-plus-module-ndk-r$(PLUS_VERSION)
+else
+NDK_DEPENDENCY_TAG=nginx-module-ndk-r$(BASE_VERSION)
+endif
+
+define MODULE_POST_ndk
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_ndk) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ndk_http_module.so;
+
+Please refer to the module documentation for further details:
+https://github.com/simpl/ngx_devel_kit
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_ndk

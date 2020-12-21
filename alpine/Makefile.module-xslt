@@ -7,7 +7,6 @@ MODULE_RELEASE_xslt=		1
 
 MODULE_CONFARGS_xslt=		--with-http_xslt_module=dynamic
 
-MODULE_DEPENDS_xslt=libxslt
 MODULE_BUILD_DEPENDS_xslt=libxslt-dev
 
 define MODULE_ADD_CONTROL_TAGS_xslt
@@ -26,7 +25,7 @@ and reload nginx:
     load_module modules/ngx_http_xslt_filter_module.so;
 
 Please refer to the module documentation for further details:
-http://nginx.org/en/docs/http/ngx_http_xslt_module.html
+https://nginx.org/en/docs/http/ngx_http_xslt_module.html
 
 ----------------------------------------------------------------------
 BANNER

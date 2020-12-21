@@ -1,0 +1,36 @@
+MODULES+=	subs-filter
+
+MODULE_SUMMARY_subs_filter=	3rd-party substitution dynamic module
+
+include $(CONTRIB)/src/ngx_http_substitutions_filter_module/version
+
+MODULE_VERSION_subs_filter=	$(SUBSTITUTIONS_FILTER_NGINX_MODULE_VERSION)
+MODULE_RELEASE_subs_filter=	1
+
+MODULE_VERSION_PREFIX_subs_filter=$(MODULE_TARGET_PREFIX)
+
+MODULE_SOURCES_subs_filter=	ngx_http_substitutions_filter_module-$(SUBSTITUTIONS_FILTER_NGINX_MODULE_GITHASH).tar.xz
+
+MODULE_CONFARGS_subs_filter=	--add-dynamic-module=ngx_http_substitutions_filter_module-$(SUBSTITUTIONS_FILTER_NGINX_MODULE_GITHASH)
+
+.deps-module-subs-filter:
+	cd $(CONTRIB) && make .sum-ngx_http_substitutions_filter_module
+	touch $@
+
+define MODULE_POST_subs_filter
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_subs_filter) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_subs_filter_module.so;
+
+Please refer to the module documentation for further details:
+https://github.com/yaoweibin/ngx_http_substitutions_filter_module
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_subs_filter

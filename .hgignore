@@ -1,0 +1,4 @@
+syntax:glob
+.git/
+subinclude:contrib/.hgignore
+subinclude:contrib/tarballs/.hgignore

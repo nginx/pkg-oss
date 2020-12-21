@@ -69,13 +69,13 @@ build() {
 
 	cd "$builddir"
 
-	CFLAGS= %%MODULE_ENV%% ./configure %%BASE_MODULE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$CFLAGS %%MODULE_CC_OPT_DEBUG%%" --with-ld-opt="$LDFLAGS %%MODULE_LD_OPT_DEBUG%%" --with-debug
+	CFLAGS= %%MODULE_ENV%% ./configure %%BASE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$CFLAGS %%MODULE_CC_OPT_DEBUG%%" --with-ld-opt="$LDFLAGS %%MODULE_LD_OPT_DEBUG%%" --with-debug
 	make $_make_opts modules
 	for so in `find objs/ -maxdepth 1 -type f -name "*.so"`; do \
 		debugso=`echo ${so} | sed -e "s|.so|-debug.so|"` ; \
 		mv ${so} ${debugso} ; \
         done
-	CFLAGS= %%MODULE_ENV%% ./configure %%BASE_MODULE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$CFLAGS %%MODULE_CC_OPT%%" --with-ld-opt="$LDFLAGS %%MODULE_LD_OPT%%"
+	CFLAGS= %%MODULE_ENV%% ./configure %%BASE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$CFLAGS %%MODULE_CC_OPT%%" --with-ld-opt="$LDFLAGS %%MODULE_LD_OPT%%"
 	make $_make_opts modules
 }
 

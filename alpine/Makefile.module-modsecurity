@@ -1,0 +1,84 @@
+MODULES+=	modsecurity
+
+MODULE_SUMMARY_modsecurity=	3rd-party ModSecurity dynamic module
+
+include $(CONTRIB)/src/modsecurity/version
+include $(CONTRIB)/src/modsecurity-nginx/version
+
+MODULE_VERSION_modsecurity=	$(MODSECURITY_NGINX_VERSION)
+MODULE_RELEASE_modsecurity=	1
+LIBMODSECURITY_SOVER=		$(MODSECURITY_VERSION)
+
+MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
+
+MODULE_SOURCES_modsecurity=	modsecurity-v$(MODSECURITY_VERSION).tar.gz \
+				modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH).tar.xz
+
+MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/PR2348.patch \
+				$(CONTRIB)/src/modsecurity-nginx/PR165.patch
+
+MODULE_CONFARGS_modsecurity=	--add-dynamic-module=$(MODSRC_PREFIX)modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH)
+
+.deps-module-modsecurity:
+	cd $(CONTRIB) && make \
+		.sum-modsecurity \
+		.sum-modsecurity-nginx
+	touch $@
+
+prerequisites-for-module-modsecurity:
+
+MODULE_BUILD_DEPENDS_modsecurity=yajl-dev libxml2-dev curl-dev patchelf
+
+define MODULE_PREBUILD_modsecurity
+	cd ../modsecurity-v$(MODSECURITY_VERSION) \&\& \
+	./configure --prefix `pwd`/local --without-lmdb --without-lua \&\& \
+	make $$_make_opts install \&\& make check-TESTS
+	rm -f /tmp/audit_test.log /tmp/audit_test_parallel.log
+	rm -rf /tmp/test
+endef
+export MODULE_PREBUILD_modsecurity
+
+define MODULE_ENV_modsecurity
+MODSECURITY_INC="../modsecurity-v$(MODSECURITY_VERSION)/local/include" \
+MODSECURITY_LIB="../modsecurity-v$(MODSECURITY_VERSION)/local/lib" \
+NGX_IGNORE_RPATH=YES
+endef
+export MODULE_ENV_modsecurity
+
+MODULE_CC_OPT_DEBUG_modsecurity=-DMODSECURITY_DDEBUG=1
+
+define MODULE_PREINSTALL_modsecurity
+	mkdir -p "$$pkgdir"/usr/bin
+	install -m755 -s ../modsecurity-v$(MODSECURITY_VERSION)/local/bin/modsec-rules-check "$$pkgdir"/usr/bin/
+	patchelf --remove-rpath "$$pkgdir"/usr/bin/modsec-rules-check
+	mkdir -p "$$pkgdir"/usr/lib
+	install -m755 ../modsecurity-v$(MODSECURITY_VERSION)/local/lib/libmodsecurity.so.$(LIBMODSECURITY_SOVER) "$$pkgdir"/usr/lib/
+	ln -fs libmodsecurity.so.$(LIBMODSECURITY_SOVER) "$$pkgdir"/usr/lib/libmodsecurity.so.3
+	ln -fs libmodsecurity.so.$(LIBMODSECURITY_SOVER) "$$pkgdir"/usr/lib/libmodsecurity.so
+	mkdir -p "$$pkgdir"/etc/nginx/modsec
+	install -m644 ../modsecurity-v$(MODSECURITY_VERSION)/modsecurity.conf-recommended "$$pkgdir"/etc/nginx/modsec/modsecurity.conf
+	install -m644 ../modsecurity-v$(MODSECURITY_VERSION)/unicode.mapping "$$pkgdir"/etc/nginx/modsec/
+endef
+export MODULE_PREINSTALL_modsecurity
+
+MODULE_TESTS_modsecurity=modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH)/tests
+
+define MODULE_POST_modsecurity
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_modsecurity) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_modsecurity_module.so;
+
+Please refer to the module documentation for further details:
+https://github.com/SpiderLabs/ModSecurity-nginx
+
+----------------------------------------------------------------------
+BANNER
+
+/sbin/ldconfig
+endef
+export MODULE_POST_modsecurity

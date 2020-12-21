@@ -1,0 +1,43 @@
+MODULES+=	passenger
+
+MODULE_SUMMARY_passenger=	3rd-party Passenger dynamic module
+
+include $(CONTRIB)/src/passenger/version
+
+MODULE_VERSION_passenger=	$(PASSENGER_VERSION)
+MODULE_RELEASE_passenger=	1
+
+MODULE_VERSION_PREFIX_passenger=$(MODULE_TARGET_PREFIX)
+
+MODULE_SOURCES_passenger=	passenger-$(PASSENGER_VERSION).tar.gz
+MODULE_PATCHES_passenger=	$(CONTRIB)/src/passenger/build-nginx.rb.patch
+
+MODULE_CONFARGS_passenger=	--with-http_ssl_module \
+				--add-dynamic-module=passenger-$(PASSENGER_VERSION)/src/nginx_module
+
+.deps-module-passenger:
+	cd $(CONTRIB) && make .sum-passenger
+	touch $@
+
+define MODULE_DEFINITIONS_passenger
+BuildRequires: rubygem-rake
+endef
+export MODULE_DEFINITIONS_passenger
+
+define MODULE_POST_passenger
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_passenger) for $(MODULE_SUMMARY_PREFIX) has been installed.
+To enable this module, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_passenger_module.so;
+
+Please refer to the module documentation for further details:
+https://www.phusionpassenger.com/
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_passenger

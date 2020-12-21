@@ -1,0 +1,129 @@
+MODULES+=	lua
+
+MODULE_SUMMARY_lua=	3rd-party Lua dynamic modules
+
+include $(CONTRIB)/src/luajit2/version
+include $(CONTRIB)/src/ngx_devel_kit/version
+include $(CONTRIB)/src/lua-nginx-module/version
+include $(CONTRIB)/src/stream-lua-nginx-module/version
+include $(CONTRIB)/src/lua-resty-core/version
+include $(CONTRIB)/src/lua-resty-lrucache/version
+
+MODULE_VERSION_lua=	$(LUA_NGINX_MODULE_VERSION)
+MODULE_RELEASE_lua=	1
+
+MODULE_VERSION_PREFIX_lua=$(MODULE_TARGET_PREFIX)
+
+MODULE_SOURCES_lua=	luajit2-$(LUAJIT2_VERSION).tar.gz \
+			ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION).tar.gz \
+			lua-nginx-module-$(LUA_NGINX_MODULE_VERSION).tar.gz \
+			stream-lua-nginx-module-$(STREAM_LUA_NGINX_MODULE_VERSION).tar.gz \
+			lua-resty-core-$(LUA_RESTY_CORE_VERSION).tar.gz \
+			lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION).tar.gz
+
+MODULE_PATCHES_lua=	$(CONTRIB)/src/luajit2/Makefile.patch \
+			$(CONTRIB)/src/luajit2/src-luaconf.h.patch \
+			$(CONTRIB)/src/lua-nginx-module/config.patch \
+			$(CONTRIB)/src/stream-lua-nginx-module/config.patch
+
+MODULE_CONFARGS_lua=	--with-http_dav_module \
+			--with-http_realip_module \
+			--with-http_ssl_module \
+			--with-http_v2_module \
+			--with-stream \
+			--with-stream_ssl_module \
+			--add-dynamic-module=ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION) \
+			--add-dynamic-module=lua-nginx-module-$(LUA_NGINX_MODULE_VERSION) \
+			--add-dynamic-module=stream-lua-nginx-module-$(STREAM_LUA_NGINX_MODULE_VERSION)
+
+.deps-module-lua:
+	cd $(CONTRIB) && make \
+		.sum-luajit2 \
+		.sum-ngx_devel_kit \
+		.sum-lua-nginx-module \
+		.sum-stream-lua-nginx-module \
+		.sum-lua-resty-core \
+		.sum-lua-resty-lrucache
+	touch $@
+
+define MODULE_DEFINITIONS_lua
+Requires: $(NDK_DEPENDENCY_TAG)
+%define LUAJIT_INC %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/include/nginx-luajit-2.1
+%define LUAJIT_LIB %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/lib
+endef
+export MODULE_DEFINITIONS_lua
+
+define MODULE_PREBUILD_lua
+cd %{bdir}/luajit2-$(LUAJIT2_VERSION)
+DESTDIR="%{bdir}/luajit2-$(LUAJIT2_VERSION)" CFLAGS="-fPIC" make %{?_smp_mflags} install
+mv %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/bin/luajit %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/bin/nginx-luajit
+endef
+export MODULE_PREBUILD_lua
+
+define MODULE_ENV_lua
+LUAJIT_INC="%{LUAJIT_INC}" \\
+LUAJIT_LIB="%{LUAJIT_LIB}" \\
+endef
+export MODULE_ENV_lua
+
+define MODULE_PREINSTALL_lua
+%{__rm} -f %{bdir}/objs/ndk_http_module.so %{bdir}/objs/ndk_http_module-debug.so
+%{__mkdir} -p $$RPM_BUILD_ROOT%{_bindir}
+%{__install} -m755 %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/bin/nginx-luajit \
+   $$RPM_BUILD_ROOT%{_bindir}/
+%{__mkdir} -p $$RPM_BUILD_ROOT%{_datadir}/nginx-luajit-2.1/jit
+for f in `find %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/share/nginx-luajit-2.1/jit/ -type f`; do
+    %{__install} -m644 $${f} $$RPM_BUILD_ROOT%{_datadir}/nginx-luajit-2.1/jit/
+done
+%{__mkdir} -p $$RPM_BUILD_ROOT%{_includedir}/nginx-luajit-2.1
+for f in `find %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/include/nginx-luajit-2.1/ -type f`; do
+    %{__install} -m644 $${f} $$RPM_BUILD_ROOT%{_includedir}/nginx-luajit-2.1/
+done
+%{__mkdir} -p $$RPM_BUILD_ROOT%{_includedir}/nginx-luajit-2.1/resty
+cd %{bdir}/lua-resty-core-$(LUA_RESTY_CORE_VERSION) \&\& \
+    LUA_LIB_DIR=$$RPM_BUILD_ROOT%{_datadir}/nginx-luajit-2.1 make install
+cd %{bdir}/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION) \&\& \
+    LUA_LIB_DIR=$$RPM_BUILD_ROOT%{_datadir}/nginx-luajit-2.1 make install
+endef
+export MODULE_PREINSTALL_lua
+
+define MODULE_FILES_lua
+%{_bindir}/nginx-luajit
+%dir %{_datadir}/nginx-luajit-2.1/jit
+%{_datadir}/nginx-luajit-2.1/jit/*
+%dir %{_datadir}/nginx-luajit-2.1/ngx
+%{_datadir}/nginx-luajit-2.1/ngx/*
+%dir %{_datadir}/nginx-luajit-2.1/resty
+%{_datadir}/nginx-luajit-2.1/resty/*
+%dir %{_includedir}/nginx-luajit-2.1
+%{_includedir}/nginx-luajit-2.1/*
+endef
+export MODULE_FILES_lua
+
+define MODULE_POST_lua
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_lua) for $(MODULE_SUMMARY_PREFIX) have been installed.
+To enable these modules, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ndk_http_module.so;
+    load_module modules/ngx_http_lua_module.so;
+    load_module modules/ngx_stream_lua_module.so;
+
+Note that ndk_http_module.so must be placed first.
+
+These modules are compiled with LuaJIT 2.1 library.
+The following binary should be used for testing and bytecode generation:
+
+    /usr/bin/nginx-luajit
+
+Please refer to the modules documentation for further details:
+https://github.com/openresty/lua-nginx-module
+https://github.com/openresty/stream-lua-nginx-module
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_lua

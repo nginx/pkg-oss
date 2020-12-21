@@ -11,7 +11,7 @@ Build-Depends: debhelper (>= 9~),
                libpcre3-dev,
                zlib1g-dev
 Standards-Version: 3.9.8.0
-Homepage: http://nginx.org
+Homepage: https://nginx.org
 
 Package: nginx
 Architecture: any
