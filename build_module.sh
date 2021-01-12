@@ -372,7 +372,12 @@ VERSION=`grep "^BASE_VERSION=" Makefile | cut -f2 -d= | tr -d "[:blank:]"`
 echo "$ME: INFO: Archiving module source for $VERSION"
 cd $BUILD_DIR
 mv $MODULE_NAME $MODULE_NAME-$VERSION
-tar cf - $MODULE_NAME-$VERSION | gzip -1 > $OLDPWD/$PACKAGE_SOURCES_DIR/$MODULE_NAME-$VERSION.tar.gz
+tar cf - $MODULE_NAME-$VERSION | gzip -1 > $MODULE_NAME-$VERSION.tar.gz
+if [ -d pkg-oss/contrib ]; then
+	cp $MODULE_NAME-$VERSION.tar.gz pkg-oss/contrib/tarballs/
+else
+	cp $MODULE_NAME-$VERSION.tar.gz $OLDPWD/$PACKAGE_SOURCES_DIR/
+fi
 cd -
 
 echo "$ME: INFO: Creating changelog"
