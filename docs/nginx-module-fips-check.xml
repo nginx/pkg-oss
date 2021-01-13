@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<!DOCTYPE change_log SYSTEM "changes.dtd" >
+
+
+<change_log title="nginx_module_fips_check">
+
+
+<changes apply="nginx-module-fips-check" ver="0.1" rev="1" basever="1.19.6"
+         date="2021-01-11" time="10:00:00 +0300"
+         packager="Andrei Belov &lt;defanator@gmail.com&gt;">
+
+<change>
+<para>
+Initial release of FIPS status check nginx module package.
+</para>
+</change>
+
+</changes>
+
+
+</change_log>
