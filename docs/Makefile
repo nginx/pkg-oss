@@ -5,6 +5,7 @@ VERSIONMASK?=	0
 XSLS?=	xslscript.pl
 
 PACKAGES=	nginx							\
+		nginx-module-auth-spnego				\
 		nginx-module-brotli					\
 		nginx-module-encrypted-session				\
 		nginx-module-geoip					\

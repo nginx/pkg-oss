@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<!DOCTYPE change_log SYSTEM "changes.dtd" >
+
+
+<change_log title="nginx_module_auth_spnego">
+
+
+<changes apply="nginx-module-auth-spnego" ver="1.1.0" rev="1" basever="1.19.6"
+         date="2021-01-11" time="09:10:00 +0300"
+         packager="Andrei Belov &lt;defanator@gmail.com&gt;">
+
+<change>
+<para>
+Initial release of spnego-http-auth nginx module package.
+</para>
+</change>
+
+</changes>
+
+
+</change_log>
