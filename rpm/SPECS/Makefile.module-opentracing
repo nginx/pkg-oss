@@ -42,7 +42,9 @@ BuildRequires: cmake3
 BuildRequires: cmake
 %define _cmake_cmd %{__cmake}
 %endif
+%if (0%{?rhel} >= 8) || (0%{?fedora} > 0)
 BuildRequires: libstdc++-static
+%endif
 BuildRequires: yaml-cpp-devel
 endef
 export MODULE_DEFINITIONS_opentracing
