@@ -1,8 +1,13 @@
 SHELL=		/bin/sh
 
-BASE_VERSION=	1.19.6
+CONTRIB?=	../contrib
+CONTRIB:=	$(abspath $(CONTRIB))
+
+include $(CONTRIB)/src/nginx/version
+
+BASE_VERSION=	$(NGINX_VERSION)
 BASE_RELEASE=	1
-PLUS_VERSION=	23
+PLUS_VERSION=	$(NGINX_PLUS_VERSION)
 PLUS_RELEASE=	${BASE_RELEASE}
 BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
 SRCDIR=		nginx-$(BASE_VERSION)
@@ -10,8 +15,6 @@ MODULE_SRCDIR=	$(SRCDIR)
 DOCS?=		../docs
 SRCPATH?=	../..
 MODSRC_PREFIX=	../
-CONTRIB?=	../contrib
-CONTRIB:=	$(abspath $(CONTRIB))
 
 MODULE_TARGET?= oss
 

@@ -1,8 +1,13 @@
 SHELL=		/bin/bash
 
-BASE_VERSION=	1.19.6
+CONTRIB?=	../../contrib
+CONTRIB:=	$(abspath $(CONTRIB))
+
+include $(CONTRIB)/src/nginx/version
+
+BASE_VERSION=	$(NGINX_VERSION)
 BASE_RELEASE=	1
-PLUS_VERSION=	23
+PLUS_VERSION=	$(NGINX_PLUS_VERSION)
 BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
 SRCPATH?=	../SOURCES
 BUILD_ENV_PATH=	${HOME}/rpmbuild
@@ -10,8 +15,6 @@ MODULE_TARGET?=	oss
 MODSRC_PREFIX=
 BUILD_DIR=	%{bdir}
 DOCS?=		../../docs
-CONTRIB?=	../../contrib
-CONTRIB:=	$(abspath $(CONTRIB))
 
 ifeq ($(MODULE_TARGET), plus)
 MODULE_SPEC_TEMPLATE=	nginx-plus-module.spec.in
