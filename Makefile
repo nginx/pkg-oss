@@ -16,12 +16,24 @@ RELEASE?=	1
 
 PACKAGER?=	$(shell hg config ui.username)
 
+TARBALL?=	https://nginx.org/download/nginx-$(VERSION).tar.gz
+
 BASE_MAKEFILES=	alpine/Makefile \
 		debian/Makefile \
 		rpm/SPECS/Makefile
 
 MODULES=	geoip image-filter perl xslt
 EXTERNAL_MODULES=	njs
+
+ifeq ($(shell sha512sum --version >/dev/null 2>&1 || echo FAIL),)
+SHA512SUM = sha512sum
+else ifeq ($(shell shasum --version >/dev/null 2>&1 || echo FAIL),)
+SHA512SUM = shasum -a 512
+else ifeq ($(shell openssl version >/dev/null 2>&1 || echo FAIL),)
+SHA512SUM = openssl dgst -r -sha512
+else
+SHA512SUM = $(error SHA-512 checksumming not found)
+endif
 
 default:
 	@{ \
@@ -39,13 +51,18 @@ version-check:
 		fi ; \
 	}
 
-release: version-check
+nginx-$(VERSION).tar.gz:
+	curl -o nginx-$(VERSION).tar.gz -fL $(TARBALL)
+
+release: version-check nginx-$(VERSION).tar.gz
 	@{ \
+		set -e ; \
 		echo "==> Preparing $(FLAVOR) release $(VERSION)-$(RELEASE)" ; \
+		$(SHA512SUM) nginx-$(VERSION).tar.gz >>contrib/src/nginx/SHA512SUMS ; \
+		sed -e "s,^NGINX_VERSION :=.*,NGINX_VERSION := $(VERSION),g" -i contrib/src/nginx/version ; \
 		for f in $(BASE_MAKEFILES); do \
 			echo "--> $${f}" ; \
-			sed -e "s,^BASE_VERSION=.*,BASE_VERSION=	$(VERSION),g" \
-				-e "s,^BASE_RELEASE=.*,BASE_RELEASE=	$(RELEASE),g" \
+			sed -e "s,^BASE_RELEASE=.*,BASE_RELEASE=	$(RELEASE),g" \
 				-i $${f} ; \
 		done ; \
 		reldate=`date +"%Y-%m-%d"` ; \
@@ -72,7 +89,7 @@ release: version-check
 	}
 
 revert:
-	@hg revert -v docs/ $(BASE_MAKEFILES)
+	@hg revert -v contrib/src/nginx/ docs/ $(BASE_MAKEFILES)
 
 commit:
 	@hg commit -vm 'Updated nginx to $(VERSION)'
