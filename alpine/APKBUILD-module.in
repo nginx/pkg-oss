@@ -90,7 +90,7 @@ unpack() {
 				sn=${bs%-*}
 			fi
 			( cd "$srcdir" && \
-				sndir=`find * -type d -maxdepth 1 -name "${sn}-*" | head -1` ; \
+				sndir=`find * -maxdepth 1 -type d -name "${sn}-*" | head -1` ; \
 				test -n "$sndir" && ln -s ${sndir} ${sn} ||: )
 		fi
 	done
