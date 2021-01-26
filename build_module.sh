@@ -195,10 +195,7 @@ if [ $CHECK_DEPENDS = 1 ]; then
 	fi
 
 	echo "$ME: INFO: checking for dependent packages"
-	CORE_PACKAGES="gcc make unzip wget"
-	if [ "$BUILD_PLATFORM" = "OSS" ]; then
-		CORE_PACKAGES="$CORE_PACKAGES mercurial"
-	fi
+	CORE_PACKAGES="gcc make unzip wget mercurial"
 	if [ "${1##*.}" = "git" ]; then
 		CORE_PACKAGES="$CORE_PACKAGES git"
 	fi
@@ -350,16 +347,15 @@ fi
 #
 echo "$ME: INFO: Downloading NGINX packaging tool"
 cd $BUILD_DIR
+hg clone https://hg.nginx.org/pkg-oss
 if [ "$BUILD_PLATFORM" = "OSS" ]; then
-	hg clone https://hg.nginx.org/pkg-oss
 	if [ "$OSS_VER" != "" ]; then
 		( cd pkg-oss && hg update `hg tags | grep "^$OSS_VER" | head -1 | awk '{print $1}'` )
 	fi
-	cd pkg-oss/$PACKAGING_DIR
 else
-	wget -O - https://hg.nginx.org/pkg-oss/archive/target-plus-r$PLUS_REL.tar.gz | tar xfz -
-	cd pkg-oss-target-plus-r$PLUS_REL/$PACKAGING_DIR
+	( cd pkg-oss && hg update target-plus-r$PLUS_REL )
 fi
+cd pkg-oss/$PACKAGING_DIR
 if [ $? -ne 0 ]; then
 	echo "$ME: ERROR: Unable to obtain NGINX packaging tool - quitting"
 	exit 1
