@@ -24,8 +24,7 @@ pkgusers=""
 pkggroups=""
 install="$pkgname.post-install"
 
-# we would like to ship all docs/licenses in the base package
-#subpackages="$pkgname-doc"
+subpackages="$pkgname-dbg"
 
 source="nginx-module-%%MODULE%%-$_base_version.tar.gz
 	%%MODULE_SOURCES%%
@@ -35,12 +34,75 @@ builddir="$srcdir/%%MODULE_SRCDIR%%"
 
 _modules_dir="usr/lib/nginx/modules"
 
+unpack() {
+	local u
+	verify || return 1
+	initdcheck || return 1
+	mkdir -p "$srcdir"
+	local gunzip=$(command -v pigz || echo gunzip)
+	[ $gunzip = "/usr/bin/pigz" ] && gunzip="$gunzip -d"
+	for u in $source; do
+		local s
+		local done=1
+		if is_remote "$u"; then
+			s="$SRCDEST/$(filename_from_uri $u)"
+		else
+			s="$startdir/$u"
+		fi
+		case "$s" in
+			*.tar)
+				done=0
+				msg "Unpacking $s..."
+				tar -C "$srcdir" -xf "$s" || return 1;;
+			*.tar.gz|*.tgz)
+				done=0
+				msg "Unpacking $s..."
+				$gunzip -c "$s" | tar -C "$srcdir" -x || return 1;;
+			*.tar.bz2)
+				done=0
+				msg "Unpacking $s..."
+				tar -C "$srcdir" -jxf "$s" || return 1;;
+			*.tar.lz)
+				done=0
+				msg "Unpacking $s..."
+				tar -C "$srcdir" --lzip -xf "$s" || return 1;;
+			*.tar.lzma)
+				done=0
+				msg "Unpacking $s..."
+				unlzma -T 0 -c "$s" | tar -C "$srcdir" -x  \
+					|| return 1;;
+			*.tar.xz)
+				done=0
+				msg "Unpacking $s..."
+				local threads_opt
+				if [ $(readlink -f $(command -v unxz)) != "/bin/busybox" ]; then
+					threads_opt="--threads=0"
+				fi
+				unxz $threads_opt -c "$s" | tar -C "$srcdir" -x || return 1;;
+			*.zip)
+				done=0
+				msg "Unpacking $s..."
+				unzip -n -q "$s" -d "$srcdir" || return 1;;
+		esac
+		if [ $done -eq 0 ]; then
+			bs=`basename $s`
+			sn=`echo $bs | sed -e 's/-[0-9].*$//'`
+			if [ "$sn" = "$bs" ] ; then
+				sn=${bs%-*}
+			fi
+			( cd "$srcdir" && \
+				sndir=`find * -maxdepth 1 -type d -name "${sn}-*" | head -1` ; \
+				test -n "$sndir" && ln -s ${sndir} ${sn} ||: )
+		fi
+	done
+}
+
 prepare() {
 	local file; for file in $source; do
 		case $file in
 		*~*.patch)
 			msg $file
-			cd "$srcdir"/${file%%~*}-*
+			cd "$srcdir"/${file%%~*}
 			patch -p 1 -i "$srcdir/$file"
 			;;
 		*.patch)
