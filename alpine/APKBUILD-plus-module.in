@@ -22,7 +22,7 @@ options="!check"
 
 pkgusers=""
 pkggroups=""
-install="$pkgname.post-install"
+install="$pkgname-plus.post-install"
 
 subpackages="$pkgname-dbg"
 
