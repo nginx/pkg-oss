@@ -364,9 +364,13 @@ fi
 #
 # Archive the module source for use with packaging tool using the base OSS version
 #
-VERSION=`grep "^NGINX_VERSION :=" ../contrib/src/nginx/version | cut -f2 -d= | tr -d "[:blank:]"`
-echo "$ME: INFO: Archiving module source for $VERSION"
 cd $BUILD_DIR
+if [ -d pkg-oss/contrib ]; then
+	VERSION=`grep "^NGINX_VERSION :=" pkg-oss/contrib/src/nginx/version | cut -f2 -d= | tr -d "[:blank:]"`
+else
+	VERSION=`grep "^BASE_VERSION=" pkg-oss/$PACKAGING_DIR/Makefile | cut -f2 -d= | tr -d "[:blank:]"`
+fi
+echo "$ME: INFO: Archiving module source for $VERSION"
 mv $MODULE_NAME $MODULE_NAME-$VERSION
 tar cf - $MODULE_NAME-$VERSION | gzip -1 > $MODULE_NAME-$VERSION.tar.gz
 if [ -d pkg-oss/contrib ]; then
