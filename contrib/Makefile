@@ -87,9 +87,8 @@ check_githash = \
 checksum = \
 	$(foreach f,$(filter $(TARBALLS)/%,$^), \
 		grep -- " $(f:$(TARBALLS)/%=%)$$" \
-			"$(SRC)/$(patsubst $(3)%,%,$@)/$(2)SUMS" &&) \
-	(cd $(TARBALLS) && $(1) /dev/stdin) < \
-		"$(SRC)/$(patsubst $(3)%,%,$@)/$(2)SUMS"
+			"$(SRC)/$(patsubst $(3)%,%,$@)/$(2)SUMS" |) \
+		(cd $(TARBALLS) && $(1))
 CHECK_SHA512 = $(call checksum,$(SHA512SUM),SHA512,.sum-)
 UNPACK = $(RM) -R $@ \
 	$(foreach f,$(filter %.tar.gz %.tgz,$^), && tar xvzfo $(f)) \
