@@ -14,7 +14,6 @@ $(TARBALLS)/modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH).tar.xz:
 
 modsecurity-nginx: modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH).tar.xz .sum-modsecurity-nginx
 	$(UNPACK)
-	$(APPLY) $(SRC)/modsecurity-nginx/PR165.patch
 	$(MOVE)
 
 DEPS_modsecurity-nginx = modsecurity $(DEPS_modsecurity)

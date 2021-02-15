@@ -6,7 +6,7 @@ include $(CONTRIB)/src/modsecurity/version
 include $(CONTRIB)/src/modsecurity-nginx/version
 
 MODULE_VERSION_modsecurity=	$(MODSECURITY_NGINX_VERSION)
-MODULE_RELEASE_modsecurity=	1
+MODULE_RELEASE_modsecurity=	2
 LIBMODSECURITY_SOVER=		$(MODSECURITY_VERSION)
 
 MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
@@ -14,8 +14,7 @@ MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
 MODULE_SOURCES_modsecurity=	modsecurity-v$(MODSECURITY_VERSION).tar.gz \
 				modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH).tar.xz
 
-MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/PR2348.patch \
-				$(CONTRIB)/src/modsecurity-nginx/PR165.patch
+MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/PR2348.patch
 
 MODULE_CONFARGS_modsecurity=	--add-dynamic-module=$(MODSRC_PREFIX)modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH)
 

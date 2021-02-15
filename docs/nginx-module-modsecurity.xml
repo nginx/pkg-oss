@@ -5,6 +5,20 @@
 <change_log title="nginx_module_modsecurity">
 
 
+<changes apply="nginx-module-modsecurity" ver="1.0.1" rev="2" basever="1.19.6"
+         date="2021-02-15" time="17:28:10 +0300"
+         packager="Andrei Belov &lt;defanator@gmail.com&gt;">
+
+<change>
+<para>
+ModSecurity-nginx updated to v1.0.1-23-g21bc821, see changelog at
+https://github.com/SpiderLabs/ModSecurity-nginx/blob/21bc821/CHANGES
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-modsecurity" ver="1.0.1" rev="1" basever="1.19.6"
          date="2020-12-17" time="12:00:00 +0300"
          packager="Andrei Belov &lt;defanator@gmail.com&gt;">
