@@ -11,12 +11,21 @@ CURRENT_VERSION_STRING=$(shell curl -fs https://version.nginx.com/nginx/$(FLAVOR
 CURRENT_VERSION=$(word 1,$(subst -, ,$(CURRENT_VERSION_STRING)))
 CURRENT_RELEASE=$(word 2,$(subst -, ,$(CURRENT_VERSION_STRING)))
 
+CURRENT_VERSION_STRING_NJS=$(shell curl -fs https://version.nginx.com/njs/$(FLAVOR))
+CURRENT_VERSION_NJS=$(word 2,$(subst +, ,$(word 1,$(subst -, ,$(CURRENT_VERSION_STRING_NJS)))))
+CURRENT_RELEASE_NJS=$(word 2,$(subst -, ,$(CURRENT_VERSION_STRING_NJS)))
+
 VERSION?=	$(shell curl -fs https://hg.nginx.org/nginx/raw-file/$(BRANCH)/src/core/nginx.h | fgrep 'define NGINX_VERSION' | cut -d '"' -f 2)
 RELEASE?=	1
+
+VERSION_NJS?= $(shell curl -fs https://hg.nginx.org/njs/raw-file/default/src/njs.h | fgrep 'define NJS_VERSION' | cut -d '"' -f 2)
+RELEASE_NJS?= 1
 
 PACKAGER?=	$(shell hg config ui.username)
 
 TARBALL?=	https://nginx.org/download/nginx-$(VERSION).tar.gz
+
+TARBALL_NJS?=	https://hg.nginx.org/njs/archive/$(VERSION_NJS).tar.gz
 
 BASE_MAKEFILES=	alpine/Makefile \
 		debian/Makefile \
@@ -39,6 +48,8 @@ default:
 	@{ \
 		echo "Latest available $(FLAVOR) nginx package version: $(CURRENT_VERSION)-$(CURRENT_RELEASE)" ; \
 		echo "Next $(FLAVOR) release version: $(VERSION)-$(RELEASE)" ; \
+		echo "Latest available $(FLAVOR) njs package version: $(CURRENT_VERSION_NJS)-$(CURRENT_RELEASE_NJS)" ; \
+		echo "Next njs version: $(VERSION_NJS)" ; \
 		echo ; \
 		echo "Valid targets: release revert commit tag" ; \
 	}
@@ -51,8 +62,19 @@ version-check:
 		fi ; \
 	}
 
+version-check-njs:
+	@{ \
+		if [ "$(VERSION_NJS)-$(RELEASE_NJS)" = "$(CURRENT_VERSION_NJS)-$(CURRENT_RELEASE_NJS)" ]; then \
+			echo "Version $(VERSION_NJS)-$(RELEASE_NJS) is the latest one, nothing to do." >&2 ; \
+			exit 1 ; \
+		fi ; \
+	}
+
 nginx-$(VERSION).tar.gz:
 	curl -o nginx-$(VERSION).tar.gz -fL $(TARBALL)
+
+njs-$(VERSION_NJS).tar.gz:
+	curl -o njs-$(VERSION_NJS).tar.gz -fL $(TARBALL_NJS)
 
 release: version-check nginx-$(VERSION).tar.gz
 	@{ \
@@ -88,8 +110,25 @@ release: version-check nginx-$(VERSION).tar.gz
 		echo ; \
 	}
 
+release-njs: version-check-njs njs-$(VERSION_NJS).tar.gz
+	@{ \
+		set -e ; \
+		echo "==> Preparing $(FLAVOR) njs release $(VERSION_NJS)-$(RELEASE_NJS)" ; \
+		$(SHA512SUM) njs-$(VERSION_NJS).tar.gz > contrib/src/njs/SHA512SUMS ; \
+		sed -e "s,^NJS_VERSION :=.*,NJS_VERSION := $(VERSION_NJS),g" -i contrib/src/njs/version ; \
+		reldate=`date +"%Y-%m-%d"` ; \
+		reltime=`date +"%H:%M:%S %z"` ; \
+		packager=`echo "$(PACKAGER)" | sed -e 's,<,\\\\\\&lt\;,' -e 's,>,\\\\\\&gt\;,'` ; \
+		echo "--> changelog for nginx-module-njs" ; \
+		CHANGESADD="\n\n\n<changes apply=\"nginx-module-njs\" ver=\"$(VERSION_NJS)\" rev=\"$(RELEASE_NJS)\" basever=\"$(CURRENT_VERSION)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nnjs updated to $(VERSION_NJS)</para>\n</change>\n\n</changes>" ; \
+		sed -i -e "s,title=\"nginx_module_njs\">,title=\"nginx_module_njs\">$${CHANGESADD}," docs/nginx-module-njs.xml ; \
+		echo ; \
+		echo "Done. Please carefully check the diff. Use \"make revert\" to revert any changes." ; \
+		echo ; \
+	}
+
 revert:
-	@hg revert -v contrib/src/nginx/ docs/ $(BASE_MAKEFILES)
+	@hg revert -v contrib/src/nginx/ docs/ $(BASE_MAKEFILES) contrib/src/njs/
 
 commit:
 	@hg commit -vm 'Updated nginx to $(VERSION)'
