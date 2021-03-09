@@ -6,7 +6,7 @@
 
 
 <changes apply="nginx-module-njs" ver="0.5.1" rev="1" basever="1.18.0"
-         date="2020-12-02" time="14:11:00 +0300"
+         date="2021-02-17" time="13:01:00 +0300"
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
 <change>
 <para>
