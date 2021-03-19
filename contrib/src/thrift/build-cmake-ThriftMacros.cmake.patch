@@ -1,0 +1,46 @@
+--- a/build/cmake/ThriftMacros.cmake	2018-12-19 01:24:34.000000000 +0000
++++ b/build/cmake/ThriftMacros.cmake	2021-03-19 13:12:11.508104155 +0000
+@@ -29,12 +29,7 @@
+         OUTPUT_NAME ${name}
+         VERSION ${thrift_VERSION}
+         SOVERSION ${thrift_VERSION} )
+-    #set_target_properties(${name} PROPERTIES PUBLIC_HEADER "${thriftcpp_HEADERS}")
+-    install(TARGETS ${name}
+-        RUNTIME DESTINATION "${BIN_INSTALL_DIR}"
+-        LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
+-        ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"
+-        PUBLIC_HEADER DESTINATION "${INCLUDE_INSTALL_DIR}")
++    list(APPEND thrift_lib_targets ${name})
+ endif()
+ 
+ if(WITH_STATIC_LIB)
+@@ -42,12 +37,9 @@
+     set_target_properties(${name}_static PROPERTIES
+         OUTPUT_NAME ${name}${STATIC_POSTFIX}
+         VERSION ${thrift_VERSION}
+-        SOVERSION ${thrift_VERSION} )
+-    install(TARGETS ${name}_static
+-        RUNTIME DESTINATION "${BIN_INSTALL_DIR}"
+-        LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
+-        ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"
+-        PUBLIC_HEADER DESTINATION "${INCLUDE_INSTALL_DIR}")
++        SOVERSION ${thrift_VERSION}
++        POSITION_INDEPENDENT_CODE ON)
++    list(APPEND thrift_lib_targets ${name}_static)
+ endif()
+ 
+ endmacro(ADD_LIBRARY_THRIFT)
+@@ -56,11 +48,11 @@
+ macro(TARGET_INCLUDE_DIRECTORIES_THRIFT name)
+ 
+ if(WITH_SHARED_LIB)
+-    target_include_directories(${name} ${ARGN})
++    target_include_directories(${name} PUBLIC ${ARGN})
+ endif()
+ 
+ if(WITH_STATIC_LIB)
+-    target_include_directories(${name}_static ${ARGN})
++    target_include_directories(${name}_static PUBLIC ${ARGN})
+ endif()
+ 
+ endmacro(TARGET_INCLUDE_DIRECTORIES_THRIFT)

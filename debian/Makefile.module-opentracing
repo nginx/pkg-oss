@@ -4,6 +4,7 @@ MODULE_SUMMARY_opentracing=	3rd-party OpenTracing dynamic module
 
 include $(CONTRIB)/src/opentracing-cpp/version
 include $(CONTRIB)/src/nginx-opentracing/version
+include $(CONTRIB)/src/thrift/version
 include $(CONTRIB)/src/jaeger-client-cpp/version
 
 MODULE_VERSION_opentracing=	$(NGINX_OPENTRACING_VERSION)
@@ -13,10 +14,15 @@ MODULE_VERSION_PREFIX_opentracing=$(MODULE_TARGET_PREFIX)
 
 MODULE_SOURCES_opentracing=	opentracing-cpp-$(OPENTRACING_CPP_VERSION).tar.gz \
 				nginx-opentracing-$(NGINX_OPENTRACING_VERSION).tar.gz \
+				thrift-$(THRIFT_VERSION).tar.gz \
 				jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION).tar.gz
 
 MODULE_PATCHES_opentracing=	$(CONTRIB)/src/opentracing-cpp/CMakeLists.txt.patch \
-				$(CONTRIB)/src/jaeger-client-cpp/CMakeLists.txt.patch
+				$(CONTRIB)/src/jaeger-client-cpp/CMakeLists.txt.patch \
+				$(CONTRIB)/src/thrift/CMakeLists.txt.patch \
+				$(CONTRIB)/src/thrift/build-cmake-Config.cmake.in.patch \
+				$(CONTRIB)/src/thrift/build-cmake-ThriftMacros.cmake.patch \
+				$(CONTRIB)/src/thrift/lib-cpp-CMakeLists.txt.patch
 
 MODULE_CONFARGS_opentracing=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-opentracing-$(NGINX_OPENTRACING_VERSION)/opentracing
 
@@ -24,21 +30,54 @@ MODULE_CONFARGS_opentracing=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-opentrac
 	cd $(CONTRIB) && make \
 		.sum-opentracing-cpp \
 		.sum-nginx-opentracing \
+		.sum-thrift \
 		.sum-jaeger-client-cpp
 	touch $@
 
-MODULE_BUILD_DEPENDS_opentracing=,cmake,libyaml-cpp-dev
+MODULE_BUILD_DEPENDS_opentracing=,cmake,libyaml-cpp-dev,libboost-dev
 
 define MODULE_PREBUILD_opentracing
 	cd $$(BUILDDIR_nginx)/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION) \&\& \
 		mkdir .build \&\& \
 		cd .build \&\& \
 		cmake ../ \&\& \
-		DESTDIR=$$(BUILDDIR_nginx)/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION) $$(MAKE) -j$$(NUMJOBS) install
+		DESTDIR=$$(BUILDDIR_nginx)/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION) \
+		$$(MAKE) -j$$(NUMJOBS) install
+	cd $$(BUILDDIR_nginx)/extra/thrift-$(THRIFT_VERSION) \&\& \
+		mkdir .build \&\& \
+		cd .build \&\& \
+		cmake \
+			-DBUILD_TESTING=OFF \
+			-DBUILD_TUTORIALS=OFF \
+			-DBUILD_COMPILER=OFF \
+			-DBUILD_C_GLIB=OFF \
+			-DBUILD_HASKELL=OFF \
+			-DBUILD_JAVA=OFF \
+			-DBUILD_PYTHON=OFF \
+			-DWITH_QT4=OFF \
+			-DWITH_QT5=OFF \
+			-DWITH_SHARED_LIB=OFF \
+			-DWITH_PLUGIN=OFF \
+			-DWITH_LIBEVENT=OFF \
+			-DWITH_OPENSSL=OFF \
+			-DWITH_ZLIB=OFF \
+			-DBUILD_SHARED_LIBS=ON \
+			-DCMAKE_INSTALL_LIBDIR=lib \
+		../ \&\& \
+		DESTDIR=$$(BUILDDIR_nginx)/extra/thrift-$(THRIFT_VERSION) \
+		$$(MAKE) -j$$(NUMJOBS) install
 	cd $$(BUILDDIR_nginx)/extra/jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION) \&\& \
 		mkdir .build \&\& \
 		cd .build \&\& \
-		OpenTracing_DIR=$$(BUILDDIR_nginx)/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/.build cmake -DCMAKE_BUILD_TYPE=Release -DJAEGERTRACING_PLUGIN=ON -DHUNTER_CONFIGURATION_TYPES=Release -DBUILD_TESTING=OFF ../ -DOPENTRACING_INC=$$(BUILDDIR_nginx)/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include \&\& \
+		OpenTracing_DIR=$$(BUILDDIR_nginx)/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib/cmake/OpenTracing \
+		thrift_DIR=$$(BUILDDIR_nginx)/extra/thrift-$(THRIFT_VERSION)/usr/local/lib/cmake/thrift \
+		cmake \
+			-DBUILD_TESTING=OFF \
+			-DJAEGERTRACING_PLUGIN=ON \
+			-DCMAKE_BUILD_TYPE=Release \
+			-DHUNTER_CONFIGURATION_TYPES=Release \
+			-DOPENTRACING_INC=$$(BUILDDIR_nginx)/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include \
+		../ \&\& \
 		$$(MAKE) -j$$(NUMJOBS)
 endef
 export MODULE_PREBUILD_opentracing

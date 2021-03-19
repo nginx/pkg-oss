@@ -1,9 +1,32 @@
---- a/CMakeLists.txt	2020-06-08 15:24:23.000000000 +0000
-+++ b/CMakeLists.txt	2020-12-10 14:06:50.510344080 +0000
-@@ -69,18 +69,11 @@
+--- a/CMakeLists.txt	2021-03-19 11:09:28.820154009 +0000
++++ b/CMakeLists.txt	2021-03-19 11:12:02.684154009 +0000
+@@ -59,28 +59,26 @@
+   message(FATAL_ERROR "Must use gcc >= 4.9")
+ endif()
+ 
+-hunter_add_package(thrift)
+-find_package(thrift ${hunter_config} REQUIRED)
+-if(HUNTER_ENABLED)
+-  list(APPEND LIBS thrift::thrift_static)
+-else()
+-  list(APPEND LIBS ${THRIFT_LIBRARIES})
+-endif()
++#hunter_add_package(thrift)
++#find_package(thrift ${hunter_config} REQUIRED)
++#if(HUNTER_ENABLED)
++#  list(APPEND LIBS thrift::thrift_static)
++#else()
++#  list(APPEND LIBS ${THRIFT_LIBRARIES})
++#endif()
++#list(APPEND package_deps thrift)
++
++# use our own prebuilt version of thrift
++include_directories(${THRIFT_INC})
++find_package(thrift CONFIG REQUIRED)
++list(APPEND LIBS thrift::thrift_static)
  list(APPEND package_deps thrift)
  
- 
+-
 -hunter_add_package(opentracing-cpp)
 -# Not `${hunter_config}` because OpenTracing provides its own
 -# OpenTracingConfig.cmake file
@@ -23,7 +46,7 @@
  list(APPEND package_deps OpenTracing)
  
  hunter_add_package(nlohmann_json)
-@@ -97,16 +90,8 @@
+@@ -97,16 +95,8 @@
    "NOT JAEGERTRACING_BUILD_CROSSDOCK" ON)
  
  if(JAEGERTRACING_WITH_YAML_CPP)

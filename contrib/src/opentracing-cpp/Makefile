@@ -17,7 +17,7 @@ opentracing-cpp: opentracing-cpp-$(OPENTRACING_CPP_VERSION).tar.gz .sum-opentrac
 
 .opentracing-cpp: opentracing-cpp
 	cd $< && \
-		mkdir .build && \
+		mkdir -p .build && \
 		cd .build && \
 		cmake ../ && \
 		DESTDIR=$(PREFIX) make $(_SMP_MFLAGS) install

@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	2021-03-19 12:11:27.096154009 +0000
++++ b/CMakeLists.txt	2021-03-19 12:11:36.216154009 +0000
+@@ -45,6 +45,8 @@
+ string(REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1" thrift_VERSION_PATCH ${thrift_VERSION})
+ message(STATUS "Parsed Thrift version: ${thrift_VERSION} (${thrift_VERSION_MAJOR}.${thrift_VERSION_MINOR}.${thrift_VERSION_PATCH})")
+ 
++project(thrift VERSION ${thrift_VERSION})
++
+ # Some default settings
+ include(DefineCMakeDefaults)
+ 
