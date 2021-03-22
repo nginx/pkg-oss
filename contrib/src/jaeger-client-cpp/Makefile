@@ -13,6 +13,11 @@ $(TARBALLS)/jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION).tar.gz:
 jaeger-client-cpp: jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION).tar.gz .sum-jaeger-client-cpp
 	$(UNPACK)
 	$(APPLY) $(SRC)/jaeger-client-cpp/CMakeLists.txt.patch
+ifeq ($(shell rpm --version 2>&1 || echo FAIL),)
+ifeq ($(shell test `rpm --eval '0%{?rhel}'` -gt 0 -a `rpm --eval '0%{?rhel}'` -lt 8 && echo 1),1)
+	$(APPLY) $(SRC)/jaeger-client-cpp/CMakeLists.txt.suppress-gcc-version-check.patch
+endif
+endif
 	$(MOVE)
 
 DEPS_jaeger-client-cpp = opentracing-cpp $(DEPS_opentracing-cpp) thrift $(DEPS_thrift)

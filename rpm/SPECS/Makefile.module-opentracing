@@ -24,6 +24,10 @@ MODULE_PATCHES_opentracing=	$(CONTRIB)/src/opentracing-cpp/CMakeLists.txt.patch 
 				$(CONTRIB)/src/thrift/build-cmake-ThriftMacros.cmake.patch \
 				$(CONTRIB)/src/thrift/lib-cpp-CMakeLists.txt.patch
 
+ifeq ($(shell test `rpm --eval '0%{?rhel}'` -gt 0 -a `rpm --eval '0%{?rhel}'` -lt 8 && echo 1),1)
+MODULE_PATCHES_opentracing+=	$(CONTRIB)/src/jaeger-client-cpp/CMakeLists.txt.suppress-gcc-version-check.patch
+endif
+
 MODULE_CONFARGS_opentracing=	--add-dynamic-module=nginx-opentracing-$(NGINX_OPENTRACING_VERSION)/opentracing
 
 .deps-module-opentracing:
@@ -49,7 +53,7 @@ BuildRequires: cmake3
 BuildRequires: cmake
 %define _cmake_cmd %{__cmake}
 %endif
-%if (0%{?rhel} >= 8) || (0%{?fedora} > 0)
+%if (0%{?rhel} >= 7) || (0%{?fedora} > 0)
 BuildRequires: libstdc++-static
 %endif
 BuildRequires: yaml-cpp-devel

@@ -1,0 +1,17 @@
+--- a/CMakeLists.txt	2021-03-22 09:00:52.327615463 +0000
++++ b/CMakeLists.txt	2021-03-22 09:01:09.287806286 +0000
+@@ -54,10 +54,10 @@
+ 
+ set(package_deps)
+ 
+-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
+-   CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9")
+-  message(FATAL_ERROR "Must use gcc >= 4.9")
+-endif()
++#if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
++#   CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9")
++#  message(FATAL_ERROR "Must use gcc >= 4.9")
++#endif()
+ 
+ #hunter_add_package(thrift)
+ #find_package(thrift ${hunter_config} REQUIRED)
