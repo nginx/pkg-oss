@@ -19,6 +19,6 @@ opentracing-cpp: opentracing-cpp-$(OPENTRACING_CPP_VERSION).tar.gz .sum-opentrac
 	cd $< && \
 		mkdir -p .build && \
 		cd .build && \
-		cmake ../ && \
+		$(CMAKE) ../ && \
 		DESTDIR=$(PREFIX) make $(_SMP_MFLAGS) install
 	touch $@

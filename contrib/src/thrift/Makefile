@@ -23,7 +23,7 @@ thrift: thrift-$(THRIFT_VERSION).tar.gz .sum-thrift
 	cd $< && \
 		mkdir -p .build && \
 		cd .build && \
-		cmake \
+		$(CMAKE) \
 			-DBUILD_TESTING=OFF \
 			-DBUILD_TUTORIALS=OFF \
 			-DBUILD_COMPILER=OFF \
