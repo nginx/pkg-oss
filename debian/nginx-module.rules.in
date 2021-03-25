@@ -8,8 +8,14 @@ include /usr/share/dpkg/buildflags.mk
 
 BUILDDIR_nginx = $(CURDIR)/debian/build-nginx
 BUILDDIR_nginx_debug = $(CURDIR)/debian/build-nginx-debug
-INSTALLDIR = $(CURDIR)/debian/nginx%%TARGET_SUFFIX%%-module-%%MODULE%%
+INSTALLDIR = $(CURDIR)/debian/nginx%%MODULE_SUFFIX%%-module-%%MODULE%%
 BASEDIR = $(CURDIR)
+
+ifeq (%%MODULE_CONFIGURE_ARGS%%,"")
+META_MODULE=1
+else
+META_MODULE=0
+endif
 
 ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
 	NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
@@ -27,9 +33,11 @@ config.env.%:
 	mkdir -p $(BUILDDIR_$*)
 	cp -Pa $(CURDIR)/auto $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/conf $(BUILDDIR_$*)/
+	if ! test -e $(CURDIR)/configure ; then ln -s $(CURDIR)/auto/configure $(CURDIR)/configure ; fi
 	cp -Pa $(CURDIR)/configure $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/contrib $(BUILDDIR_$*)/
-	cp -Pa $(CURDIR)/man $(BUILDDIR_$*)/
+	if test -e $(CURDIR)/man ; then  cp -Pa $(CURDIR)/man $(BUILDDIR_$*)/ ; fi
+	if test -e $(CURDIR)/docs ; then cp -Pa $(CURDIR)/docs $(BUILDDIR_$*)/ ; fi
 	cp -Pa $(CURDIR)/src $(BUILDDIR_$*)/
 	test -d $(CURDIR)/debian/extra && cp -Pa $(CURDIR)/debian/extra $(BUILDDIR_$*)/
 	touch $@
@@ -45,19 +53,25 @@ config.pre.nginx_debug: config.pre.nginx
 	touch $@
 
 config.status.nginx: config.env.nginx config.pre.nginx
+ifeq ($(META_MODULE), 0)
 	cd $(BUILDDIR_nginx) && \
 	CFLAGS="" %%MODULE_ENV%% ./configure %%BASE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS) %%MODULE_CC_OPT%%" --with-ld-opt="$(LDFLAGS) %%MODULE_LD_OPT%%"
+endif
 	touch $@
 
 config.status.nginx_debug: config.env.nginx_debug config.pre.nginx_debug
+ifeq ($(META_MODULE), 0)
 	cd $(BUILDDIR_nginx_debug) && \
 	CFLAGS="" %%MODULE_ENV%% ./configure %%BASE_CONFIGURE_ARGS%% %%MODULE_CONFIGURE_ARGS%% --with-cc-opt="$(CFLAGS) %%MODULE_CC_OPT_DEBUG%%" --with-ld-opt="$(LDFLAGS) %%MODULE_LD_OPT_DEBUG%%" --with-debug
+endif
 	touch $@
 
 build-arch.%: config.status.%
 	dh_testdir
 	dh_prep
+ifeq ($(META_MODULE), 0)
 	$(MAKE) -j$(NUMJOBS) -C $(BUILDDIR_$*) modules
+endif
 
 build-arch: build-arch.nginx build-arch.nginx_debug
 	dh_testdir
@@ -65,7 +79,9 @@ build-arch: build-arch.nginx build-arch.nginx_debug
 
 build-dbg.%: install
 	dh_testdir
-	dh_strip --dbg-package=nginx%%TARGET_SUFFIX%%-module-%%MODULE%%-dbg
+ifeq ($(META_MODULE), 0)
+	dh_strip --dbg-package=nginx%%MODULE_SUFFIX%%-module-%%MODULE%%-dbg
+endif
 
 build-dbg: build-dbg.nginx
 	dh_testdir
@@ -87,10 +103,12 @@ clean:
 	find $(CURDIR) -maxdepth 1 -size 0 -delete
 
 post-build:
+ifeq ($(META_MODULE), 0)
 	for so in `find $(BUILDDIR_nginx_debug)/objs/ -maxdepth 1 -type f -name "*.so"`; do \
 	    debugso=`echo $${so} | sed -e "s|.so|-debug.so|"` ; \
 	    mv $${so} $${debugso} ; \
 	done
+endif
 
 install:
 	dh_testdir
@@ -99,6 +117,7 @@ install:
 	dh_installdirs
 	dh_install
 %%MODULE_PREINSTALL%%
+ifeq ($(META_MODULE), 0)
 	mkdir -p $(INSTALLDIR)/usr/lib/nginx/modules
 	for so in `find $(BUILDDIR_nginx_debug)/objs/ -maxdepth 1 -type f -name "*.so"`; do \
 	    install -m755 $${so} $(INSTALLDIR)/usr/lib/nginx/modules/ ; \
@@ -106,6 +125,7 @@ install:
 	for so in `find $(BUILDDIR_nginx)/objs/ -maxdepth 1 -type f -name "*.so"`; do \
 	    install -m755 $${so} $(INSTALLDIR)/usr/lib/nginx/modules/ ; \
 	done
+endif
 
 binary-indep: build post-build install
 
@@ -120,7 +140,9 @@ binary-arch: install build-dbg
 	dh_perl -a
 	dh_fixperms -a
 	dh_installdeb -a
+ifeq ($(META_MODULE), 0)
 	dh_shlibdeps -a
+endif
 	dh_gencontrol -a
 	dh_md5sums -a
 	dh_builddeb -a

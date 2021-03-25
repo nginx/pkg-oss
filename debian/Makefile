@@ -2,33 +2,40 @@ SHELL=		/bin/bash
 
 CONTRIB?=	../contrib
 CONTRIB:=	$(abspath $(CONTRIB))
+DOCS?=		../docs
 
-include $(CONTRIB)/src/nginx/version
+BASE_TARGET?=	oss
+MODULE_TARGET?=	oss
+
+ifeq ($(BASE_TARGET), plus)
+BASE_SUFFIX=-plus
+endif
+
+include $(CONTRIB)/src/nginx$(BASE_SUFFIX)/version
 
 BASE_VERSION=	$(NGINX_VERSION)
 BASE_RELEASE=	1
 PLUS_VERSION=	$(NGINX_PLUS_VERSION)
-BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
-SRCDIR=		nginx-$(BASE_VERSION)
+PLUS_RELEASE=	1
+BASE_SRC=	nginx$(BASE_SUFFIX)-$(BASE_VERSION).tar.gz
+SRCDIR=		nginx$(BASE_SUFFIX)-$(BASE_VERSION)
 SRCPATH?=	../..
-DOCS?=		../docs
 BUILD_ENV_PATH=	${HOME}/debuild
-MODULE_TARGET?=	oss
 
 ifeq ($(MODULE_TARGET), plus)
-MODULE_CONTROL_TEMPLATE=   nginx-plus-module.control.in
-TARGET_SUFFIX=	-plus
+MODULE_SUFFIX=	-plus
 MODULE_SUMMARY_PREFIX=NGINX Plus
 TARGET_VERSION=$(PLUS_VERSION)
-MODULE_PACKAGE_PREFIX=nginx-plus-module
+BASE_ORIG_NAME=nginx-plus_$(PLUS_VERSION).orig.tar.gz
 else
-MODULE_CONTROL_TEMPLATE=   nginx-module.control.in
 MODULE_SUMMARY_PREFIX=nginx
 TARGET_VERSION=$(BASE_VERSION)
-MODULE_PACKAGE_PREFIX=nginx-module
+BASE_ORIG_NAME=nginx_$(BASE_VERSION).orig.tar.gz
 endif
 
+MODULE_PACKAGE_PREFIX=nginx$(MODULE_SUFFIX)-module
 MODULE_TARGET_PREFIX=$(TARGET_VERSION)+
+MODULE_CONTROL_TEMPLATE=	nginx$(MODULE_SUFFIX)-module.control.in
 
 MODULE_PACKAGE_VENDOR=	Sergey Budnevitch <sb@nginx.com>
 MODULE_PACKAGE_URL=	https://nginx.org/
@@ -86,6 +93,15 @@ BASE_CONFIGURE_ARGS=\
 	--with-stream_ssl_module \
 	--with-stream_ssl_preread_module
 
+ifeq ($(BASE_TARGET), plus)
+BASE_CONFIGURE_ARGS+= \
+	--build=nginx-plus-r$(PLUS_VERSION) \
+	--with-http_auth_jwt_module \
+	--with-http_f4f_module \
+	--with-http_hls_module \
+	--with-http_session_log_module
+endif
+
 export CR=\\n
 
 modname = $(shell echo $1 | tr '-' '_')
@@ -118,61 +134,114 @@ base:	rules-base
 	@echo "===> Building base package" ; \
 	$(SHELL) -c "cd debuild-base/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" && \
 	find debuild-base/ -maxdepth 1 -type f -exec cp {} ../../ \; && \
-	ln -s debuild-base/$(SRCDIR)/debian/nginx/usr/sbin base
+	ln -s debuild-base/$(SRCDIR)/debian/nginx$(BASE_SUFFIX)/usr/sbin base
 
 $(BASE_SRC):
-	cd $(CONTRIB) && make .sum-nginx
+	cd $(CONTRIB) && make .sum-nginx$(BASE_SUFFIX)
 	ln -s $(CONTRIB)/tarballs/$(BASE_SRC) $(BASE_SRC)
 
 nginx.deb-changelog:
 	@echo "===> Generating $@"
-	@cd $(DOCS) && DEST=$(CURDIR) VERSIONMASK=1 make $(CURDIR)/nginx.deb-changelog
+	@cd $(DOCS) && DEST=$(CURDIR) VERSIONMASK=1 make $(CURDIR)/nginx$(BASE_SUFFIX).deb-changelog
 
 rules-base: $(BASE_SRC) nginx.deb-changelog
 	@echo "===> Creating $@"
 	@{ \
 	set -e ; \
 	mkdir -p debuild-base ; \
-	cp $(BASE_SRC) debuild-base/nginx_$(BASE_VERSION).orig.tar.gz ; \
-	tar -C debuild-base -xf debuild-base/nginx_$(BASE_VERSION).orig.tar.gz ; \
+	cp $(BASE_SRC) debuild-base/$(BASE_ORIG_NAME); \
+	tar -C debuild-base -xf debuild-base/$(BASE_ORIG_NAME) ; \
 	mkdir -p debuild-base/$(SRCDIR)/debian ; \
 	mkdir -p debuild-base/$(SRCDIR)/debian/source ; \
 	echo "3.0 (quilt)" > debuild-base/$(SRCDIR)/debian/source/format ; \
 	echo "9" > debuild-base/$(SRCDIR)/debian/compat ; \
-	cat nginx.rules.in | sed \
+	for patch in `find $(CONTRIB)/src/nginx$(BASE_SUFFIX)/ -type f -name '*.patch' -printf "%f\n" | sort`; do \
+		mkdir -p debuild-base/$(SRCDIR)/debian/patches ; \
+		echo $$patch >> debuild-base/$(SRCDIR)/debian/patches/series ; \
+		cp -v $(CONTRIB)/src/nginx$(BASE_SUFFIX)/$$patch debuild-base/$(SRCDIR)/debian/patches ; \
+	done ; \
+	cat nginx$(BASE_SUFFIX).rules.in | sed \
 		-e 's#%%CODENAME%%#$(CODENAME)#g' \
 		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
-		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
 		> debuild-base/$(SRCDIR)/debian/rules ; \
-	cat nginx.deb-changelog | sed \
+	cat nginx$(BASE_SUFFIX).deb-changelog | sed \
 		-e 's#%%CODENAME%%#$(CODENAME)#g' \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
+		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
+		-e 's#%%PLUS_RELEASE%%#$(PLUS_RELEASE)#g' \
 		> debuild-base/$(SRCDIR)/debian/changelog ; \
-	cat nginx.control.in | sed \
+	cat nginx$(BASE_SUFFIX).control.in | sed \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
+		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
 		> debuild-base/$(SRCDIR)/debian/control ; \
-	cp debuild-base/$(SRCDIR)/CHANGES debuild-base/$(SRCDIR)/CHANGES.ru nginx.* nginx-debug.default nginx-debug.service debuild-base/$(SRCDIR)/debian/ ; \
+	cp nginx$(BASE_SUFFIX).* debuild-base/$(SRCDIR)/debian/ ; \
+	cp nginx$(BASE_SUFFIX).default.conf debuild-base/$(SRCDIR)/debian/default.conf ; \
+	if [ "$(BASE_TARGET)" = "plus" ]; then \
+		cp	$(DOCS)/EULA-TRIAL \
+			$(DOCS)/EULA-DEVELOPER \
+			$(DOCS)/EULA-SUBSCRIPTION \
+			$(DOCS)/CHANGES \
+			$(DOCS)/nginx-modules-reference.pdf \
+			nginx.subscription-check.sh \
+			debuild-base/$(SRCDIR)/debian/ ; \
+		cp -r $(DOCS)/swagger-ui/ debuild-base/$(SRCDIR)/debian/ ; \
+		cp $(CONTRIB)/tarballs/dashboard.html debuild-base/$(SRCDIR)/debian/ ; \
+		mv debuild-base/$(SRCDIR)/debian/nginx-plus.conf debuild-base/$(SRCDIR)/debian/nginx.conf ; \
+		( cd debuild-base/$(SRCDIR) && \
+			find debian/ -type f -exec file --mime {} \; | fgrep 'charset=binary' | cut -d ':' -f 1 > include-binaries && \
+			mv include-binaries debian/source/ \
+		) ; \
+	else \
+		cp	debuild-base/$(SRCDIR)/CHANGES \
+			debuild-base/$(SRCDIR)/CHANGES.ru \
+			nginx-debug.default \
+			nginx-debug.service \
+			debuild-base/$(SRCDIR)/debian/ ; \
+	fi; \
 	cp $(DOCS)/nginx.copyright debuild-base/$(SRCDIR)/debian/copyright ; \
 	chmod +x debuild-base/$(SRCDIR)/debian/rules ; \
 	ln -s debuild-base/$(SRCDIR)/debian/rules rules-base ; \
 	}
 
-module-%: rules-module-%
-	@echo "===> Building nginx-$@ package" ; \
-	$(SHELL) -c "cd debuild-$@/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" && \
-	find debuild-$@/ -maxdepth 1 -type f -exec cp {} ../../ \; && \
-	ln -s debuild-$@/$(SRCDIR)/debian/$(MODULE_PACKAGE_PREFIX)-$*/usr/lib/nginx/modules $@
+module-%: rules-module-% check-compat-%
+	@if [ -e nginx-$@.skip ]; then \
+	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
+	else \
+	    echo "===> Building nginx-$@ package" ; \
+	    $(SHELL) -c "cd debuild-$@/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" && \
+	    find debuild-$@/ -maxdepth 1 -type f -exec cp {} ../../ \; && \
+	    ln -s debuild-$@/$(SRCDIR)/debian/$(MODULE_PACKAGE_PREFIX)-$*/usr/lib/nginx/modules $@ ; \
+	fi;
+
+check-compat-%:
+	@module=`echo $@ | cut -d '-' -f 3- | tr '-' '_'` ; \
+	set -e ; \
+	case "$${module}" in \
+	    brotli) \
+	    if [ "$(CODENAME)" = "stretch" ]; then \
+	        echo "brotli can not be built on Debian 9" > \
+	        nginx-module-$${module}.skip ; \
+	    fi ; \
+	    ;; \
+	    lua) \
+	    if [ "$(ARCH)" = "ppc64le" ]; then \
+	        echo "Lua can not be built on $(ARCH) due to issues with LuaJIT" > \
+	        nginx-module-$${module}.skip ; \
+	    fi ; \
+	    ;; \
+	    modsecurity) \
+	    if [ "$(ARCH)" = "ppc64le" ]; then \
+	        echo "ModSecurity can not be built on $(ARCH)" > \
+	        nginx-module-$${module}.skip ; \
+	    fi ; \
+	    ;; \
+	esac
 
 nginx-module-%.deb-changelog:
 	@echo "===> Generating $@"
 	@cd $(DOCS) && DEST=$(CURDIR) VERSIONMASK=1 make $(CURDIR)/nginx-module-$*.deb-changelog
-	@{ \
-	if [ "$(MODULE_TARGET)" = "plus" ]; then \
-		sed -i -e 's,nginx-module-,nginx-plus-module-,g' $(CURDIR)/nginx-module-$*.deb-changelog ; \
-	fi ; \
-	}
-
+	@sed -i -e 's,nginx-module-,nginx$(MODULE_SUFFIX)-module-,g' $(CURDIR)/$@
 
 rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 	@echo "===> Creating $@"
@@ -182,13 +251,8 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 	module_asis=`echo $@ | cut -d '-' -f 3-` ; \
 	builddir=`echo debuild-module-$${module_asis}` ; \
 	mkdir -p $${builddir} ; \
-	if [ "$(MODULE_TARGET)" = "oss" ]; then \
-		module_version="$(MODULE_VERSION_PREFIX_$(call modname, $*))$(MODULE_VERSION_$(call modname, $*))" ; \
-		orig_name="nginx-module-$${module_asis}_$${module_version}.orig.tar.gz" ; \
-	else \
-		module_version="$(MODULE_VERSION_PREFIX_$(call modname, $*))$(MODULE_VERSION_$(call modname, $*))" ; \
-		orig_name="nginx-plus-module-$${module_asis}_$${module_version}.orig.tar.gz" ; \
-	fi ; \
+	module_version="$(MODULE_VERSION_PREFIX_$(call modname, $*))$(MODULE_VERSION_$(call modname, $*))" ; \
+	orig_name="nginx$(MODULE_SUFFIX)-module-$${module_asis}_$${module_version}.orig.tar.gz" ; \
 	cp $(BASE_SRC) $${builddir}/$${orig_name} ; \
 	tar -C $${builddir} -xf $${builddir}/$${orig_name} ; \
 	mkdir -p $${builddir}/$(SRCDIR)/debian/extra ; \
@@ -250,7 +314,7 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 		-e "s#%%CODENAME%%#$(CODENAME)#g" \
 		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \
-		-e "s#%%TARGET_SUFFIX%%#$(TARGET_SUFFIX)#g" \
+		-e "s#%%MODULE_SUFFIX%%#$(MODULE_SUFFIX)#g" \
 		-e "s#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g" \
 		-e "s#%%MODULE_CONFIGURE_ARGS%%#$(MODULE_CONFARGS_$(call modname, $*))#g" \
 		-e "s#%%MODULE_DEFINITIONS%%#$${definitions}#g" \
@@ -264,7 +328,7 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 	> $${builddir}/$(SRCDIR)/debian/rules ; \
 	cat nginx-module.postinst.in | sed \
 		-e "s#%%MODULE_POST%%#$$post#g" \
-	> $${builddir}/$(SRCDIR)/debian/nginx$(TARGET_SUFFIX)-module-$${module_asis}.postinst ; \
+	> $${builddir}/$(SRCDIR)/debian/nginx$(MODULE_SUFFIX)-module-$${module_asis}.postinst ; \
 	chmod +x $${builddir}/$(SRCDIR)/debian/rules ; \
 	ln -s $${builddir}/$(SRCDIR)/debian/rules $@ ; \
 	}
@@ -293,17 +357,17 @@ test: base nginx-tests
 	for so in `find module-*/ -maxdepth 1 -type f -name "*module.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
-	if [ -d $$pwd/debuild-module-perl ]; then \
-		globals="$$globals env PERL5LIB=$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx/objs/src/http/modules/perl:$$pwd/debuild-module-perl/nginx-$(BASE_VERSION)/debian/build-nginx/objs/src/http/modules/perl/blib/arch;" ; \
+	if [ -d $$pwd/module-perl ]; then \
+		globals="$$globals env PERL5LIB=$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx/objs/src/http/modules/perl:$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/debuild-module-modsecurity ]; then \
+	if [ -d $$pwd/module-modsecurity ]; then \
 		export LD_LIBRARY_PATH=$$pwd/debuild-module-modsecurity/$(SRCDIR)/debian/build-nginx/extra/modsecurity-v$(MODSECURITY_VERSION)/local/lib ; \
 	fi ; \
-	if [ -d $$pwd/debuild-module-opentracing ]; then \
+	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/debuild-module-opentracing/$(SRCDIR)/debian/build-nginx/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ; \
-	if [ -d $$pwd/debuild-module-lua ]; then \
-		globals_http="lua_package_path '$$pwd/debuild-module-lua/nginx-$(BASE_VERSION)/debian/extra/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/debuild-module-lua/nginx-$(BASE_VERSION)/debian/extra/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
+	if [ -d $$pwd/module-lua ]; then \
+		globals_http="lua_package_path '$$pwd/debuild-module-lua/$(SRCDIR)/debian/extra/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/debuild-module-lua/$(SRCDIR)/debian/extra/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
 		globals_stream="$$globals_http" ; \
 	fi ; \
 	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$globals" TEST_NGINX_GLOBALS_HTTP="$$globals_http" TEST_NGINX_GLOBALS_STREAM="$$globals_stream" prove $$PROVE_ARGS . ; \
@@ -319,17 +383,17 @@ test-debug: base nginx-tests
 	for so in `find module-*/ -maxdepth 1 -type f -name "*module-debug.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
-	if [ -d $$pwd/debuild-module-perl ]; then \
-		globals="$$globals env PERL5LIB=$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx-debug/objs/src/http/modules/perl:$$pwd/debuild-module-perl/nginx-$(BASE_VERSION)/debian/build-nginx/objs/src/http/modules/perl/blib/arch;" ; \
+	if [ -d $$pwd/module-perl ]; then \
+		globals="$$globals env PERL5LIB=$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx-debug/objs/src/http/modules/perl:$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/debuild-module-modsecurity ]; then \
+	if [ -d $$pwd/module-modsecurity ]; then \
 		export LD_LIBRARY_PATH=$$pwd/debuild-module-modsecurity/$(SRCDIR)/debian/build-nginx-debug/extra/modsecurity-v$(MODSECURITY_VERSION)/local/lib ; \
 	fi ; \
-	if [ -d $$pwd/debuild-module-opentracing ]; then \
+	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/debuild-module-opentracing/$(SRCDIR)/debian/build-nginx-debug/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ; \
-	if [ -d $$pwd/debuild-module-lua ]; then \
-		globals_http="lua_package_path '$$pwd/debuild-module-lua/nginx-$(BASE_VERSION)/debian/extra/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/debuild-module-lua/nginx-$(BASE_VERSION)/debian/extra/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
+	if [ -d $$pwd/module-lua ]; then \
+		globals_http="lua_package_path '$$pwd/debuild-module-lua/$(SRCDIR)/debian/extra/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/debuild-module-lua/$(SRCDIR)/debian/extra/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
 		globals_stream="$$globals_http" ; \
 	fi ; \
 	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx-debug TEST_NGINX_GLOBALS="$$globals" TEST_NGINX_GLOBALS_HTTP="$$globals_http" TEST_NGINX_GLOBALS_STREAM="$$globals_stream" prove $$PROVE_ARGS . ; \

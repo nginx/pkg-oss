@@ -25,8 +25,8 @@ endef
 export MODULE_PREBUILD_njs
 
 define MODULE_PREINSTALL_njs
-	mkdir -p $$(INSTALLDIR)/usr/share/doc/nginx-module-njs
-	install -m644 $$(BUILDDIR_nginx)/extra/njs-$(NJS_VERSION)/CHANGES $$(INSTALLDIR)/usr/share/doc/nginx-module-njs/
+	mkdir -p $$(INSTALLDIR)/usr/share/doc/nginx$(MODULE_SUFFIX)-module-njs
+	install -m644 $$(BUILDDIR_nginx)/extra/njs-$(NJS_VERSION)/CHANGES $$(INSTALLDIR)/usr/share/doc/nginx$(MODULE_SUFFIX)-module-njs/
 	mkdir -p $$(INSTALLDIR)/usr/bin
 	install -m755 $$(CURDIR)/debian/extra/njs-$(NJS_VERSION)/build/njs $$(INSTALLDIR)/usr/bin/
 endef
