@@ -20,7 +20,7 @@ MODULE_CONFARGS_passenger=	--with-http_ssl_module \
 	touch $@
 
 define MODULE_DEFINITIONS_passenger
-BuildRequires: rubygem-rake
+BuildRequires: rubygem(rake)
 endef
 export MODULE_DEFINITIONS_passenger
 

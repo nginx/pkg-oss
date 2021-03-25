@@ -100,6 +100,7 @@ cd .build \&\& \
 OpenTracing_DIR=%{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib/cmake/OpenTracing \
 thrift_DIR=%{bdir}/thrift-$(THRIFT_VERSION)/usr/local/lib/cmake/thrift \
 %{_cmake_cmd} \
+	-DJAEGERTRACING_BUILD_EXAMPLES=OFF \
 	-DBUILD_TESTING=OFF \
 	-DJAEGERTRACING_PLUGIN=ON \
 	-DCMAKE_BUILD_TYPE=Release \

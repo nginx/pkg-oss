@@ -26,7 +26,7 @@ MODULE_CONFARGS_modsecurity=	--add-dynamic-module=modsecurity-nginx-$(MODSECURIT
 
 define MODULE_DEFINITIONS_modsecurity
 BuildRequires: gcc-c++
-BuildRequires: yajl-devel
+BuildRequires: pkgconfig(yajl)
 BuildRequires: libcurl-devel
 BuildRequires: libxml2-devel
 endef

@@ -62,7 +62,7 @@ Provides: %{name}-r%{base_version}
 %description
 nginx %%SHORT_SUMMARY%%.
 
-%if 0%{?suse_version} || 0%{?amzn}
+%if 0%{?suse_version}
 %debug_package
 %endif
 

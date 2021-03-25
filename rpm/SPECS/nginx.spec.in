@@ -84,7 +84,7 @@ Source1: logrotate
 Source2: nginx.init.in
 Source3: nginx.sysconf
 Source4: nginx.conf
-Source5: nginx.vh.default.conf
+Source5: nginx.default.conf
 Source7: nginx-debug.sysconf
 Source8: nginx.service
 Source9: nginx.upgrade.sh
@@ -92,6 +92,8 @@ Source10: nginx.suse.logrotate
 Source11: nginx-debug.service
 Source12: nginx.copyright
 Source13: nginx.check-reload.sh
+
+%%BASE_PATCHES%%
 
 License: 2-clause BSD-like license
 
@@ -111,7 +113,7 @@ a mail proxy server.
 %endif
 
 %prep
-%setup -q
+%autosetup -p1
 cp %{SOURCE2} .
 sed -e 's|%%DEFAULTSTART%%|2 3 4 5|g' -e 's|%%DEFAULTSTOP%%|0 1 6|g' \
     -e 's|%%PROVIDES%%|nginx|g' < %{SOURCE2} > nginx.init
