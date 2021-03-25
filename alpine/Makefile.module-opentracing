@@ -72,6 +72,7 @@ define MODULE_PREBUILD_opentracing
 		OpenTracing_DIR=$$builddir/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib/cmake/OpenTracing \
 		thrift_DIR=$$builddir/../thrift-$(THRIFT_VERSION)/usr/local/lib/cmake/thrift \
 		cmake \
+			-DJAEGERTRACING_BUILD_EXAMPLES=OFF \
 			-DBUILD_TESTING=OFF \
 			-DJAEGERTRACING_PLUGIN=ON \
 			-DCMAKE_BUILD_TYPE=Release \

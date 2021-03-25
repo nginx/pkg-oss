@@ -27,11 +27,12 @@ subpackages="$pkgname-dbg"
 replaces="nginx-common nginx-initscripts nginx-lua nginx-rtmp"
 source="nginx-$_base_version.tar.gz
 	nginx.conf
-	default.conf
+	nginx.default.conf
 	nginx.logrotate
 	nginx.initd
 	nginx-debug.initd
 	COPYRIGHT
+	%%BASE_PATCHES%%
 	"
 builddir="$srcdir/nginx-$_base_version"
 
@@ -83,7 +84,7 @@ package() {
 	cd "$pkgdir"
 
 	install -Dm644 "$srcdir"/nginx.conf ./etc/nginx/nginx.conf
-	install -Dm644 "$srcdir"/default.conf ./etc/nginx/conf.d/default.conf
+	install -Dm644 "$srcdir"/nginx.default.conf ./etc/nginx/conf.d/default.conf
 	install -Dm755 "$srcdir"/$pkgname.initd ./etc/init.d/nginx
 	install -Dm755 "$srcdir"/$pkgname-debug.initd ./etc/init.d/nginx-debug
 	install -Dm644 "$srcdir"/$pkgname.logrotate ./etc/logrotate.d/nginx

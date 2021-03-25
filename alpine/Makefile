@@ -2,25 +2,30 @@ SHELL=		/bin/sh
 
 CONTRIB?=	../contrib
 CONTRIB:=	$(abspath $(CONTRIB))
+DOCS?=		../docs
 
-include $(CONTRIB)/src/nginx/version
+BASE_TARGET?=	oss
+MODULE_TARGET?=	oss
+
+ifeq ($(BASE_TARGET), plus)
+BASE_SUFFIX=-plus
+endif
+
+include $(CONTRIB)/src/nginx$(BASE_SUFFIX)/version
 
 BASE_VERSION=	$(NGINX_VERSION)
 BASE_RELEASE=	1
 PLUS_VERSION=	$(NGINX_PLUS_VERSION)
-PLUS_RELEASE=	${BASE_RELEASE}
-BASE_SRC=	nginx-$(BASE_VERSION).tar.gz
-SRCDIR=		nginx-$(BASE_VERSION)
+PLUS_RELEASE=	1
+BASE_SRC=	nginx$(BASE_SUFFIX)-$(BASE_VERSION).tar.gz
+SRCDIR=	nginx$(BASE_SUFFIX)-$(BASE_VERSION)
 MODULE_SRCDIR=	$(SRCDIR)
-DOCS?=		../docs
 SRCPATH?=	../..
 MODSRC_PREFIX=	../
 
-MODULE_TARGET?= oss
-
 ifeq ($(MODULE_TARGET), plus)
 APKBUILD_TEMPLATE=	APKBUILD-plus-module.in
-TARGET_SUFFIX=  -plus
+MODULE_SUFFIX=	-plus
 MODULE_SUMMARY_PREFIX=NGINX Plus
 TARGET_VERSION=$(PLUS_VERSION)
 MODULE_PACKAGE_PREFIX=nginx-plus-module
@@ -86,6 +91,15 @@ BASE_CONFIGURE_ARGS=\
 	--with-stream_ssl_module \
 	--with-stream_ssl_preread_module
 
+ifeq ($(BASE_TARGET), plus)
+BASE_CONFIGURE_ARGS+=\
+	--build=nginx-plus-r$(PLUS_VERSION) \
+	--with-http_auth_jwt_module \
+	--with-http_f4f_module \
+	--with-http_hls_module \
+	--with-http_session_log_module
+endif
+
 export CR=\\n
 
 modname = $(shell echo $1 | tr '-' '_')
@@ -124,11 +138,11 @@ abuild:	abuild-base $(addprefix abuild-module-, $(MODULES))
 base:	${HOME}/.abuild/abuild.conf abuild-base
 	@echo "===> Building base package" ; \
 	/usr/bin/time -p $(SHELL) -c "cd abuild-base/ && abuild checksum && abuild unpack && abuild prepare && abuild -K build && abuild rootpkg" && \
-	ln -s abuild-base/pkg/nginx/usr/sbin base && \
+	ln -s abuild-base/pkg/nginx$(BASE_SUFFIX)/usr/sbin base && \
 	touch base
 
 $(BASE_SRC):
-	cd $(CONTRIB) && make .sum-nginx
+	cd $(CONTRIB) && make .sum-nginx$(BASE_SUFFIX)
 	ln -s $(CONTRIB)/tarballs/$(BASE_SRC) $(BASE_SRC)
 
 abuild-base: $(BASE_SRC)
@@ -137,22 +151,33 @@ abuild-base: $(BASE_SRC)
 	set -e ; \
 	mkdir -p abuild-base ; \
 	cp $(BASE_SRC) abuild-base/ ; \
-	cp nginx.* default.conf abuild-base/ ; \
+	cp nginx$(BASE_SUFFIX).* abuild-base/ ; \
+	patches=`find $(CONTRIB)/src/nginx$(BASE_SUFFIX)/ \
+		-type f -name '*.patch' -printf  "%f\n" | sort |tr "\\n" " "` ; \
+	for patch in $$patches; do \
+		cp -v $(CONTRIB)/src/nginx$(BASE_SUFFIX)/$$patch abuild-base/ ; \
+	done ;\
 	cp $(DOCS)/nginx.copyright abuild-base/COPYRIGHT ; \
-	cat nginx.initd.in | sed -e 's#%%DAEMON%%#nginx#g' > abuild-base/nginx.initd ; \
-	cat nginx.initd.in | sed -e 's#%%DAEMON%%#nginx-debug#g' > abuild-base/nginx-debug.initd ; \
-	cat APKBUILD-base.in | sed \
+	if [ "$(BASE_TARGET)" = "plus" ]; then \
+		cp -v $(DOCS)/EULA-* $(CONTRIB)/tarballs/dashboard.html $(DOCS)/nginx-modules-reference.pdf abuild-base/ ; \
+		cp -vr $(DOCS)/swagger-ui abuild-base/; \
+	fi; \
+	cat nginx$(BASE_SUFFIX).initd.in | sed -e 's#%%DAEMON%%#nginx#g' > abuild-base/nginx$(BASE_SUFFIX).initd ; \
+	cat nginx$(BASE_SUFFIX).initd.in | sed -e 's#%%DAEMON%%#nginx-debug#g' > abuild-base/nginx$(BASE_SUFFIX)-debug.initd ; \
+	cat APKBUILD-base$(BASE_SUFFIX).in | sed \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
+		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
+		-e 's#%%PLUS_RELEASE%%#$(PLUS_RELEASE)#g' \
+		-e "s#%%BASE_PATCHES%%#$$patches#g" \
 		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
 		> abuild-base/APKBUILD ; \
 	}
 
 module-%: ${HOME}/.abuild/abuild.conf abuild-module-%
-	@echo "===> Building nginx-$@ package" ; \
-	/usr/bin/time -p $(SHELL) -c "cd abuild-$@/ && abuild checksum && abuild unpack && abuild prepare && abuild -K build && abuild rootpkg" && \
-	ln -s abuild-$@/pkg/$(MODULE_PACKAGE_PREFIX)-$*/usr/lib/nginx/modules $@ && \
-	touch $@
+	@echo "===> Building nginx$(MODULE_SUFFIX)-$@ package"
+	@/usr/bin/time -p $(SHELL) -c "cd abuild-$@/ && abuild checksum && abuild unpack && abuild prepare && abuild -K build && abuild rootpkg" && \
+	ln -s abuild-$@/pkg/$(MODULE_PACKAGE_PREFIX)-$*/usr/lib/nginx/modules $@
 
 abuild-module-%: $(BASE_SRC) .deps-module-%
 	@echo "===> Creating $@"
@@ -177,11 +202,7 @@ abuild-module-%: $(BASE_SRC) .deps-module-%
 	done ; \
 	module_copyright="nginx-module-$${module_asis}.copyright" ; \
 	cp -p $(DOCS)/$${module_copyright} $${builddir}/COPYRIGHT ; \
-	if [ "$(MODULE_TARGET)" = "oss" ]; then \
-		postinstall_script=$${builddir}/nginx-module-$${module_asis}.post-install ; \
-	else \
-		postinstall_script=$${builddir}/nginx-plus-module-$${module_asis}.post-install ; \
-	fi ; \
+	postinstall_script=$${builddir}/nginx$(MODULE_SUFFIX)-module-$${module_asis}.post-install ; \
 	definitions=`echo "$$MODULE_DEFINITIONS_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	addcontroltags=`echo "$$MODULE_ADD_CONTROL_TAGS_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	prebuild=`echo "$$MODULE_PREBUILD_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
@@ -243,16 +264,16 @@ test: base nginx-tests
 	for so in `find module-*/ -maxdepth 1 -type f -name "*module.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
-	if [ -d $$pwd/abuild-module-perl ]; then \
+	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl:$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/abuild-module-modsecurity ]; then \
+	if [ -d $$pwd/module-modsecurity ]; then \
 		export LD_LIBRARY_PATH=$$pwd/abuild-module-modsecurity/src/modsecurity-v$(MODSECURITY_VERSION)/local/lib ; \
 	fi ; \
-	if [ -d $$pwd/abuild-module-opentracing ]; then \
+	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/abuild-module-opentracing/src/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ; \
-	if [ -d $$pwd/abuild-module-lua ]; then \
+	if [ -d $$pwd/module-lua ]; then \
 		globals_http="lua_package_path '$$pwd/abuild-module-lua/src/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/abuild-module-lua/src/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
 		globals_stream="$$globals_http" ; \
 	fi ; \
@@ -269,16 +290,16 @@ test-debug: base nginx-tests
 	for so in `find module-*/ -maxdepth 1 -type f -name "*module-debug.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
-	if [ -d $$pwd/abuild-module-perl ]; then \
+	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl:$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/abuild-module-modsecurity ]; then \
+	if [ -d $$pwd/module-modsecurity ]; then \
 		export LD_LIBRARY_PATH=$$pwd/abuild-module-modsecurity/src/modsecurity-v$(MODSECURITY_VERSION)/local/lib ; \
 	fi ; \
-	if [ -d $$pwd/abuild-module-opentracing ]; then \
+	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/abuild-module-opentracing/src/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ; \
-	if [ -d $$pwd/abuild-module-lua ]; then \
+	if [ -d $$pwd/module-lua -a ! -e nginx-module-lua.skip ]; then \
 		globals_http="lua_package_path '$$pwd/abuild-module-lua/src/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/abuild-module-lua/src/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
 		globals_stream="$$globals_http" ; \
 	fi ; \
