@@ -51,7 +51,7 @@ default:
 		echo "Latest available $(FLAVOR) njs package version: $(CURRENT_VERSION_NJS)-$(CURRENT_RELEASE_NJS)" ; \
 		echo "Next njs version: $(VERSION_NJS)" ; \
 		echo ; \
-		echo "Valid targets: release revert commit tag" ; \
+		echo "Valid targets: release release-njs revert commit tag" ; \
 	}
 
 version-check:
@@ -136,4 +136,4 @@ commit:
 tag:
 	@hg tag -v $(VERSION)-$(RELEASE)
 
-.PHONY: version-check release revert commit tag
+.PHONY: version-check version-check-njs release release-njs revert commit tag
