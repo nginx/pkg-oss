@@ -5,6 +5,18 @@
 <change_log title="nginx_module_opentracing">
 
 
+<changes apply="nginx-module-opentracing" ver="0.14.0" rev="1" basever="1.19.9"
+         date="2021-03-30" time="17:58:30 +0300"
+         packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
+<change>
+<para>
+base version updated to 1.19.9-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-opentracing" ver="0.14.0" rev="1" basever="1.19.8"
          date="2021-03-19" time="17:01:22 +0300"
          packager="Andrei Belov &lt;defan@nginx.com&gt;">
