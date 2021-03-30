@@ -2,7 +2,7 @@ MODULES+=	njs
 
 MODULE_SUMMARY_njs=	njs dynamic modules
 
-MODULE_VERSION_njs=	0.5.2
+MODULE_VERSION_njs=	0.5.3
 MODULE_RELEASE_njs=	1
 
 MODULE_SOURCES_njs=	njs-$(MODULE_VERSION_njs).tar.gz
