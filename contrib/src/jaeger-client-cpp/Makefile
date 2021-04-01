@@ -30,6 +30,7 @@ DEPS_jaeger-client-cpp = opentracing-cpp $(DEPS_opentracing-cpp) thrift $(DEPS_t
 		OpenTracing_DIR=$(PREFIX)/usr/local/lib/cmake/OpenTracing \
 		thrift_DIR=$(PREFIX)/usr/local/lib/cmake/thrift \
 		$(CMAKE) \
+			-DJAEGERTRACING_BUILD_EXAMPLES=OFF \
 			-DBUILD_TESTING=OFF \
 			-DJAEGERTRACING_PLUGIN=ON \
 			-DCMAKE_BUILD_TYPE=Release \
