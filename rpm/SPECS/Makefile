@@ -127,12 +127,6 @@ specs:	nginx.spec $(addsuffix .spec, $(addprefix nginx-module-, $(MODULES)))
 $(SRCPATH)/$(BASE_SRC):
 	cd $(CONTRIB) && make .sum-nginx$(BASE_SUFFIX)
 	cd $(SRCPATH) && ln -s $(CONTRIB)/tarballs/$(BASE_SRC) $(BASE_SRC)
-	cp -p $(DOCS)/nginx.copyright ../SOURCES/ ;
-ifeq ($(BASE_TARGET), plus)
-	cp $(DOCS)/swagger-ui/* $(DOCS)/nginx-modules-reference.pdf $(SRCPATH)
-	cp $(CONTRIB)/tarballs/dashboard.html $(SRCPATH)
-	cp $(DOCS)/EULA* $(SRCPATH)
-endif
 
 base:	nginx.spec $(SRCPATH)/$(BASE_SRC)
 	@echo "===> Building base package" ; \
@@ -144,9 +138,15 @@ nginx.rpm-changelog:
 	@cd $(DOCS) && DEST=$(CURDIR) VERSIONMASK=1 make $(CURDIR)/nginx$(BASE_SUFFIX).rpm-changelog
 
 nginx.spec: nginx.rpm-changelog
+ifeq ($(BASE_TARGET), plus)
+	cp $(DOCS)/swagger-ui/* $(DOCS)/nginx-modules-reference.pdf $(SRCPATH)
+	cp $(CONTRIB)/tarballs/dashboard.html $(SRCPATH)
+	cp $(DOCS)/EULA* $(SRCPATH)
+endif
 	@echo "===> Creating $@"
 	@{ \
 	set -e ; \
+	cp -p $(DOCS)/nginx.copyright $(SRCPATH) ; \
 	patch_files=`find $(CONTRIB)/src/nginx$(BASE_SUFFIX)/ \
 		-type f -name '*.patch' -printf "%f\n" | sort`; \
 	patches=`for i in $$patch_files; do echo $$i; done | \
@@ -168,8 +168,8 @@ nginx.spec: nginx.rpm-changelog
 	cat nginx$(BASE_SUFFIX).rpm-changelog | sed \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
-    	-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
-    	-e 's#%%PLUS_RELEASE%%#$(PLUS_RELEASE)#g' \
+		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
+		-e 's#%%PLUS_RELEASE%%#$(PLUS_RELEASE)#g' \
 	>> nginx$(BASE_SUFFIX).spec ; \
 	}
 
