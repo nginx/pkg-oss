@@ -197,8 +197,8 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 	sources= ; \
 	prepsources= ; \
 	for src in $(MODULE_SOURCES_$(call modname, $*)); do \
-		if [ -h ../SOURCES/$${src} ] ; then rm ../SOURCES/$${src} ; fi ; \
-		ln -s $(CONTRIB)/tarballs/$${src} ../SOURCES/$${src} ; \
+		if [ -h $(SRCPATH)/$${src} ] ; then rm $(SRCPATH)/$${src} ; fi ; \
+		ln -s $(CONTRIB)/tarballs/$${src} $(SRCPATH)/$${src} ; \
 		s="`printf "Source%d: %s\n" $${i} $${src}`" ; \
 		sources="$${sources}\n$${s}" ; \
 		case "$${src}" in \
@@ -226,8 +226,8 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		dn=`dirname $${src}` ; \
 		bdn=`basename $${dn}` ; \
 		pn="$${bdn}_`basename $${src}`" ; \
-		if [ -h ../SOURCES/$${pn} ] ; then rm ../SOURCES/$${pn} ; fi ; \
-		ln -s $${src} ../SOURCES/$${pn} ; \
+		if [ -h $(SRCPATH)/$${pn} ] ; then rm $(SRCPATH)/$${pn} ; fi ; \
+		ln -s $${src} $(SRCPATH)/$${pn} ; \
 		s="`printf "Patch%d: %s\n" $${i} $${pn}`" ; \
 		patches="$${patches}\n$${s}" ; \
 		s="`printf "cd %%{bdir}/$${bdn}"`" ; \
@@ -237,7 +237,7 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		i=$$(($${i}+1)) ; \
 	done ; \
 	module_copyright=`echo $@ | sed -e "s#.spec#.copyright#"` ; \
-	cp -p $(DOCS)/$${module_copyright} ../SOURCES/ ; \
+	cp -p $(DOCS)/$${module_copyright} $(SRCPATH) ; \
 	pkgname=$(shell echo $@ | cut -d '.' -f 1) ; \
 	pkgname=`echo $${pkgname} | sed -e "s#^nginx-#nginx$(MODULE_SUFFIX)-#"` ; \
 	definitions=`echo "$$MODULE_DEFINITIONS_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
@@ -442,7 +442,7 @@ clean:
 	@rm -f $(BASE_SRC) $(SRCPATH)/$(BASE_SRC)
 	@rm -f nginx.rpm-changelog nginx-module-*.rpm-changelog
 	@rm -f .deps-module-*
-	@find ../SOURCES/ -type l -delete
+	@find $(SRCPATH)/ -type l -delete
 
 .PHONY:	default list list-base list-all-modules list-base-modules all modules specs test test-debug clean
 
