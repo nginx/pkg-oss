@@ -1,5 +1,0 @@
-# Configuration file for the nginx-debug service.
-
-NGINX=/usr/sbin/nginx-debug
-CONFFILE=/etc/nginx/nginx.conf
-LOCKFILE=/var/lock/subsys/nginx-debug
