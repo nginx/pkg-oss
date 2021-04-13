@@ -1,7 +1,4 @@
 debian/nginx.conf			etc/nginx
-conf/win-utf				etc/nginx
-conf/koi-utf				etc/nginx
-conf/koi-win				etc/nginx
 conf/mime.types				etc/nginx
 conf/scgi_params			etc/nginx
 conf/fastcgi_params			etc/nginx

@@ -168,6 +168,10 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
 %{__install} -m755 %{bdir}/objs/nginx-debug \
     $RPM_BUILD_ROOT%{_sbindir}/nginx-debug
 
+%{__rm} $RPM_BUILD_ROOT%{_sysconfdir}/nginx/koi-utf
+%{__rm} $RPM_BUILD_ROOT%{_sysconfdir}/nginx/koi-win
+%{__rm} $RPM_BUILD_ROOT%{_sysconfdir}/nginx/win-utf
+
 %check
 %{__rm} -rf $RPM_BUILD_ROOT/usr/src
 cd %{bdir}
@@ -196,9 +200,6 @@ cat /dev/null > debugsourcefiles.list
 %config(noreplace) %{_sysconfdir}/nginx/fastcgi_params
 %config(noreplace) %{_sysconfdir}/nginx/scgi_params
 %config(noreplace) %{_sysconfdir}/nginx/uwsgi_params
-%config(noreplace) %{_sysconfdir}/nginx/koi-utf
-%config(noreplace) %{_sysconfdir}/nginx/koi-win
-%config(noreplace) %{_sysconfdir}/nginx/win-utf
 
 %config(noreplace) %{_sysconfdir}/logrotate.d/nginx
 %{_unitdir}/nginx.service

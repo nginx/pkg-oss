@@ -98,4 +98,7 @@ package() {
 	ln -sf /$_modules_dir ./etc/nginx/modules
 
 	rm -rf ./etc/nginx/*.default
+	rm -f ./etc/nginx/koi-utf
+	rm -f ./etc/nginx/koi-win
+	rm -f ./etc/nginx/win-utf
 }
