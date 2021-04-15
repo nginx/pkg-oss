@@ -27,18 +27,21 @@ ifeq ($(MODULE_TARGET), plus)
 MODULE_SUMMARY_PREFIX=	NGINX Plus
 TARGET_VERSION=$(PLUS_VERSION)
 MODULE_SUFFIX=-plus
+MODULE_PACKAGER=	Nginx Software, Inc. <https://www.nginx.com>
+MODULE_PACKAGE_VENDOR=	Nginx Software, Inc.
+MODULE_PACKAGE_URL=	https://www.nginx.com/
+MODULE_PACKAGE_LICENSE=	Proprietary (EULA included)
 else
 MODULE_SUMMARY_PREFIX=	nginx
 TARGET_VERSION=$(BASE_VERSION)
+MODULE_PACKAGE_VENDOR=	Nginx, Inc.
+MODULE_PACKAGE_URL=	https://nginx.org/
+MODULE_PACKAGE_LICENSE=2-clause BSD-like license
 endif
 
 MODULE_SPEC_TEMPLATE=	nginx$(MODULE_SUFFIX)-module.spec.in
 MODULE_PACKAGE_PREFIX=nginx$(MODULE_SUFFIX)-module
 MODULE_TARGET_PREFIX=$(TARGET_VERSION)+
-
-MODULE_PACKAGE_VENDOR=	Nginx, Inc.
-MODULE_PACKAGE_URL=	https://nginx.org/
-MODULE_PACKAGE_LICENSE=2-clause BSD-like license
 
 BASE_MODULES=	geoip image-filter njs perl xslt
 
@@ -248,6 +251,7 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 	post=`echo "$$MODULE_POST_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	cat $(MODULE_SPEC_TEMPLATE) | sed \
 		-e "s#%%NAME%%#$${pkgname}#g" \
+		-e "s#%%MODULE_PACKAGER%%#$(MODULE_PACKAGER)#g" \
 		-e "s#%%MODULE_PACKAGE_VENDOR%%#$(MODULE_PACKAGE_VENDOR)#g" \
 		-e "s#%%MODULE_PACKAGE_URL%%#$(MODULE_PACKAGE_URL)#g" \
 		-e "s#%%MODULE_PACKAGE_LICENSE%%#$(MODULE_PACKAGE_LICENSE)#g" \

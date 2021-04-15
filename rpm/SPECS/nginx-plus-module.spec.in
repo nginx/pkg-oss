@@ -68,6 +68,7 @@ BuildRequires: zlib-devel
 BuildRequires: pcre-devel
 Requires: nginx-plus-r%{plus_version}
 Provides: %{name}-r%{plus_version}
+Packager: %%MODULE_PACKAGER%%
 
 %description
 NGINX Plus: %%SHORT_SUMMARY%%.
