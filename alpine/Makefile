@@ -135,7 +135,7 @@ modules:	base $(addprefix module-, $(MODULES))
 
 abuild:	abuild-base $(addprefix abuild-module-, $(MODULES))
 
-base:	${HOME}/.abuild/abuild.conf abuild-base
+base:	${HOME}/.abuild/abuild.conf | abuild-base
 	@echo "===> Building base package" ; \
 	/usr/bin/time -p $(SHELL) -c "cd abuild-base/ && abuild checksum && abuild unpack && abuild prepare && abuild -K build && abuild rootpkg" && \
 	ln -s abuild-base/pkg/nginx$(BASE_SUFFIX)/usr/sbin base && \
@@ -174,7 +174,7 @@ abuild-base: $(BASE_SRC)
 		> abuild-base/APKBUILD ; \
 	}
 
-module-%: ${HOME}/.abuild/abuild.conf abuild-module-%
+module-%: ${HOME}/.abuild/abuild.conf | abuild-module-%
 	@echo "===> Building nginx$(MODULE_SUFFIX)-$@ package"
 	@/usr/bin/time -p $(SHELL) -c "cd abuild-$@/ && abuild checksum && abuild unpack && abuild prepare && abuild -K build && abuild rootpkg" && \
 	ln -s abuild-$@/pkg/$(MODULE_PACKAGE_PREFIX)-$*/usr/lib/nginx/modules $@
