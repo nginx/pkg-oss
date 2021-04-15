@@ -10,7 +10,11 @@
 
 %if 0%{?rhel} || 0%{?amzn}
 %define _group System Environment/Daemons
+%if 0%{?amzn} >= 2
+BuildRequires: openssl11-devel
+%else
 BuildRequires: openssl-devel
+%endif
 %endif
 
 %if 0%{?suse_version} >= 1315
