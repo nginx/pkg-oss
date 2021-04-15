@@ -27,18 +27,20 @@ MODULE_SUFFIX=	-plus
 MODULE_SUMMARY_PREFIX=NGINX Plus
 TARGET_VERSION=$(PLUS_VERSION)
 BASE_ORIG_NAME=nginx-plus_$(PLUS_VERSION).orig.tar.gz
+MODULE_PACKAGE_VENDOR=	Andrei Belov <defan@nginx.com>
+MODULE_PACKAGE_URL=	https://www.nginx.com/
 else
 MODULE_SUMMARY_PREFIX=nginx
 TARGET_VERSION=$(BASE_VERSION)
 BASE_ORIG_NAME=nginx_$(BASE_VERSION).orig.tar.gz
+MODULE_PACKAGE_VENDOR=	Sergey Budnevitch <sb@nginx.com>
+MODULE_PACKAGE_URL=	https://nginx.org/
 endif
 
 MODULE_PACKAGE_PREFIX=nginx$(MODULE_SUFFIX)-module
 MODULE_TARGET_PREFIX=$(TARGET_VERSION)+
 MODULE_CONTROL_TEMPLATE=	nginx$(MODULE_SUFFIX)-module.control.in
 
-MODULE_PACKAGE_VENDOR=	Sergey Budnevitch <sb@nginx.com>
-MODULE_PACKAGE_URL=	https://nginx.org/
 
 CODENAME=	$(shell lsb_release -cs)
 ARCH=		$(shell uname -m)
