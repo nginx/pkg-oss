@@ -19,7 +19,7 @@ BuildRequires: libopenssl-devel
 %define _debugsource_template %{nil}
 %endif
 
-%if 0%{?rhel} == 7
+%if (0%{?rhel} == 7) && (0%{?amzn} == 0)
 %define dist .el7
 %endif
 
