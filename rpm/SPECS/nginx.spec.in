@@ -68,14 +68,14 @@ Group: %{_group}
 
 Source0: https://nginx.org/download/%{name}-%{version}.tar.gz
 Source1: logrotate
-Source4: nginx.conf
-Source5: nginx.default.conf
-Source8: nginx.service
-Source9: nginx.upgrade.sh
-Source10: nginx.suse.logrotate
-Source11: nginx-debug.service
-Source12: nginx.copyright
-Source13: nginx.check-reload.sh
+Source2: nginx.conf
+Source3: nginx.default.conf
+Source4: nginx.service
+Source5: nginx.upgrade.sh
+Source6: nginx.suse.logrotate
+Source7: nginx-debug.service
+Source8: nginx.copyright
+Source9: nginx.check-reload.sh
 
 %%BASE_PATCHES%%
 
@@ -131,34 +131,34 @@ cd $RPM_BUILD_ROOT%{_sysconfdir}/nginx && \
     %{__ln_s} ../..%{_libdir}/nginx/modules modules && cd -
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_datadir}/doc/%{name}-%{base_version}
-%{__install} -m 644 -p %{SOURCE12} \
+%{__install} -m 644 -p %{SOURCE8} \
     $RPM_BUILD_ROOT%{_datadir}/doc/%{name}-%{base_version}/COPYRIGHT
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/nginx/conf.d
 %{__rm} $RPM_BUILD_ROOT%{_sysconfdir}/nginx/nginx.conf
-%{__install} -m 644 -p %{SOURCE4} \
+%{__install} -m 644 -p %{SOURCE2} \
     $RPM_BUILD_ROOT%{_sysconfdir}/nginx/nginx.conf
-%{__install} -m 644 -p %{SOURCE5} \
+%{__install} -m 644 -p %{SOURCE3} \
     $RPM_BUILD_ROOT%{_sysconfdir}/nginx/conf.d/default.conf
 
 %{__install} -p -D -m 0644 %{bdir}/objs/nginx.8 \
     $RPM_BUILD_ROOT%{_mandir}/man8/nginx.8
 
 %{__mkdir} -p $RPM_BUILD_ROOT%{_unitdir}
-%{__install} -m644 %SOURCE8 \
+%{__install} -m644 %SOURCE4 \
     $RPM_BUILD_ROOT%{_unitdir}/nginx.service
-%{__install} -m644 %SOURCE11 \
+%{__install} -m644 %SOURCE7 \
     $RPM_BUILD_ROOT%{_unitdir}/nginx-debug.service
 %{__mkdir} -p $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx
-%{__install} -m755 %SOURCE9 \
+%{__install} -m755 %SOURCE5 \
     $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx/upgrade
-%{__install} -m755 %SOURCE13 \
+%{__install} -m755 %SOURCE9 \
     $RPM_BUILD_ROOT%{_libexecdir}/initscripts/legacy-actions/nginx/check-reload
 
 # install log rotation stuff
 %{__mkdir} -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d
 %if 0%{?suse_version}
-%{__install} -m 644 -p %{SOURCE10} \
+%{__install} -m 644 -p %{SOURCE6} \
     $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/nginx
 %else
 %{__install} -m 644 -p %{SOURCE1} \
