@@ -13,6 +13,8 @@ endif
 
 include $(CONTRIB)/src/nginx$(BASE_SUFFIX)/version
 
+PACKAGE_VENDOR=	NGINX Packaging <nginx-packaging@f5.com>
+
 BASE_VERSION=	$(NGINX_VERSION)
 BASE_RELEASE=	1
 PLUS_VERSION=	$(NGINX_PLUS_VERSION)
@@ -113,6 +115,7 @@ ${HOME}/.abuild/abuild-key.rsa: | ${HOME}/.abuild
 
 ${HOME}/.abuild/abuild.conf: ${HOME}/.abuild/abuild-key.rsa | ${HOME}/.abuild
 	echo PACKAGER_PRIVKEY=\"${HOME}/.abuild/abuild-key.rsa\" > ${HOME}/.abuild/abuild.conf
+	echo "PACKAGER=\"$(PACKAGE_VENDOR)\"" >> ${HOME}/.abuild/abuild.conf
 
 list-base:
 	@printf "%-20s\t%s\n" nginx $(BASE_VERSION)-$(BASE_RELEASE)
@@ -165,6 +168,7 @@ abuild-base: $(BASE_SRC)
 	cat nginx$(BASE_SUFFIX).initd.in | sed -e 's#%%DAEMON%%#nginx#g' > abuild-base/nginx$(BASE_SUFFIX).initd ; \
 	cat nginx$(BASE_SUFFIX).initd.in | sed -e 's#%%DAEMON%%#nginx-debug#g' > abuild-base/nginx$(BASE_SUFFIX)-debug.initd ; \
 	cat APKBUILD-base$(BASE_SUFFIX).in | sed \
+		-e 's#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g' \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
 		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
@@ -210,6 +214,7 @@ abuild-module-%: $(BASE_SRC) .deps-module-%
 	preinstall=`echo "$$MODULE_PREINSTALL_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	post=`echo "$$MODULE_POST_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	cat $(APKBUILD_TEMPLATE) | sed \
+		-e 's#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g' \
 		-e "s#%%MODULE%%#$${module_asis}#g" \
 		-e "s#%%SUMMARY%%#$(MODULE_SUMMARY_PREFIX) $(MODULE_SUMMARY_$(call modname, $*))#g" \
 		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \

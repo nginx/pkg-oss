@@ -27,13 +27,11 @@ MODULE_SUFFIX=	-plus
 MODULE_SUMMARY_PREFIX=NGINX Plus
 TARGET_VERSION=$(PLUS_VERSION)
 BASE_ORIG_NAME=nginx-plus_$(PLUS_VERSION).orig.tar.gz
-MODULE_PACKAGE_VENDOR=	Andrei Belov <defan@nginx.com>
 MODULE_PACKAGE_URL=	https://www.nginx.com/
 else
 MODULE_SUMMARY_PREFIX=nginx
 TARGET_VERSION=$(BASE_VERSION)
 BASE_ORIG_NAME=nginx_$(BASE_VERSION).orig.tar.gz
-MODULE_PACKAGE_VENDOR=	Sergey Budnevitch <sb@nginx.com>
 MODULE_PACKAGE_URL=	https://nginx.org/
 endif
 
@@ -41,6 +39,7 @@ MODULE_PACKAGE_PREFIX=nginx$(MODULE_SUFFIX)-module
 MODULE_TARGET_PREFIX=$(TARGET_VERSION)+
 MODULE_CONTROL_TEMPLATE=	nginx$(MODULE_SUFFIX)-module.control.in
 
+PACKAGE_VENDOR=	NGINX Packaging <nginx-packaging@f5.com>
 
 CODENAME=	$(shell lsb_release -cs)
 ARCH=		$(shell uname -m)
@@ -174,6 +173,7 @@ rules-base: $(BASE_SRC) nginx.deb-changelog
 		-e 's#%%PLUS_RELEASE%%#$(PLUS_RELEASE)#g' \
 		> debuild-base/$(SRCDIR)/debian/changelog ; \
 	cat nginx$(BASE_SUFFIX).control.in | sed \
+		-e "s#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g" \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
 		> debuild-base/$(SRCDIR)/debian/control ; \
@@ -285,7 +285,7 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 	post=`echo "$$MODULE_POST_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	cat $(MODULE_CONTROL_TEMPLATE) | sed \
 		-e "s#%%MODULE%%#$${module_asis}#g" \
-		-e "s#%%MODULE_PACKAGE_VENDOR%%#$(MODULE_PACKAGE_VENDOR)#g" \
+		-e "s#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g" \
 		-e "s#%%MODULE_PACKAGE_URL%%#$(MODULE_PACKAGE_URL)#g" \
 		-e "s#%%SUMMARY%%#$(MODULE_SUMMARY_PREFIX) $(MODULE_SUMMARY_$(call modname, $*))#g" \
 		-e "s#%%SHORT_SUMMARY%%#$(MODULE_SUMMARY_$(call modname, $*))#g" \

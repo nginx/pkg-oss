@@ -41,7 +41,7 @@ Summary: %%SUMMARY%%
 Name: %%NAME%%
 Version: %%VERSION_PREFIX%%%%VERSION%%
 Release: %%RELEASE%%%{?dist}.ngx
-Vendor: %%MODULE_PACKAGE_VENDOR%%
+Vendor: %%PACKAGE_VENDOR%%
 URL: %%MODULE_PACKAGE_URL%%
 Group: %{_group}
 
