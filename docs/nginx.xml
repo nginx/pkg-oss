@@ -14,6 +14,24 @@
 </para>
 </change>
 
+<change>
+<para>
+Changed the default number of worker processes to auto
+</para>
+</change>
+
+<change>
+<para>
+Changed the default error log level to notice
+</para>
+</change>
+
+<change>
+<para>
+Dropped charset-related data from packages and default configuration
+</para>
+</change>
+
 </changes>
 
 
