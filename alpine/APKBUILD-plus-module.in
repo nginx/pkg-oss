@@ -21,7 +21,7 @@ options="!check"
 
 pkgusers=""
 pkggroups=""
-install="$pkgname-plus.post-install"
+install="$pkgname.post-install"
 
 if ! [ "x%%MODULE_CONFIGURE_ARGS%%" = "x" ]; then
 subpackages="$pkgname-dbg"
