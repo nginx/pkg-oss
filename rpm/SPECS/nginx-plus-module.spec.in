@@ -51,7 +51,7 @@ Summary: %%SUMMARY%%
 Name: %%NAME%%
 Version: %%VERSION_PREFIX%%%%VERSION%%
 Release: %%RELEASE%%%{?dist}.ngx
-Vendor: %%MODULE_PACKAGE_VENDOR%%
+Vendor: %%PACKAGE_VENDOR%%
 URL: %%MODULE_PACKAGE_URL%%
 Group: %{_group}
 
@@ -72,7 +72,6 @@ BuildRequires: zlib-devel
 BuildRequires: pcre-devel
 Requires: nginx-plus-r%{plus_version}
 Provides: %{name}-r%{plus_version}
-Packager: %%MODULE_PACKAGER%%
 
 %description
 NGINX Plus: %%SHORT_SUMMARY%%.

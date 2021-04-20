@@ -70,7 +70,7 @@ Summary: High performance web server
 Name: nginx
 Version: %{base_version}
 Release: %{base_release}
-Vendor: Nginx, Inc.
+Vendor: %%PACKAGE_VENDOR%%
 URL: https://nginx.org/
 Group: %{_group}
 

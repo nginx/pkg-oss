@@ -1,5 +1,4 @@
-# Maintainer: Andrei Belov <defan@nginx.com>
-# Contributor: Andrei Belov <defan@nginx.com>
+# Maintainer: %%PACKAGE_VENDOR%%
 #
 
 _base_version=%%BASE_VERSION%%
