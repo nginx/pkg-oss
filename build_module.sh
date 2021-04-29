@@ -9,6 +9,7 @@
 # Obtains pkg-oss tool, creates packaging files and copies in module source.
 #
 # CHANGELOG
+# v0.18 [29-Apr-2021] Added -V option to specify module version
 # v0.17 [11-Nov-2020] Fixed bashisms and made /bin/sh default interpreter
 # v0.16 [09-Nov-2020] Added Alpine Linux packaging
 # v0.15 [03-Nov-2020] use latest version tag if -v is specified
@@ -57,6 +58,7 @@ if [ $# -eq 0 ]; then
 	echo " URL may be Github clone or download link, otherwise 'tarball' is assumed."
 	echo " Options:"
 	echo " -n | --nickname <word>         # Used for packaging, lower case alphanumeric only"
+	echo " -V | --module-version          # Module version (default is 1.0-1)"
 	echo " -s | --skip-depends            # Skip dependecies check/install"
 	echo " -y | --non-interactive         # Automatically install dependencies and overwrite files"
 	echo " -f | --force-dynamic           # Attempt to convert static configuration to dynamic module"
@@ -75,6 +77,8 @@ SAY_YES=""
 COPY_CMD="cp -i"
 DO_DYNAMIC_CONVERT=0
 MODULE_NAME=""
+MODULE_VERSION="1.0"
+MODULE_RELEASE="1"
 BUILD_PLATFORM=OSS
 while [ $# -gt 1 ]; do
 	case "$1" in
@@ -93,6 +97,13 @@ while [ $# -gt 1 ]; do
 			;;
 		"-n" | "--nickname" )
 			MODULE_NAME=$2
+			shift; shift
+			;;
+		"-V" | "--module-version" )
+			MODULE_VERSION="${2%-*}"
+			if [ "${2#*-}" != "$2" ]; then
+				MODULE_RELEASE="${2#*-}"
+			fi
 			shift; shift
 			;;
 		"-r")
@@ -390,7 +401,7 @@ cat << __EOF__ >pkg-oss/docs/nginx-module-$MODULE_NAME.xml
 <change_log title="nginx_module_$MODULE_NAME">
 
 
-<changes apply="nginx-module-$MODULE_NAME" ver="$VERSION" rev="1"
+<changes apply="nginx-module-$MODULE_NAME" ver="$MODULE_VERSION" rev="$MODULE_RELEASE" basever="$VERSION"
          date="`date '+%Y-%m-%d'`" time="`date '+%H:%M:%S %z'`"
          packager="Build Script &lt;build.script@example.com&gt;">
 
@@ -418,8 +429,9 @@ MODULE_PACKAGE_VENDOR=	Build Script <build.script@example.com>
 MODULE_PACKAGE_URL=	https://www.nginx.com/blog/compiling-dynamic-modules-nginx-plus/
 
 MODULE_SUMMARY_$MODULE_NAME=		$MODULE_NAME dynamic module
-MODULE_VERSION_$MODULE_NAME=		$VERSION
-MODULE_RELEASE_$MODULE_NAME=		1
+MODULE_VERSION_$MODULE_NAME=		$MODULE_VERSION
+MODULE_RELEASE_$MODULE_NAME=		$MODULE_RELEASE
+MODULE_VERSION_PREFIX_$MODULE_NAME=	\$(MODULE_TARGET_PREFIX)
 MODULE_CONFARGS_$MODULE_NAME=		--add-dynamic-module=\$(MODSRC_PREFIX)$MODULE_NAME-$VERSION
 MODULE_SOURCES_$MODULE_NAME=		$MODULE_NAME-$VERSION.tar.gz
 
