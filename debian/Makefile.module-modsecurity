@@ -6,7 +6,7 @@ include $(CONTRIB)/src/modsecurity/version
 include $(CONTRIB)/src/modsecurity-nginx/version
 
 MODULE_VERSION_modsecurity=	$(MODSECURITY_NGINX_VERSION)
-MODULE_RELEASE_modsecurity=	2
+MODULE_RELEASE_modsecurity=	1
 LIBMODSECURITY_SOVER=		$(MODSECURITY_VERSION)
 
 MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
