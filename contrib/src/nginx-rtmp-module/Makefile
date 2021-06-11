@@ -12,7 +12,6 @@ $(TARBALLS)/nginx-rtmp-module-$(NGINX_RTMP_MODULE_VERSION).tar.gz:
 
 nginx-rtmp-module: nginx-rtmp-module-$(NGINX_RTMP_MODULE_VERSION).tar.gz .sum-nginx-rtmp-module
 	$(UNPACK)
-	$(APPLY) $(SRC)/nginx-rtmp-module/PR1340.patch
 	$(MOVE)
 
 .nginx-rtmp-module: nginx-rtmp-module

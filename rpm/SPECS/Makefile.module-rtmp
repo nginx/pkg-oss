@@ -10,7 +10,6 @@ MODULE_RELEASE_rtmp=	1
 MODULE_VERSION_PREFIX_rtmp=$(MODULE_TARGET_PREFIX)
 
 MODULE_SOURCES_rtmp=	nginx-rtmp-module-$(NGINX_RTMP_MODULE_VERSION).tar.gz
-MODULE_PATCHES_rtmp=	$(CONTRIB)/src/nginx-rtmp-module/PR1340.patch
 
 MODULE_CONFARGS_rtmp=	--add-dynamic-module=nginx-rtmp-module-$(NGINX_RTMP_MODULE_VERSION)
 
