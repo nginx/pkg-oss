@@ -358,7 +358,17 @@ fi
 #
 echo "$ME: INFO: Downloading NGINX packaging tool"
 cd $BUILD_DIR
-hg clone https://hg.nginx.org/pkg-oss
+
+PKG_OSS_URL="https://hg.nginx.org/pkg-oss"
+
+if [ "$PKG_FMT" = "rpm" ]; then
+	if [ `rpm --eval "0%{?rhel}"` -lt 8 ] || [ `rpm --eval "0%{?amzn}"` -le 2 ]; then
+		PKG_OSS_URL="http://hg.nginx.org/pkg-oss"
+	fi
+fi
+
+hg clone $PKG_OSS_URL
+
 if [ "$BUILD_PLATFORM" = "OSS" ]; then
 	if [ "$OSS_VER" != "" ]; then
 		( cd pkg-oss && hg update `hg tags | grep "^$OSS_VER" | head -1 | awk '{print $1}'` )
