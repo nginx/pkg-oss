@@ -2,9 +2,19 @@
 %define nginx_user nginx
 %define nginx_group nginx
 
+%if "%%MODULE_CONFIGURE_ARGS%%" == ""
+%define META_MODULE 1
+%else
+%define META_MODULE 0
+%endif
+
 %if 0%{?rhel} || 0%{?amzn}
 %define _group System Environment/Daemons
+%if 0%{?amzn} >= 2
+BuildRequires: openssl11-devel
+%else
 BuildRequires: openssl-devel
+%endif
 %endif
 
 %if 0%{?suse_version} >= 1315
@@ -13,7 +23,7 @@ BuildRequires: libopenssl-devel
 %define _debugsource_template %{nil}
 %endif
 
-%if 0%{?rhel} == 7
+%if (0%{?rhel} == 7) && (0%{?amzn} == 0)
 %define dist .el7
 %endif
 
@@ -38,11 +48,15 @@ Summary: %%SUMMARY%%
 Name: %%NAME%%
 Version: %%VERSION_PREFIX%%%%VERSION%%
 Release: %%RELEASE%%%{?dist}.ngx
-Vendor: %%MODULE_PACKAGE_VENDOR%%
+Vendor: %%PACKAGE_VENDOR%%
 URL: %%MODULE_PACKAGE_URL%%
 Group: %{_group}
 
-Source0: http://nginx.org/download/nginx-%{base_version}.tar.gz
+%if %{META_MODULE} == 1
+BuildArch: noarch
+%endif
+
+Source0: nginx%{?base_suffix}-%{base_version}.tar.gz
 Source1: %%COPYRIGHT_SOURCE%%
 %%MODULE_SOURCES%%
 
@@ -59,7 +73,7 @@ Provides: %{name}-r%{plus_version}
 %description
 NGINX Plus: %%SHORT_SUMMARY%%.
 
-%if 0%{?suse_version} || 0%{?amzn}
+%if 0%{?suse_version}
 %debug_package
 %endif
 
@@ -71,28 +85,34 @@ NGINX Plus: %%SHORT_SUMMARY%%.
 
 %prep
 %setup -qcTn %{name}-%{base_version}
-tar --strip-components=1 -zxf %{SOURCE0}
+%if %{META_MODULE} == 0
+	tar --strip-components=1 -zxf %{SOURCE0}
+	if ! test -e configure ; then ln -s auto/configure ./ ; fi
+%endif
 %%MODULE_PREP_SOURCES%%
 %%MODULE_PREP_PATCHES%%
 
 %build
 %%MODULE_PREBUILD%%
-cd %{bdir}
-%%MODULE_ENV%%
-./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
-	--with-cc-opt="%{WITH_CC_OPT} %%MODULE_CC_OPT_DEBUG%%" \
-	--with-ld-opt="%{WITH_LD_OPT} %%MODULE_LD_OPT_DEBUG%%" \
-	--with-debug
-make %{?_smp_mflags} modules
-for so in `find %{bdir}/objs/ -type f -name "*.so"`; do
-debugso=`echo $so | sed -e "s|.so|-debug.so|"`
-mv $so $debugso
-done
-%%MODULE_ENV%%
-./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
-	--with-cc-opt="%{WITH_CC_OPT} %%MODULE_CC_OPT%%" \
-	--with-ld-opt="%{WITH_LD_OPT} %%MODULE_LD_OPT%%"
-make %{?_smp_mflags} modules
+
+%if %{META_MODULE} == 0
+	cd %{bdir}
+	%%MODULE_ENV%%
+	./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
+		--with-cc-opt="%{WITH_CC_OPT} %%MODULE_CC_OPT_DEBUG%%" \
+		--with-ld-opt="%{WITH_LD_OPT} %%MODULE_LD_OPT_DEBUG%%" \
+		--with-debug
+	make %{?_smp_mflags} modules
+	for so in `find %{bdir}/objs/ -type f -name "*.so"`; do
+	debugso=`echo $so | sed -e "s|.so|-debug.so|"`
+	mv $so $debugso
+	done
+	%%MODULE_ENV%%
+	./configure %{BASE_CONFIGURE_ARGS} %{MODULE_CONFIGURE_ARGS} \
+		--with-cc-opt="%{WITH_CC_OPT} %%MODULE_CC_OPT%%" \
+		--with-ld-opt="%{WITH_LD_OPT} %%MODULE_LD_OPT%%"
+	make %{?_smp_mflags} modules
+%endif
 
 %check
 %{__rm} -rf $RPM_BUILD_ROOT/usr/src
@@ -112,18 +132,22 @@ cd %{bdir}
 
 %%MODULE_PREINSTALL%%
 
-%{__mkdir} -p $RPM_BUILD_ROOT%{_libdir}/nginx/modules
-for so in `find %{bdir}/objs/ -maxdepth 1 -type f -name "*.so"`; do
-%{__install} -m755 $so \
-   $RPM_BUILD_ROOT%{_libdir}/nginx/modules/
-done
+%if %{META_MODULE} == 0
+	%{__mkdir} -p $RPM_BUILD_ROOT%{_libdir}/nginx/modules
+	for so in `find %{bdir}/objs/ -maxdepth 1 -type f -name "*.so"`; do
+	%{__install} -m755 $so \
+	   $RPM_BUILD_ROOT%{_libdir}/nginx/modules/
+	done
+%endif
 
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
+%if %{META_MODULE} == 0
 %{_libdir}/nginx/modules/*
+%endif
 %dir %{_datadir}/doc/%%NAME%%
 %{_datadir}/doc/%%NAME%%/*
 %%MODULE_FILES%%
