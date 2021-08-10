@@ -14,8 +14,6 @@ MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
 MODULE_SOURCES_modsecurity=	modsecurity-v$(MODSECURITY_VERSION).tar.gz \
 				modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH).tar.xz
 
-MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/PR2348.patch
-
 MODULE_CONFARGS_modsecurity=	--add-dynamic-module=modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH)
 
 .deps-module-modsecurity:
