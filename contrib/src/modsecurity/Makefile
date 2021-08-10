@@ -19,7 +19,6 @@ $(TARBALLS)/modsecurity-v$(MODSECURITY_VERSION).tar.gz:
 
 modsecurity: modsecurity-v$(MODSECURITY_VERSION).tar.gz .sum-modsecurity
 	$(UNPACK)
-	$(APPLY) $(SRC)/modsecurity/PR2348.patch
 	$(MOVE)
 
 .modsecurity: modsecurity
