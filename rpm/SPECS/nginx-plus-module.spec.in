@@ -107,7 +107,7 @@ NGINX Plus: %%SHORT_SUMMARY%%.
 		--with-debug
 	make %{?_smp_mflags} modules
 	for so in `find %{bdir}/objs/ -type f -name "*.so"`; do
-	debugso=`echo $so | sed -e "s|.so|-debug.so|"`
+	debugso=`echo $so | sed -e 's|\.so$|-debug.so|'`
 	mv $so $debugso
 	done
 	%%MODULE_ENV%%
