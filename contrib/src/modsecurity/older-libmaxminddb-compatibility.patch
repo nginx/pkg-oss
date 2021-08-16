@@ -1,0 +1,24 @@
+# see https://github.com/SpiderLabs/ModSecurity/issues/2254
+--- a/src/utils/geo_lookup.h	2021-08-16 13:53:16.361372841 +0000
++++ b/src/utils/geo_lookup.h	2021-08-16 13:53:51.209561652 +0000
+@@ -50,7 +50,7 @@
+     void cleanUp();
+ 
+     bool lookup(const std::string& target, Transaction *transaction,
+-        std::function<bool(int, const std::string &)> debug) const;
++        std::function<bool(int, const std::string &)> debug);
+ 
+  private:
+     GeoLookup() :
+--- a/src/utils/geo_lookup.cc	2021-08-16 13:53:22.615406728 +0000
++++ b/src/utils/geo_lookup.cc	2021-08-16 13:54:15.959695749 +0000
+@@ -113,7 +113,7 @@
+ 
+ 
+ bool GeoLookup::lookup(const std::string& target, Transaction *trans,
+-    std::function<bool(int, const std::string &)> debug) const {
++    std::function<bool(int, const std::string &)> debug) {
+ 
+     if (m_version == NOT_LOADED) {
+         if (debug) {
+
