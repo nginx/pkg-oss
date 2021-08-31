@@ -5,6 +5,18 @@
 <change_log title="nginx_module_fips_check">
 
 
+<changes apply="nginx-module-fips-check" ver="0.1" rev="1" basever="1.21.2"
+         date="2021-08-31" time="18:35:29 +0300"
+         packager="Andrei Belov &lt;defan@nginx.com&gt;">
+<change>
+<para>
+base version updated to 1.21.2-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-fips-check" ver="0.1" rev="1" basever="1.21.1"
          date="2021-07-06" time="18:11:20 +0300"
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
