@@ -10,7 +10,8 @@
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
 <change>
 <para>
-njs updated to 0.6.1</para>
+njs updated to 0.6.1
+</para>
 </change>
 
 </changes>
@@ -21,7 +22,8 @@ njs updated to 0.6.1</para>
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
 <change>
 <para>
-njs updated to 0.6.0</para>
+njs updated to 0.6.0
+</para>
 </change>
 
 </changes>
@@ -80,7 +82,8 @@ base version updated to 1.19.9-1
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
 <change>
 <para>
-njs updated to 0.5.3</para>
+njs updated to 0.5.3
+</para>
 </change>
 
 </changes>
@@ -103,7 +106,8 @@ base version updated to 1.19.8-1
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
 <change>
 <para>
-njs updated to 0.5.2</para>
+njs updated to 0.5.2
+</para>
 </change>
 
 </changes>
@@ -126,7 +130,8 @@ base version updated to 1.19.7-1
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
 <change>
 <para>
-njs updated to 0.5.1</para>
+njs updated to 0.5.1
+</para>
 </change>
 
 </changes>
