@@ -5,6 +5,18 @@
 <change_log title="nginx_module_njs">
 
 
+<changes apply="nginx-module-njs" ver="0.7.0" rev="1" basever="1.21.3"
+         date="2021-10-19" time="17:44:05 +0300"
+         packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
+<change>
+<para>
+njs updated to 0.7.0
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-njs" ver="0.6.2" rev="1" basever="1.21.3"
          date="2021-09-07" time="18:38:16 +0300"
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
