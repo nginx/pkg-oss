@@ -5,6 +5,18 @@
 <change_log title="nginx_module_geoip2">
 
 
+<changes apply="nginx-module-geoip2" ver="3.3" rev="1" basever="1.21.4"
+         date="2021-11-02" time="18:01:49 +0300"
+         packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
+<change>
+<para>
+base version updated to 1.21.4-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-geoip2" ver="3.3" rev="1" basever="1.21.3"
          date="2021-09-07" time="18:38:16 +0300"
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
