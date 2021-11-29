@@ -13,6 +13,7 @@ $(TARBALLS)/opentracing-cpp-$(OPENTRACING_CPP_VERSION).tar.gz:
 opentracing-cpp: opentracing-cpp-$(OPENTRACING_CPP_VERSION).tar.gz .sum-opentracing-cpp
 	$(UNPACK)
 	$(APPLY) $(SRC)/opentracing-cpp/CMakeLists.txt.patch
+	$(APPLY) $(SRC)/opentracing-cpp/fix-ftbfs-glibc-2.34.patch
 	$(MOVE)
 
 .opentracing-cpp: opentracing-cpp

@@ -1,0 +1,42 @@
+Author: Sergio Durigan Junior <sergio.durigan@canonical.com>
+Forwarded: yes, https://github.com/opentracing/opentracing-cpp/pull/142
+Last-Update: 2021-11-19
+
+Index: opentracing-cpp-1.6.0/3rd_party/include/opentracing/catch2/catch.hpp
+===================================================================
+--- opentracing-cpp-1.6.0.orig/3rd_party/include/opentracing/catch2/catch.hpp	2021-11-19 20:01:32.336577631 -0500
++++ opentracing-cpp-1.6.0/3rd_party/include/opentracing/catch2/catch.hpp	2021-11-19 20:12:17.853232501 -0500
+@@ -6462,7 +6462,7 @@
+         static bool isSet;
+         static struct sigaction oldSigActions[];// [sizeof(signalDefs) / sizeof(SignalDefs)];
+         static stack_t oldSigStack;
+-        static char altStackMem[];
++        static char *altStackMem;
+ 
+         static void handleSignal( int sig );
+ 
+@@ -6594,6 +6594,7 @@
+     }
+ 
+     FatalConditionHandler::FatalConditionHandler() {
++        altStackMem = new(char[SIGSTKSZ]);
+         isSet = true;
+         stack_t sigStack;
+         sigStack.ss_sp = altStackMem;
+@@ -6610,6 +6611,7 @@
+     }
+ 
+     FatalConditionHandler::~FatalConditionHandler() {
++        delete[] altStackMem;
+         reset();
+     }
+ 
+@@ -6628,7 +6630,7 @@
+     bool FatalConditionHandler::isSet = false;
+     struct sigaction FatalConditionHandler::oldSigActions[sizeof(signalDefs)/sizeof(SignalDefs)] = {};
+     stack_t FatalConditionHandler::oldSigStack = {};
+-    char FatalConditionHandler::altStackMem[SIGSTKSZ] = {};
++    char *FatalConditionHandler::altStackMem;
+ 
+ } // namespace Catch
+ 

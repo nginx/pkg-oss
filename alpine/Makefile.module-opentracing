@@ -18,6 +18,7 @@ MODULE_SOURCES_opentracing=	opentracing-cpp-$(OPENTRACING_CPP_VERSION).tar.gz \
 				jaeger-client-cpp-$(JAEGER_CLIENT_CPP_VERSION).tar.gz
 
 MODULE_PATCHES_opentracing=	$(CONTRIB)/src/opentracing-cpp/CMakeLists.txt.patch \
+				$(CONTRIB)/src/opentracing-cpp/fix-ftbfs-glibc-2.34.patch \
 				$(CONTRIB)/src/jaeger-client-cpp/CMakeLists.txt.patch \
 				$(CONTRIB)/src/thrift/CMakeLists.txt.patch \
 				$(CONTRIB)/src/thrift/build-cmake-Config.cmake.in.patch \
