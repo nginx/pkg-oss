@@ -2,15 +2,14 @@ Source: nginx
 Section: httpd
 Priority: optional
 Maintainer: %%PACKAGE_VENDOR%%
-Build-Depends: debhelper (>= 9~),
-               dh-systemd | debhelper (>= 9.20160709),
+Build-Depends: debhelper (>= 11),
                dpkg-dev (>= 1.16.1~),
                quilt (>= 0.46-7~),
                lsb-release,
                libssl-dev (>= 0.9.7),
                libpcre3-dev,
                zlib1g-dev
-Standards-Version: 3.9.8.0
+Standards-Version: 4.1.4
 Homepage: https://nginx.org
 
 Package: nginx

@@ -2,14 +2,14 @@ Source: nginx-module-%%MODULE%%
 Section: httpd
 Priority: optional
 Maintainer: %%PACKAGE_VENDOR%%
-Build-Depends: debhelper (>= 9~),
+Build-Depends: debhelper (>= 11),
                dpkg-dev (>= 1.16.1~),
                quilt (>= 0.46-7~),
                lsb-release,
                libssl-dev (>= 1.0.1),
                libpcre3-dev,
                zlib1g-dev%%MODULE_BUILD_DEPENDS%%
-Standards-Version: 3.9.8.0
+Standards-Version: 4.1.4
 Homepage: %%MODULE_PACKAGE_URL%%
 
 Package: nginx-module-%%MODULE%%
