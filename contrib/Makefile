@@ -62,14 +62,17 @@ else
 SHA512SUM = $(error SHA-512 checksumming not found)
 endif
 
+CMAKE_MIN_VERSION = 3.1
 ifndef CMAKE
-ifeq ($(shell cmake --version 2>&1 | grep -q -- "version 3.1" || echo FAIL),)
+_CMAKE_VERSION := $(shell cmake --version 2>/dev/null | head -1 | cut -d ' ' -f 3)
+_CMAKE3_VERSION := $(shell cmake3 --version 2>/dev/null | head -1 | cut -d ' ' -f 3)
+ifeq ($(shell test "$(_CMAKE_VERSION)" = "`echo -e "$(_CMAKE_VERSION)\n$(CMAKE_MIN_VERSION)" | sort -V | tail -1`" || echo FAIL),)
 CMAKE = cmake
-else ifeq ($(shell cmake3 --version 2>&1 | grep -q -- "version 3.1" || echo FAIL),)
+else ifeq ($(shell test "$(_CMAKE3_VERSION)" = "`echo -e "$(_CMAKE3_VERSION)\n$(CMAKE_MIN_VERSION)" | sort -V | tail -1`" || echo FAIL),)
 CMAKE = cmake3
 endif
 endif
-CMAKE ?= $(error cmake >= 3.1 not found)
+CMAKE ?= $(error cmake >= $(CMAKE_MIN_VERSION) not found)
 
 #
 # Common helpers
