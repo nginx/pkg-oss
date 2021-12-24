@@ -15,6 +15,9 @@ BuildRequires: perl-devel
 BuildRequires: perl-ExtUtils-Embed
 %endif
 Requires: perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $$version))
+%if 0%{?rhel} == 9
+BuildRequires: perl-macros
+%endif
 endef
 export MODULE_DEFINITIONS_perl
 

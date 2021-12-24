@@ -38,6 +38,14 @@ BuildRequires: openssl-devel >= 1.1.1
 %define _debugsource_template %{nil}
 %endif
 
+%if 0%{?rhel} == 9
+%define epoch 1
+Epoch: %{epoch}
+Requires(pre): shadow-utils
+BuildRequires: openssl-devel
+%define _debugsource_template %{nil}
+%endif
+
 %if 0%{?suse_version} >= 1315
 %define _group Productivity/Networking/Web/Servers
 %define nginx_loggroup trusted
