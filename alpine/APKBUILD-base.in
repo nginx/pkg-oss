@@ -14,7 +14,7 @@ license="2-clause BSD-like license"
 provides="nginx-r$_base_version"
 provider_priority=$_base_release
 depends=""
-makedepends="linux-headers openssl-dev pcre-dev zlib-dev"
+makedepends="linux-headers openssl-dev pcre2-dev zlib-dev"
 
 options="!check"
 

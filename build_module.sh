@@ -163,7 +163,7 @@ if [ `whereis yum 2>/dev/null | grep -c "^yum: /"` -eq 1 ]; then
 	PKG_MGR_INSTALL="yum install $SAY_YES"
 	PKG_MGR_UPDATE="yum makecache"
 	PKG_FMT=rpm
-	NGINX_PACKAGES="pcre-devel zlib-devel openssl-devel"
+	NGINX_PACKAGES="pcre2-devel pcre-devel zlib-devel openssl-devel"
 	DEVEL_PACKAGES="rpm-build libxml2 libxslt"
 	PACKAGING_ROOT=pkg-oss/rpm/
 	PACKAGING_DIR=rpm/SPECS
@@ -173,7 +173,7 @@ elif [ `whereis apt-get 2>/dev/null | grep -c "^apt-get: /"` -eq 1 ]; then
 	PKG_MGR_INSTALL="apt-get --no-install-suggests --no-install-recommends install $SAY_YES"
 	PKG_MGR_UPDATE="apt-get update"
 	PKG_FMT=deb
-	NGINX_PACKAGES="libpcre3-dev zlib1g-dev libssl-dev"
+	NGINX_PACKAGES="libpcre2-dev libpcre3-dev zlib1g-dev libssl-dev"
 	DEVEL_PACKAGES="devscripts fakeroot debhelper dpkg-dev quilt lsb-release build-essential libxml2-utils xsltproc"
 	PACKAGING_ROOT=pkg-oss/debian/
 	PACKAGING_DIR=debian
@@ -183,7 +183,7 @@ elif [ `apk --version | grep -c "^apk-tools"` -eq 1 ]; then
 	PKG_MGR_INSTALL="apk add"
 	PKG_MGR_UPDATE="apk update"
 	PKG_FMT=apk
-	NGINX_PACKAGES="linux-headers openssl-dev pcre-dev zlib-dev"
+	NGINX_PACKAGES="linux-headers openssl-dev pcre2-dev pcre-dev zlib-dev"
 	DEVEL_PACKAGES="openssl abuild musl-dev"
 	PACKAGING_ROOT=pkg-oss/alpine/
 	PACKAGING_DIR=alpine

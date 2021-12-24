@@ -64,7 +64,7 @@ License: %%MODULE_PACKAGE_LICENSE%%
 
 BuildRoot: %{_tmppath}/%{name}-%{base_version}-%{base_release}-root
 BuildRequires: zlib-devel
-BuildRequires: pcre-devel
+BuildRequires: pcre2-devel
 Requires: nginx-r%{base_version}
 Provides: %{name}-r%{base_version}
 
@@ -75,7 +75,7 @@ nginx %%SHORT_SUMMARY%%.
 %debug_package
 %endif
 
-%define WITH_CC_OPT $(echo %{optflags} $(pcre-config --cflags))
+%define WITH_CC_OPT $(echo %{optflags} $(pcre2-config --cflags))
 %define WITH_LD_OPT -Wl,-z,relro -Wl,-z,now
 
 %define BASE_CONFIGURE_ARGS $(echo "%%BASE_CONFIGURE_ARGS%%")

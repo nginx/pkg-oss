@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 11),
                quilt (>= 0.46-7~),
                lsb-release,
                libssl-dev (>= 0.9.7),
-               libpcre3-dev,
+               libpcre2-dev,
                zlib1g-dev
 Standards-Version: 4.1.4
 Homepage: https://nginx.org

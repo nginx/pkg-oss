@@ -61,7 +61,7 @@ Requires(pre): shadow-utils
 
 %define bdir %{_builddir}/%{name}-%{base_version}
 
-%define WITH_CC_OPT $(echo %{optflags} $(pcre-config --cflags)) -fPIC
+%define WITH_CC_OPT $(echo %{optflags} $(pcre2-config --cflags)) -fPIC
 %define WITH_LD_OPT -Wl,-z,relro -Wl,-z,now -pie
 
 %define BASE_CONFIGURE_ARGS $(echo "%%BASE_CONFIGURE_ARGS%%")
@@ -91,7 +91,7 @@ License: 2-clause BSD-like license
 
 BuildRoot: %{_tmppath}/%{name}-%{base_version}-%{base_release}-root
 BuildRequires: zlib-devel
-BuildRequires: pcre-devel
+BuildRequires: pcre2-devel
 
 Provides: webserver
 Provides: nginx-r%{base_version}

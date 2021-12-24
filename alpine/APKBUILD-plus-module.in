@@ -13,7 +13,7 @@ url="https://www.nginx.com/"
 arch="all"
 license="Proprietary (EULA included)"
 depends="nginx-plus-r$_plus_version %%MODULE_DEPENDS%%"
-makedepends="linux-headers openssl-dev pcre-dev zlib-dev %%MODULE_BUILD_DEPENDS%%"
+makedepends="linux-headers openssl-dev pcre2-dev zlib-dev %%MODULE_BUILD_DEPENDS%%"
 provides="$pkgname-r$_plus_version %%MODULE_PROVIDES%%"
 %%ADD_CONTROL_TAGS%%
 
