@@ -5,6 +5,18 @@
 <change_log title="nginx_module_xslt">
 
 
+<changes apply="nginx-module-xslt" ver="1.21.5" rev="1"
+         date="2021-12-28" time="18:40:58 +0300"
+         packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
+<change>
+<para>
+base version updated to 1.21.5-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-xslt" ver="1.21.4" rev="1"
          date="2021-11-02" time="18:01:49 +0300"
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
