@@ -20,7 +20,7 @@ MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
 MODULE_BUILD_DEPENDS_njs=,libedit-dev
 
 define MODULE_PREBUILD_njs
-	cd debian/extra/njs-$(NJS_VERSION) \&\& ./configure \&\& make njs
+	cd debian/extra/njs-$(NJS_VERSION) \&\& ./configure \&\& make njs \&\& mv build build-cli
 endef
 export MODULE_PREBUILD_njs
 
@@ -28,7 +28,7 @@ define MODULE_PREINSTALL_njs
 	mkdir -p $$(INSTALLDIR)/usr/share/doc/nginx$(MODULE_SUFFIX)-module-njs
 	install -m644 $$(BUILDDIR_nginx)/extra/njs-$(NJS_VERSION)/CHANGES $$(INSTALLDIR)/usr/share/doc/nginx$(MODULE_SUFFIX)-module-njs/
 	mkdir -p $$(INSTALLDIR)/usr/bin
-	install -m755 $$(CURDIR)/debian/extra/njs-$(NJS_VERSION)/build/njs $$(INSTALLDIR)/usr/bin/
+	install -m755 $$(CURDIR)/debian/extra/njs-$(NJS_VERSION)/build-cli/njs $$(INSTALLDIR)/usr/bin/
 endef
 export MODULE_PREINSTALL_njs
 
