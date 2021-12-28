@@ -14,7 +14,8 @@ MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
 MODULE_SOURCES_modsecurity=	modsecurity-v$(MODSECURITY_VERSION).tar.gz \
 				modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH).tar.xz
 
-MODULE_CONFARGS_modsecurity=	--add-dynamic-module=$(MODSRC_PREFIX)modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH)
+MODULE_CONFARGS_modsecurity=	--add-dynamic-module=$(MODSRC_PREFIX)modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH) \
+				--without-pcre2
 
 .deps-module-modsecurity:
 	cd $(CONTRIB) && make \
