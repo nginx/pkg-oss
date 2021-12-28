@@ -23,7 +23,7 @@ endef
 export MODULE_DEFINITIONS_njs
 
 define MODULE_PREBUILD_njs
-cd %{bdir}/njs-$(NJS_VERSION) \&\& ./configure \&\& make njs
+cd %{bdir}/njs-$(NJS_VERSION) \&\& ./configure \&\& make njs \&\& mv build build-cli
 endef
 export MODULE_PREBUILD_njs
 
@@ -31,7 +31,7 @@ define MODULE_PREINSTALL_njs
 %{__install} -m644 %{bdir}/njs-$(NJS_VERSION)/CHANGES \
         $$RPM_BUILD_ROOT%{_datadir}/doc/%{name}/
 %{__mkdir} -p $$RPM_BUILD_ROOT%{_bindir}
-%{__install} -m755 %{bdir}/njs-$(NJS_VERSION)/build/njs \
+%{__install} -m755 %{bdir}/njs-$(NJS_VERSION)/build-cli/njs \
         $$RPM_BUILD_ROOT%{_bindir}/
 endef
 export MODULE_PREINSTALL_njs
