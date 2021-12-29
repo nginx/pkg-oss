@@ -20,7 +20,7 @@ MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
 MODULE_BUILD_DEPENDS_njs=,libedit-dev
 
 define MODULE_PREBUILD_njs
-	cd debian/extra/njs-$(NJS_VERSION) \&\& ./configure \&\& make njs \&\& mv build build-cli
+	cd debian/extra/njs-$(NJS_VERSION) \&\& ./configure --no-pcre2 \&\& make njs \&\& mv build build-cli
 endef
 export MODULE_PREBUILD_njs
 
