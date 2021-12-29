@@ -47,6 +47,7 @@ MODULE_CONFARGS_lua=	--with-http_dav_module \
 	touch $@
 
 define MODULE_DEFINITIONS_lua
+BuildRequires: pcre-devel
 Requires: $(NDK_DEPENDENCY_TAG)
 %define LUAJIT_INC %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/include/nginx-luajit-2.1
 %define LUAJIT_LIB %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/lib

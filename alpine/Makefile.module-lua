@@ -36,6 +36,8 @@ MODULE_CONFARGS_lua=	--with-http_dav_module \
 			--add-dynamic-module=$(MODSRC_PREFIX)lua-nginx-module-$(LUA_NGINX_MODULE_VERSION) \
 			--add-dynamic-module=$(MODSRC_PREFIX)stream-lua-nginx-module-$(STREAM_LUA_NGINX_MODULE_VERSION)
 
+MODULE_BUILD_DEPENDS_lua=pcre-dev
+
 .deps-module-lua:
 	cd $(CONTRIB) && make \
 		.sum-luajit2 \
