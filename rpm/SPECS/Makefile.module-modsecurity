@@ -30,6 +30,7 @@ BuildRequires: gcc-c++
 BuildRequires: pkgconfig(yajl)
 BuildRequires: libcurl-devel
 BuildRequires: libxml2-devel
+BuildRequires: pcre-devel
 endef
 export MODULE_DEFINITIONS_modsecurity
 

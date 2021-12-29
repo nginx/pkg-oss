@@ -25,7 +25,7 @@ MODULE_CONFARGS_modsecurity=	--add-dynamic-module=$(MODSRC_PREFIX)modsecurity-ng
 
 prerequisites-for-module-modsecurity:
 
-MODULE_BUILD_DEPENDS_modsecurity=yajl-dev libxml2-dev curl-dev patchelf
+MODULE_BUILD_DEPENDS_modsecurity=yajl-dev libxml2-dev curl-dev patchelf pcre-dev
 
 define MODULE_PREBUILD_modsecurity
 	cd ../modsecurity-v$(MODSECURITY_VERSION) \&\& \
