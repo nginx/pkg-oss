@@ -58,6 +58,9 @@ define MODULE_PREBUILD_lua
 endef
 export MODULE_PREBUILD_lua
 
+MODULE_LD_OPT_lua=-lpcre
+MODULE_LD_OPT_DEBUG_lua=$(MODULE_LD_OPT_lua)
+
 define MODULE_ENV_lua
 LUAJIT_INC="../luajit2-$(LUAJIT2_VERSION)/usr/include/nginx-luajit-2.1" LUAJIT_LIB="../luajit2-$(LUAJIT2_VERSION)/usr/lib"
 endef

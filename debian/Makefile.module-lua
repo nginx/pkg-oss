@@ -67,6 +67,9 @@ define MODULE_PREBUILD_lua
 endef
 export MODULE_PREBUILD_lua
 
+MODULE_LD_OPT_lua=-lpcre
+MODULE_LD_OPT_DEBUG_lua=$(MODULE_LD_OPT_lua)
+
 define MODULE_ENV_lua
 LUAJIT_INC="$$(LUAJIT_INC_$$(shell echo $$@ | cut -d '.' -f 3))" LUAJIT_LIB="$$(LUAJIT_LIB_$$(shell echo $$@ | cut -d '.' -f 3))"
 endef
