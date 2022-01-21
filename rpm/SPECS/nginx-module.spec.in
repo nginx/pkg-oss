@@ -4,7 +4,7 @@
 
 %if 0%{?rhel} || 0%{?amzn} || 0%{?fedora}
 %define _group System Environment/Daemons
-%if 0%{?amzn} >= 2
+%if 0%{?amzn} == 2
 BuildRequires: openssl11-devel
 %else
 BuildRequires: openssl-devel

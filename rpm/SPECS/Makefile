@@ -300,14 +300,14 @@ check-compat-%:
 		if [	`rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 -o \
 				`rpm --eval '0%{?fedora}'` -gt 0 -a `rpm --eval '0%{?fedora}'` -lt 29 -o \
 				`rpm --eval '0%{?amzn}'` -eq 1 ]; then \
-			echo "Brotli can't be build on SLES < 15, Fedora < 29 or Amazon Linux" > \
+			echo "Brotli can't be build on SLES < 15, Fedora < 29 or Amazon Linux 1" > \
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \
 		;; \
 		geoip) \
-		if [ `rpm --eval '0%{?rhel}'` -ge 8 ]; then \
-			echo "GeoIP can not be build on RHEL/CentOS >= 8" > \
+		if [ `rpm --eval '0%{?rhel}'` -ge 8 ] || [ `rpm --eval '0%{?amzn}'` -gt 2 ]; then \
+			echo "GeoIP can not be build on RHEL/CentOS >= 8 or Amazon Linux >2" > \
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \
@@ -340,6 +340,11 @@ check-compat-%:
 		fi ; \
 		if [ "`rpm --eval '0%{?amzn}'`" -eq 1 ]; then \
 			echo "OpenTracing can not be built on Amazon Linux due to old yaml-cpp library" > \
+			nginx-module-$${module}.skip ; \
+			exit ; \
+		fi ; \
+		if [ "`rpm --eval '0%{?amzn}'`" -gt 2 ]; then \
+			echo "OpenTracing can not be built on Amazon Linux >2 due to (temporary) absence yaml-cpp library" > \
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \
