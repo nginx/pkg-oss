@@ -4,41 +4,57 @@ MODULE_SUMMARY_modsecurity=	3rd-party ModSecurity dynamic module
 
 include $(CONTRIB)/src/modsecurity/version
 include $(CONTRIB)/src/modsecurity-nginx/version
+include $(CONTRIB)/src/libinjection/version
+include $(CONTRIB)/src/secrules-language-tests/version
+include $(CONTRIB)/src/modsecurity-python-bindings/version
 
 MODULE_VERSION_modsecurity=	$(MODSECURITY_NGINX_VERSION)
-MODULE_RELEASE_modsecurity=	2
-LIBMODSECURITY_SOVER=		$(MODSECURITY_VERSION)
+MODULE_RELEASE_modsecurity= 4
 
 MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
 
-MODULE_SOURCES_modsecurity=	modsecurity-v$(MODSECURITY_VERSION).tar.gz \
-				modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH).tar.xz
+MODULE_SOURCES_modsecurity=	modsecurity-$(MODSECURITY_GITHASH).tar.xz \
+				modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH).tar.xz \
+				libinjection-$(LIBINJECTION_GITHASH).tar.xz \
+				secrules-language-tests-$(SECRULES_LANGUAGE_TESTS_GITHASH).tar.xz \
+				modsecurity-python-bindings-$(MODSECURITY_PYTHON_BINDINGS_GITHASH).tar.xz
 
-MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/older-libmaxminddb-compatibility.patch
+MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/older-libmaxminddb-compatibility.patch \
+							$(CONTRIB)/src/modsecurity/PR2580.patch
 
 MODULE_CONFARGS_modsecurity=	--add-dynamic-module=$(MODSRC_PREFIX)modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH) \
 				--without-pcre2
 
 .deps-module-modsecurity:
 	cd $(CONTRIB) && make \
+		.sum-libinjection \
+		.sum-secrules-language-tests \
+		.sum-modsecurity-python-bindings \
 		.sum-modsecurity \
 		.sum-modsecurity-nginx
 	touch $@
 
-MODULE_BUILD_DEPENDS_modsecurity=,libxml2-dev,libyajl-dev,libcurl4-openssl-dev,libpcre3-dev
+MODULE_BUILD_DEPENDS_modsecurity=,libxml2-dev,libyajl-dev,libcurl4-openssl-dev,patchelf,libpcre3-dev,autoconf,automake,libtool
 
 define MODULE_PREBUILD_modsecurity
-	cd $$(BUILDDIR_nginx)/extra/modsecurity-v$(MODSECURITY_VERSION) \&\& \
-	./configure --prefix $$(BUILDDIR_nginx)/extra/modsecurity-v$(MODSECURITY_VERSION)/local --without-lmdb --without-lua \&\& \
-	$$(MAKE) -j$$(NUMJOBS) install \&\& $$(MAKE) check-TESTS
+	cd $$(BUILDDIR_nginx)/extra/modsecurity-$(MODSECURITY_GITHASH) \&\& \
+	rm -rf others/libinjection \&\& \
+	ln -s ../../libinjection others/libinjection \&\& \
+	rm -rf test/test-cases/secrules-language-tests \&\& \
+	ln -s ../../../secrules-language-tests test/test-cases/secrules-language-tests \&\& \
+	rm -rf bindings/python \&\& \
+	ln -s ../../modsecurity-python-bindings bindings/python \&\& \
+	./build.sh \&\& \
+	./configure --prefix $$(BUILDDIR_nginx)/extra/modsecurity-$(MODSECURITY_GITHASH)/local --without-lmdb --without-lua \&\& \
+	$$(MAKE) -j$$(NUMJOBS) install \&\& : $$(MAKE) check-TESTS
 	rm -f /tmp/audit_test.log /tmp/audit_test_parallel.log
 	rm -rf /tmp/test
 endef
 export MODULE_PREBUILD_modsecurity
 
 define MODULE_ENV_modsecurity
-MODSECURITY_INC="$$(BUILDDIR_$$(shell echo $$@ | cut -d '.' -f 3))/extra/modsecurity-v$(MODSECURITY_VERSION)/local/include" \
-MODSECURITY_LIB="$$(BUILDDIR_$$(shell echo $$@ | cut -d '.' -f 3))/extra/modsecurity-v$(MODSECURITY_VERSION)/local/lib" \
+MODSECURITY_INC="$$(BUILDDIR_$$(shell echo $$@ | cut -d '.' -f 3))/extra/modsecurity-$(MODSECURITY_GITHASH)/local/include" \
+MODSECURITY_LIB="$$(BUILDDIR_$$(shell echo $$@ | cut -d '.' -f 3))/extra/modsecurity-$(MODSECURITY_GITHASH)/local/lib" \
 NGX_IGNORE_RPATH=YES
 endef
 export MODULE_ENV_modsecurity
@@ -47,14 +63,20 @@ MODULE_CC_OPT_DEBUG_modsecurity=-DMODSECURITY_DDEBUG=1
 
 define MODULE_PREINSTALL_modsecurity
 	mkdir -p $$(INSTALLDIR)/usr/bin
-	install -m755 -s $$(BUILDDIR_nginx)/extra/modsecurity-v$(MODSECURITY_VERSION)/local/bin/modsec-rules-check $$(INSTALLDIR)/usr/bin/
+	install -m755 -s $$(BUILDDIR_nginx)/extra/modsecurity-$(MODSECURITY_GITHASH)/local/bin/modsec-rules-check $$(INSTALLDIR)/usr/bin/
+	patchelf --remove-rpath $$(INSTALLDIR)/usr/bin/modsec-rules-check
 	mkdir -p $$(INSTALLDIR)/usr/lib/$$(DEB_HOST_MULTIARCH)
-	install -m755 $$(BUILDDIR_nginx)/extra/modsecurity-v$(MODSECURITY_VERSION)/local/lib/libmodsecurity.so.$(LIBMODSECURITY_SOVER) $$(INSTALLDIR)/usr/lib/$$(DEB_HOST_MULTIARCH)
-	ln -fs libmodsecurity.so.$(LIBMODSECURITY_SOVER) $$(INSTALLDIR)/usr/lib/$$(DEB_HOST_MULTIARCH)/libmodsecurity.so.3
-	ln -fs libmodsecurity.so.$(LIBMODSECURITY_SOVER) $$(INSTALLDIR)/usr/lib/$$(DEB_HOST_MULTIARCH)/libmodsecurity.so
+	$$(eval MDH=$$(BUILDDIR_nginx)/extra/modsecurity-$(MODSECURITY_GITHASH)/headers/modsecurity/modsecurity.h)
+	$$(eval MAJOR=$$(shell awk '/define MODSECURITY_MAJOR /{print $$$$3}' $$(MDH) | sed 's/"//g'))
+	$$(eval MINOR=$$(shell awk '/define MODSECURITY_MINOR /{print $$$$3}' $$(MDH) | sed 's/"//g'))
+	$$(eval PATCHLEV=$$(shell  awk '/define MODSECURITY_PATCHLEVEL / {print $$$$3}' $$(MDH) | sed 's/"//g'))
+	$$(eval LIBMODSECURITY_SOVER=$$(MAJOR).$$(MINOR).$$(PATCHLEV))
+	install -m755 $$(BUILDDIR_nginx)/extra/modsecurity-$(MODSECURITY_GITHASH)/local/lib/libmodsecurity.so.$$(LIBMODSECURITY_SOVER) $$(INSTALLDIR)/usr/lib/$$(DEB_HOST_MULTIARCH)
+	ln -fs libmodsecurity.so.$$(LIBMODSECURITY_SOVER) $$(INSTALLDIR)/usr/lib/$$(DEB_HOST_MULTIARCH)/libmodsecurity.so.$$(MAJOR)
+	ln -fs libmodsecurity.so.$$(LIBMODSECURITY_SOVER) $$(INSTALLDIR)/usr/lib/$$(DEB_HOST_MULTIARCH)/libmodsecurity.so
 	mkdir -p $$(INSTALLDIR)/etc/nginx/modsec
-	install -m644 $$(BUILDDIR_nginx)/extra/modsecurity-v$(MODSECURITY_VERSION)/modsecurity.conf-recommended $$(INSTALLDIR)/etc/nginx/modsec/modsecurity.conf
-	install -m644 $$(BUILDDIR_nginx)/extra/modsecurity-v$(MODSECURITY_VERSION)/unicode.mapping $$(INSTALLDIR)/etc/nginx/modsec/
+	install -m644 $$(BUILDDIR_nginx)/extra/modsecurity-$(MODSECURITY_GITHASH)/modsecurity.conf-recommended $$(INSTALLDIR)/etc/nginx/modsec/modsecurity.conf
+	install -m644 $$(BUILDDIR_nginx)/extra/modsecurity-$(MODSECURITY_GITHASH)/unicode.mapping $$(INSTALLDIR)/etc/nginx/modsec/
 endef
 export MODULE_PREINSTALL_modsecurity
 
