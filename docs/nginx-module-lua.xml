@@ -5,6 +5,33 @@
 <change_log title="nginx_module_lua">
 
 
+<changes apply="nginx-module-lua" ver="0.10.20" rev="1" basever="1.21.6"
+         date="2022-01-25" time="18:13:46 +0300"
+         packager="Igor Ippolitov &lt;iippolitov@nginx.com&gt;">
+<change>
+<para>
+Lua module updated to 0.10.20
+</para>
+</change>
+<change>
+<para>
+Stream lua module updated to 0.10
+</para>
+</change>
+<change>
+<para>
+lua lru cache updated to 0.11
+</para>
+</change>
+<change>
+<para>
+lua resty core updated to 0.1.22
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-lua" ver="0.10.19" rev="1" basever="1.21.6"
          date="2022-01-25" time="18:13:46 +0300"
          packager="Mikhail Isachenkov &lt;mikhail.isachenkov@nginx.com&gt;">
