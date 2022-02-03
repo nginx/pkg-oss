@@ -5,6 +5,31 @@
 <change_log title="nginx_module_encrypted_session">
 
 
+<changes apply="nginx-module-encrypted-session" ver="0.09" rev="1" basever="1.21.6"
+         date="2022-02-02" time="18:13:46 +0300"
+         packager="Igor Ippolitov &lt;iippolitov@nginx.com&gt;">
+<change>
+<para>
+encrypted session module updated to 0.09
+</para>
+</change>
+
+</changes>
+
+
+<changes apply="nginx-module-encrypted-session" ver="0.08" rev="1" basever="1.21.6"
+         date="2022-01-25" time="18:13:46 +0300"
+         packager="Mikhail Isachenkov &lt;mikhail.isachenkov@nginx.com&gt;">
+<change>
+<para>
+base version updated to 1.21.6-1
+</para>
+</change>
+
+</changes>
+
+
+
 <changes apply="nginx-module-encrypted-session" ver="0.08" rev="1" basever="1.21.5"
          date="2021-12-28" time="18:40:58 +0300"
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
