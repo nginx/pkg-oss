@@ -5,6 +5,36 @@
 <change_log title="nginx_module_modsecurity">
 
 
+<changes apply="nginx-module-modsecurity" ver="1.0.2" rev="4" basever="1.21.6"
+         date="2022-02-02" time="18:13:46 +0300"
+         packager="Igor Ippolitov &lt;iippolitov@nginx.com&gt;">
+<change>
+<para>
+Modsecurity updated to 3.0.6-26-4e37985
+https://github.com/SpiderLabs/ModSecurity/commit/4e37985b22a56c5573084e7b4039288faf2a12f3
+</para>
+</change>
+<change>
+<para>
+Patch for PR2580 included
+https://github.com/SpiderLabs/ModSecurity/pull/2580
+</para>
+</change>
+</changes>
+
+
+<changes apply="nginx-module-modsecurity" ver="1.0.2" rev="3" basever="1.21.6"
+         date="2022-02-02" time="18:13:46 +0300"
+         packager="Igor Ippolitov &lt;iippolitov@nginx.com&gt;">
+<change>
+<para>
+Modsecurity updated to 3.0.6-26-cc83a1b
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-modsecurity" ver="1.0.2" rev="1" basever="1.21.6"
          date="2022-01-25" time="18:13:46 +0300"
          packager="Mikhail Isachenkov &lt;mikhail.isachenkov@nginx.com&gt;">

@@ -1,0 +1,170 @@
+From ab313df49ff1195d643f3b1c390f9938323394a4 Mon Sep 17 00:00:00 2001
+From: Yupeng Zhou <zhouyupeng@tensorsecurity.cn>
+Date: Fri, 18 Jun 2021 10:37:08 +0800
+Subject: [PATCH] fix some memory leaks for parsing & cleaning up rules
+
+---
+ headers/modsecurity/rule.h    | 2 ++
+ src/parser/driver.cc          | 4 ++--
+ src/parser/location.hh        | 4 ++--
+ src/parser/seclang-parser.cc  | 2 +-
+ src/parser/seclang-parser.yy  | 2 +-
+ src/parser/seclang-scanner.cc | 6 +++---
+ src/parser/seclang-scanner.ll | 6 +++---
+ src/rule_with_actions.cc      | 4 ++++
+ 8 files changed, 18 insertions(+), 12 deletions(-)
+
+diff --git a/headers/modsecurity/rule.h b/headers/modsecurity/rule.h
+index b10e0556e..1d5570a8d 100644
+--- a/headers/modsecurity/rule.h
++++ b/headers/modsecurity/rule.h
+@@ -86,6 +86,8 @@ class Rule {
+         return *this;
+     }
+ 
++    virtual ~Rule() {}
++
+     virtual bool evaluate(Transaction *transaction) = 0;
+ 
+     virtual bool evaluate(Transaction *transaction,
+diff --git a/src/parser/driver.cc b/src/parser/driver.cc
+index c8d15b48a..c08026a53 100644
+--- a/src/parser/driver.cc
++++ b/src/parser/driver.cc
+@@ -129,9 +129,9 @@ int Driver::parse(const std::string &f, const std::string &ref) {
+     m_lastRule = nullptr;
+     loc.push_back(new yy::location());
+     if (ref.empty()) {
+-        loc.back()->begin.filename = loc.back()->end.filename = new std::string("<<reference missing or not informed>>");
++        loc.back()->begin.filename = loc.back()->end.filename = std::shared_ptr<const std::string>(new std::string("<<reference missing or not informed>>"));
+     } else {
+-        loc.back()->begin.filename = loc.back()->end.filename = new std::string(ref);
++        loc.back()->begin.filename = loc.back()->end.filename = std::shared_ptr<const std::string>(new std::string(ref));
+     }
+ 
+     if (f.empty()) {
+diff --git a/src/parser/location.hh b/src/parser/location.hh
+index 314b0693a..0f414d831 100644
+--- a/src/parser/location.hh
++++ b/src/parser/location.hh
+@@ -80,7 +80,7 @@ namespace yy {
+                      counter_type l = 1,
+                      counter_type c = 1)
+     {
+-      filename = fn;
++      filename = std::shared_ptr<filename_type>(fn);
+       line = l;
+       column = c;
+     }
+@@ -105,7 +105,7 @@ namespace yy {
+     /** \} */
+ 
+     /// File name to which this position refers.
+-    filename_type* filename;
++    std::shared_ptr<filename_type> filename;
+     /// Current line number.
+     counter_type line;
+     /// Current column number.
+diff --git a/src/parser/seclang-parser.cc b/src/parser/seclang-parser.cc
+index dfabb4342..00198fded 100644
+--- a/src/parser/seclang-parser.cc
++++ b/src/parser/seclang-parser.cc
+@@ -1317,7 +1317,7 @@ namespace yy {
+ #line 319 "seclang-parser.yy"
+ {
+   // Initialize the initial location.
+-  yyla.location.begin.filename = yyla.location.end.filename = new std::string(driver.file);
++  yyla.location.begin.filename = yyla.location.end.filename = std::shared_ptr<const std::string>(new std::string(driver.file));
+ }
+ 
+ #line 1328 "seclang-parser.cc"
+diff --git a/src/parser/seclang-parser.yy b/src/parser/seclang-parser.yy
+index fdb2bb111..224e6abc5 100644
+--- a/src/parser/seclang-parser.yy
++++ b/src/parser/seclang-parser.yy
+@@ -317,7 +317,7 @@ using namespace modsecurity::operators;
+ %initial-action
+ {
+   // Initialize the initial location.
+-  @$.begin.filename = @$.end.filename = new std::string(driver.file);
++  @$.begin.filename = @$.end.filename = std::shared_ptr<const std::string>(new std::string(driver.file));
+ };
+ %define parse.trace
+ %define parse.error verbose
+diff --git a/src/parser/seclang-scanner.cc b/src/parser/seclang-scanner.cc
+index 74418c522..fe5fd4bd4 100644
+--- a/src/parser/seclang-scanner.cc
++++ b/src/parser/seclang-scanner.cc
+@@ -8488,7 +8488,7 @@ YY_RULE_SETUP
+         std::string err;
+         std::string f = modsecurity::utils::find_resource(s, *driver.loc.back()->end.filename, &err);
+         driver.loc.push_back(new yy::location());
+-        driver.loc.back()->begin.filename = driver.loc.back()->end.filename = new std::string(f);
++        driver.loc.back()->begin.filename = driver.loc.back()->end.filename = std::shared_ptr<const std::string>(new std::string(f));
+         yyin = fopen(f.c_str(), "r" );
+         if (!yyin) {
+             BEGIN(INITIAL);
+@@ -8519,7 +8519,7 @@ YY_RULE_SETUP
+     for (auto& s: files) {
+         std::string f = modsecurity::utils::find_resource(s, *driver.loc.back()->end.filename, &err);
+         driver.loc.push_back(new yy::location());
+-        driver.loc.back()->begin.filename = driver.loc.back()->end.filename = new std::string(f);
++        driver.loc.back()->begin.filename = driver.loc.back()->end.filename = std::shared_ptr<const std::string>(new std::string(f));
+ 
+         yyin = fopen(f.c_str(), "r" );
+         if (!yyin) {
+@@ -8552,7 +8552,7 @@ YY_RULE_SETUP
+     c.setKey(key);
+ 
+     driver.loc.push_back(new yy::location());
+-    driver.loc.back()->begin.filename = driver.loc.back()->end.filename = new std::string(url);
++    driver.loc.back()->begin.filename = driver.loc.back()->end.filename = std::shared_ptr<const std::string>(new std::string(url));
+     YY_BUFFER_STATE temp = YY_CURRENT_BUFFER;
+     yypush_buffer_state(temp);
+ 
+diff --git a/src/parser/seclang-scanner.ll b/src/parser/seclang-scanner.ll
+index 9686027ba..18118bb08 100755
+--- a/src/parser/seclang-scanner.ll
++++ b/src/parser/seclang-scanner.ll
+@@ -1250,7 +1250,7 @@ EQUALS_MINUS                            (?i:=\-)
+         std::string err;
+         std::string f = modsecurity::utils::find_resource(s, *driver.loc.back()->end.filename, &err);
+         driver.loc.push_back(new yy::location());
+-        driver.loc.back()->begin.filename = driver.loc.back()->end.filename = new std::string(f);
++        driver.loc.back()->begin.filename = driver.loc.back()->end.filename = std::shared_ptr<const std::string>(new std::string(f));
+         yyin = fopen(f.c_str(), "r" );
+         if (!yyin) {
+             BEGIN(INITIAL);
+@@ -1278,7 +1278,7 @@ EQUALS_MINUS                            (?i:=\-)
+     for (auto& s: files) {
+         std::string f = modsecurity::utils::find_resource(s, *driver.loc.back()->end.filename, &err);
+         driver.loc.push_back(new yy::location());
+-        driver.loc.back()->begin.filename = driver.loc.back()->end.filename = new std::string(f);
++        driver.loc.back()->begin.filename = driver.loc.back()->end.filename = std::shared_ptr<const std::string>(new std::string(f));
+ 
+         yyin = fopen(f.c_str(), "r" );
+         if (!yyin) {
+@@ -1307,7 +1307,7 @@ EQUALS_MINUS                            (?i:=\-)
+     c.setKey(key);
+ 
+     driver.loc.push_back(new yy::location());
+-    driver.loc.back()->begin.filename = driver.loc.back()->end.filename = new std::string(url);
++    driver.loc.back()->begin.filename = driver.loc.back()->end.filename = std::shared_ptr<const std::string>(new std::string(url));
+     YY_BUFFER_STATE temp = YY_CURRENT_BUFFER;
+     yypush_buffer_state(temp);
+ 
+diff --git a/src/rule_with_actions.cc b/src/rule_with_actions.cc
+index 5ac17a267..6c44da7e5 100644
+--- a/src/rule_with_actions.cc
++++ b/src/rule_with_actions.cc
+@@ -80,6 +80,10 @@ RuleWithActions::RuleWithActions(
+     m_containsStaticBlockAction(false),
+     m_isChained(false) {
+ 
++    if (transformations != NULL) {
++        delete transformations;
++    }
++
+     if (actions) {
+         for (Action *a : *actions) {
+             if (a->action_kind == Action::ConfigurationKind) {
