@@ -1,0 +1,36 @@
+From 741719ca53f9da8629d3a2acf3a4570cfa6c2d11 Mon Sep 17 00:00:00 2001
+From: Konstantin Pavlov <thresh@nginx.com>
+Date: Fri, 20 May 2022 11:26:35 +0400
+Subject: [PATCH] Added support for OpenSSL 3.0.
+
+FIPS_mode() was removed from OpenSSL 3.0 so use
+EVP_default_properties_is_fips_enabled instead.  However, at least
+Fedora and RHEL 9 patched their openssl packages to provide FIPS_mode()
+so check if it's not defined.
+
+This was tested on:
+- Ubuntu 22.04 openssl 3.0.2-0ubuntu1.1 FIPS disabled
+- RHEL 8.6 openssl 1.1.1k-6.el8_5.x86_64 FIPS disabled and enabled.
+- RHEL 9.0 openssl 3.0.1-23.el9_0.x86_64 FIPS disabled and enabled.
+---
+ ngx_core_fips_check_module.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/ngx_core_fips_check_module.c b/ngx_core_fips_check_module.c
+index 149f595..706725a 100644
+--- a/ngx_core_fips_check_module.c
++++ b/ngx_core_fips_check_module.c
+@@ -10,6 +10,10 @@
+ 
+ #include <openssl/crypto.h>
+ 
++#if (OPENSSL_VERSION_NUMBER >= 0x30000000L && !defined FIPS_mode)
++# define FIPS_mode() EVP_default_properties_is_fips_enabled(NULL)
++#endif
++
+ typedef enum {
+     UNKNOWN,
+     DISABLED,
+-- 
+2.30.1 (Apple Git-130)
+

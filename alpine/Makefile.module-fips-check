@@ -5,11 +5,13 @@ MODULE_SUMMARY_fips_check=	3rd-party FIPS status check dynamic module
 include $(CONTRIB)/src/nginx-fips-check-module/version
 
 MODULE_VERSION_fips_check=	$(NGINX_FIPS_CHECK_MODULE_VERSION)
-MODULE_RELEASE_fips_check=	1
+MODULE_RELEASE_fips_check=	2
 
 MODULE_VERSION_PREFIX_fips_check=$(MODULE_TARGET_PREFIX)
 
 MODULE_SOURCES_fips_check=	nginx-fips-check-module-$(NGINX_FIPS_CHECK_MODULE_VERSION).tar.gz
+
+MODULE_PATCHES_fips_check= $(CONTRIB)/src/nginx-fips-check-module/0001-Added-support-for-OpenSSL-3.0.patch
 
 MODULE_CONFARGS_fips_check=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-fips-check-module-$(NGINX_FIPS_CHECK_MODULE_VERSION)
 

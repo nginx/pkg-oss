@@ -5,6 +5,18 @@
 <change_log title="nginx_module_fips_check">
 
 
+<changes apply="nginx-module-fips-check" ver="0.1" rev="2" basever="1.21.6"
+         date="2022-05-20" time="12:20:00 +0400"
+         packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
+<change>
+<para>
+Added a patch to fix FTBFS on OpenSSL 3.0-based systems.
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-fips-check" ver="0.1" rev="1" basever="1.21.6"
          date="2022-01-25" time="18:13:46 +0300"
          packager="Mikhail Isachenkov &lt;mikhail.isachenkov@nginx.com&gt;">
