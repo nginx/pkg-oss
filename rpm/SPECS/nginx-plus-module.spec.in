@@ -31,6 +31,12 @@ BuildRequires: libopenssl-devel
 %define _debugsource_template %{nil}
 %endif
 
+%if 0%{?rhel} == 9
+%define epoch 1
+Epoch: %{epoch}
+%define _debugsource_template %{nil}
+%endif
+
 %if 0%{?fedora}
 %define _debugsource_template %{nil}
 %global _hardened_build 1
