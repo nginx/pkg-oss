@@ -41,7 +41,7 @@ BuildRequires: libxml2-devel
 %if 0%{?suse_version} == 0
 BuildRequires: patchelf
 %endif
-BuildRequires: pcre-devel
+BuildRequires: pcre2-devel
 BuildRequires: libtool
 BuildRequires: autoconf
 BuildRequires: automake

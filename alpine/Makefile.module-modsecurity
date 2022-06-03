@@ -34,7 +34,7 @@ MODULE_CONFARGS_modsecurity=	--add-dynamic-module=$(MODSRC_PREFIX)modsecurity-ng
 
 prerequisites-for-module-modsecurity:
 
-MODULE_BUILD_DEPENDS_modsecurity=yajl-dev libxml2-dev curl-dev patchelf pcre-dev libtool autoconf automake
+MODULE_BUILD_DEPENDS_modsecurity=yajl-dev libxml2-dev curl-dev patchelf pcre2-dev libtool autoconf automake
 
 define MODULE_PREBUILD_modsecurity
 	cd ../modsecurity-$(MODSECURITY_GITHASH) \&\& \

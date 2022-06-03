@@ -33,7 +33,7 @@ MODULE_CONFARGS_modsecurity=	--add-dynamic-module=$(MODSRC_PREFIX)modsecurity-ng
 		.sum-modsecurity-nginx
 	touch $@
 
-MODULE_BUILD_DEPENDS_modsecurity=,libxml2-dev,libyajl-dev,libcurl4-openssl-dev,patchelf,libpcre3-dev,autoconf,automake,libtool
+MODULE_BUILD_DEPENDS_modsecurity=,libxml2-dev,libyajl-dev,libcurl4-openssl-dev,patchelf,libpcre2-dev,autoconf,automake,libtool
 
 define MODULE_PREBUILD_modsecurity
 	cd $$(BUILDDIR_nginx)/extra/modsecurity-$(MODSECURITY_GITHASH) \&\& \
