@@ -5,6 +5,24 @@
 <change_log title="nginx_module_opentracing">
 
 
+<changes apply="nginx-module-opentracing" ver="0.24.0" rev="1" basever="1.21.6"
+         date="2022-06-03" time="21:34:00 +0400"
+         packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
+<change>
+<para>
+Updated jaeger-cpp to 0.9.0
+</para>
+</change>
+
+<change>
+<para>
+Updated nginx-opentracing to 0.24.0
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-opentracing" ver="0.23.0" rev="1" basever="1.21.6"
          date="2022-02-02" time="18:13:46 +0300"
          packager="Igor Ippolitov &lt;iippolitov@nginx.com&gt;">
