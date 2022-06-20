@@ -24,7 +24,7 @@ Description: %%SUMMARY%%
 Package: nginx-module-%%MODULE%%-dbg
 Architecture: any
 Section: debug
-Priority: extra
+Priority: optional
 Depends: nginx (= %%BASE_VERSION%%-%%BASE_RELEASE%%~%%CODENAME%%),
          nginx-module-%%MODULE%% (= %%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%),
          ${misc:Depends}
