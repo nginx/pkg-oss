@@ -25,7 +25,7 @@ Description: high performance web server
 Package: nginx-dbg
 Architecture: any
 Section: debug
-Priority: extra
+Priority: optional
 Depends: ${misc:Depends}, nginx (= ${binary:Version})
 Description: nginx debug symbols
  This package contains the debugging symbols for nginx.
