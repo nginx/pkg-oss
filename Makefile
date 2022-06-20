@@ -21,7 +21,7 @@ RELEASE?=	1
 VERSION_NJS?= $(shell curl -fs https://hg.nginx.org/njs/raw-file/default/src/njs.h | fgrep 'define NJS_VERSION' | cut -d '"' -f 2)
 RELEASE_NJS?= 1
 
-PACKAGER?=	$(shell hg config ui.username)
+PACKAGER?=	Nginx Packaging <nginx-packaging@f5.com>
 
 TARBALL?=	https://nginx.org/download/nginx-$(VERSION).tar.gz
 
