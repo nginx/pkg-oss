@@ -4,6 +4,18 @@
 
 <change_log title="nginx_module_modsecurity">
 
+
+<changes apply="nginx-module-modsecurity" ver="1.0.3" rev="1" basever="1.23.0"
+         date="2022-06-21" time="20:54:23 +0400"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.23.0-1
+</para>
+</change>
+
+</changes>
+
 <changes apply="nginx-module-modsecurity" ver="1.0.3" rev="1" basever="1.21.6"
          date="2022-06-03" time="19:55:46 +0400"
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
