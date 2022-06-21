@@ -81,29 +81,29 @@ release: version-check nginx-$(VERSION).tar.gz
 		set -e ; \
 		echo "==> Preparing $(FLAVOR) release $(VERSION)-$(RELEASE)" ; \
 		$(SHA512SUM) nginx-$(VERSION).tar.gz >>contrib/src/nginx/SHA512SUMS ; \
-		sed -e "s,^NGINX_VERSION :=.*,NGINX_VERSION := $(VERSION),g" -i contrib/src/nginx/version ; \
+		sed -e "s,^NGINX_VERSION :=.*,NGINX_VERSION := $(VERSION),g" -i.bak contrib/src/nginx/version ; \
 		for f in $(BASE_MAKEFILES); do \
 			echo "--> $${f}" ; \
 			sed -e "s,^BASE_RELEASE=.*,BASE_RELEASE=	$(RELEASE),g" \
-				-i $${f} ; \
+				-i.bak $${f} ; \
 		done ; \
 		reldate=`date +"%Y-%m-%d"` ; \
 		reltime=`date +"%H:%M:%S %z"` ; \
 		packager=`echo "$(PACKAGER)" | sed -e 's,<,\\\\\\&lt\;,' -e 's,>,\\\\\\&gt\;,'` ; \
 		CHANGESADD="\n\n\n<changes apply=\"nginx\" ver=\"$(VERSION)\" rev=\"$(RELEASE)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\n$(VERSION)-$(RELEASE)\n</para>\n</change>\n\n</changes>" ; \
-		sed -i -e "s,title=\"nginx\">,title=\"nginx\">$${CHANGESADD}," docs/nginx.xml ; \
+		sed -i.bak -e "s,title=\"nginx\">,title=\"nginx\">$${CHANGESADD}," docs/nginx.xml ; \
 		for module in $(MODULES); do \
 			echo "--> changelog for nginx-module-$${module}" ; \
 			module_underscore=`echo $${module} | tr '-' '_'` ; \
 			CHANGESADD="\n\n\n<changes apply=\"nginx-module-$${module}\" ver=\"$(VERSION)\" rev=\"$(RELEASE)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nbase version updated to $(VERSION)-$(RELEASE)\n</para>\n</change>\n\n</changes>" ; \
-			sed -i -e "s,title=\"nginx_module_$${module_underscore}\">,title=\"nginx_module_$${module_underscore}\">$${CHANGESADD}," docs/nginx-module-$${module}.xml ; \
+			sed -i.bak -e "s,title=\"nginx_module_$${module_underscore}\">,title=\"nginx_module_$${module_underscore}\">$${CHANGESADD}," docs/nginx-module-$${module}.xml ; \
 		done ; \
 		for module in $(EXTERNAL_MODULES); do \
 			echo "--> changelog for nginx-module-$${module}" ; \
 			module_version=`fgrep apply docs/nginx-module-$${module}.xml | head -1 | cut -d '"' -f 4` ; \
 			module_underscore=`echo $${module} | tr '-' '_'` ; \
 			CHANGESADD="\n\n\n<changes apply=\"nginx-module-$${module}\" ver=\"$${module_version}\" rev=\"$(RELEASE)\" basever=\"$(VERSION)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nbase version updated to $(VERSION)-$(RELEASE)\n</para>\n</change>\n\n</changes>" ; \
-			sed -i -e "s,title=\"nginx_module_$${module_underscore}\">,title=\"nginx_module_$${module_underscore}\">$${CHANGESADD}," docs/nginx-module-$${module}.xml ; \
+			sed -i.bak -e "s,title=\"nginx_module_$${module_underscore}\">,title=\"nginx_module_$${module_underscore}\">$${CHANGESADD}," docs/nginx-module-$${module}.xml ; \
 		done ; \
 		echo ; \
 		echo "Done. Please carefully check the diff. Use \"make revert\" to revert any changes." ; \
@@ -115,13 +115,13 @@ release-njs: version-check-njs njs-$(VERSION_NJS).tar.gz
 		set -e ; \
 		echo "==> Preparing $(FLAVOR) njs release $(VERSION_NJS)-$(RELEASE_NJS)" ; \
 		$(SHA512SUM) njs-$(VERSION_NJS).tar.gz > contrib/src/njs/SHA512SUMS ; \
-		sed -e "s,^NJS_VERSION :=.*,NJS_VERSION := $(VERSION_NJS),g" -i contrib/src/njs/version ; \
+		sed -e "s,^NJS_VERSION :=.*,NJS_VERSION := $(VERSION_NJS),g" -i.bak contrib/src/njs/version ; \
 		reldate=`date +"%Y-%m-%d"` ; \
 		reltime=`date +"%H:%M:%S %z"` ; \
 		packager=`echo "$(PACKAGER)" | sed -e 's,<,\\\\\\&lt\;,' -e 's,>,\\\\\\&gt\;,'` ; \
 		echo "--> changelog for nginx-module-njs" ; \
 		CHANGESADD="\n\n\n<changes apply=\"nginx-module-njs\" ver=\"$(VERSION_NJS)\" rev=\"$(RELEASE_NJS)\" basever=\"$(CURRENT_VERSION)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nnjs updated to $(VERSION_NJS)\n</para>\n</change>\n\n</changes>" ; \
-		sed -i -e "s,title=\"nginx_module_njs\">,title=\"nginx_module_njs\">$${CHANGESADD}," docs/nginx-module-njs.xml ; \
+		sed -i.bak -e "s,title=\"nginx_module_njs\">,title=\"nginx_module_njs\">$${CHANGESADD}," docs/nginx-module-njs.xml ; \
 		echo ; \
 		echo "Done. Please carefully check the diff. Use \"make revert\" to revert any changes." ; \
 		echo ; \
