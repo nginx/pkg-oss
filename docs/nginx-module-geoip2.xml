@@ -5,6 +5,18 @@
 <change_log title="nginx_module_geoip2">
 
 
+<changes apply="nginx-module-geoip2" ver="3.4" rev="1" basever="1.23.0"
+         date="2022-07-14" time="18:30:00 +0400"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated geoip2 module to 3.4 release.
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-geoip2" ver="3.3" rev="1" basever="1.23.0"
          date="2022-06-21" time="20:54:23 +0400"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
