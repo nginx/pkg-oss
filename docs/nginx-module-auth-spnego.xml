@@ -5,6 +5,18 @@
 <change_log title="nginx_module_auth_spnego">
 
 
+<changes apply="nginx-module-auth-spnego" ver="1.1.0" rev="2" basever="1.23.0"
+         date="2022-07-14" time="17:45 +0400"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Added a patch fixing segfaults with nginx 1.23.0+.
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-auth-spnego" ver="1.1.0" rev="1" basever="1.23.0"
          date="2022-06-21" time="20:54:23 +0400"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">

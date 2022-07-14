@@ -5,11 +5,13 @@ MODULE_SUMMARY_auth_spnego=	3rd-party kerberos authentication dynamic module
 include $(CONTRIB)/src/spnego-http-auth-nginx-module/version
 
 MODULE_VERSION_auth_spnego=	$(SPNEGO_HTTP_AUTH_NGINX_MODULE_VERSION)
-MODULE_RELEASE_auth_spnego=	1
+MODULE_RELEASE_auth_spnego=	2
 
 MODULE_VERSION_PREFIX_auth_spnego=$(MODULE_TARGET_PREFIX)
 
 MODULE_SOURCES_auth_spnego=	spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHASH).tar.xz
+
+MODULE_PATCHES_auth_spnego=	$(CONTRIB)/src/spnego-http-auth-nginx-module/extra-patch-ngx_http_auth_spnego_module.c
 
 MODULE_CONFARGS_auth_spnego=	--with-http_ssl_module \
 				--add-dynamic-module=$(MODSRC_PREFIX)spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHASH)
