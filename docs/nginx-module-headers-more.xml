@@ -5,6 +5,19 @@
 <change_log title="nginx_module_headers_more">
 
 
+<changes apply="nginx-module-headers-more" ver="0.33" rev="2" basever="1.23.0"
+         date="2022-07-14" time="17:00:00 +0400"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated headers-more to git hash d502e41996d24a382bd9c632e3ae3efa0a5fca66
+This fixes FTBFS with nginx 1.23.0+.
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-headers-more" ver="0.33" rev="1" basever="1.23.0"
          date="2022-06-21" time="20:54:23 +0400"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
