@@ -10,7 +10,7 @@ include $(CONTRIB)/src/lua-resty-core/version
 include $(CONTRIB)/src/lua-resty-lrucache/version
 
 MODULE_VERSION_lua=	$(LUA_NGINX_MODULE_VERSION)
-MODULE_RELEASE_lua=	1
+MODULE_RELEASE_lua=	2
 
 MODULE_VERSION_PREFIX_lua=$(MODULE_TARGET_PREFIX)
 
@@ -24,6 +24,7 @@ MODULE_SOURCES_lua=	luajit2-$(LUAJIT2_VERSION).tar.gz \
 MODULE_PATCHES_lua=	$(CONTRIB)/src/luajit2/Makefile.patch \
 			$(CONTRIB)/src/luajit2/src-luaconf.h.patch \
 			$(CONTRIB)/src/lua-nginx-module/config.patch \
+			$(CONTRIB)/src/lua-nginx-module/0001-bugfix-update-handling-of-multiple-headers-changed-i.patch \
 			$(CONTRIB)/src/stream-lua-nginx-module/config.patch
 
 MODULE_CONFARGS_lua=	--with-http_dav_module \
