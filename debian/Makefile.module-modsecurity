@@ -45,7 +45,7 @@ define MODULE_PREBUILD_modsecurity
 	ln -s ../../modsecurity-python-bindings bindings/python \&\& \
 	./build.sh \&\& \
 	./configure --prefix $$(BUILDDIR_nginx)/extra/modsecurity-$(MODSECURITY_GITHASH)/local --without-lmdb --without-lua \&\& \
-	$$(MAKE) -j$$(NUMJOBS) install \&\& : $$(MAKE) check-TESTS
+	$$(MAKE) -j$$(NUMJOBS) install \&\& $$(MAKE) check-TESTS
 	rm -f /tmp/audit_test.log /tmp/audit_test_parallel.log
 	rm -rf /tmp/test
 endef
