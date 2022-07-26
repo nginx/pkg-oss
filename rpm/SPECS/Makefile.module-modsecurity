@@ -67,7 +67,7 @@ export MODULE_PREBUILD_modsecurity
 define MODULE_ENV_modsecurity
 MODSECURITY_INC="%{bdir}/modsecurity-$(MODSECURITY_GITHASH)/local/include" \\
 MODSECURITY_LIB="%{bdir}/modsecurity-$(MODSECURITY_GITHASH)/local/lib" \\
-NGX_IGNORE_RPATH=yes \\
+NGX_IGNORE_RPATH=YES \\
 endef
 export MODULE_ENV_modsecurity
 
