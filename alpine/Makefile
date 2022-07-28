@@ -43,7 +43,7 @@ MODULE_TARGET_PREFIX=$(TARGET_VERSION).
 ARCH=		$(shell uname -m)
 
 default:
-	@echo "valid targets: all base $(addprefix module-, $(MODULES)) test test-debug"
+	@echo "valid targets: all base $(addprefix module-, $(MODULES)) check-modules test test-debug"
 
 BASE_MODULES=	geoip image-filter njs perl xslt
 
@@ -335,9 +335,49 @@ test-module-%: base nginx-tests module-%
 	cd nginx-tests/module-$${module} && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$globals" prove $$PROVE_ARGS . ; \
 	}
 
+check-modules:
+	@{ \
+	files=$@-files ; \
+	rpath=$@-rpath ; \
+	exitcode=0 ; \
+	for module in $(MODULES); do \
+		searchpath=abuild-module-$${module}/pkg/nginx-module-$${module}/ ; \
+		[ -d $${searchpath} ] || continue ; \
+		case $${module} in \
+			perl) \
+				echo "Skipping module-$${module} checks due to known good rpaths" ; \
+			;; \
+			*) \
+				echo "Checking module-$${module} for rpaths" ; \
+				for p in usr/bin/ usr/sbin/; do \
+					find $${searchpath}$${p} -type f -executable -print > $${files} 2>/dev/null ; \
+				done; \
+				for p in usr/lib/ usr/lib64/; do \
+					find $${searchpath}$${p} -type f -iname "*.so" -print >> $${files} 2>/dev/null ; \
+				done; \
+				echo -n > $${rpath} ; \
+				while IFS= read -r line; do \
+					RPATH=`objdump -x $${line} 2>/dev/null | grep -E 'R.*PATH' | sed 's,R.*PATH,,' | tr -d ' '` ; \
+					if [ $${RPATH} ]; then \
+						echo $${line}:$${RPATH} >> $${rpath} ; \
+					fi; \
+				done < $${files} ; \
+				if [ -s $${rpath} ]; then \
+					echo "RPATHs found!" ; \
+					cat $${rpath} ; \
+					exitcode=1 ; \
+				fi ; \
+			;; \
+		esac ; \
+	done ; \
+	[ -f $${files} ] && rm -f $${files} ; \
+	[ -f $${rpath} ] && rm -f $${rpath} ; \
+	exit $${exitcode} ; \
+	}
+
 clean:
 	@rm -rf base abuild-base abuild-module-* module-* $(BASE_SRC) nginx-tests .deps-module-*
 
-.PHONY:	default all modules abuild test test-debug clean
+.PHONY:	default all modules abuild test test-debug check-modules clean
 
 .SECONDARY:

@@ -2,6 +2,8 @@
 %define nginx_user nginx
 %define nginx_group nginx
 
+%define __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
+
 %if 0%{?rhel} || 0%{?amzn} || 0%{?fedora}
 %define _group System Environment/Daemons
 %if 0%{?amzn} == 2
