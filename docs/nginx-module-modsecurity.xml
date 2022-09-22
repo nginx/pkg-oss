@@ -5,6 +5,17 @@
 <change_log title="nginx_module_modsecurity">
 
 
+<changes apply="nginx-module-modsecurity" ver="1.0.3" rev="2" basever="1.23.1"
+         date="2022-09-20" time="12:00:00 +0000"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+ModSecurity updated to 3.0.8 release (+commits up to 82f75dc0ce134c639df6c33bd610519bd4e90e42)
+https://github.com/SpiderLabs/ModSecurity/releases/tag/v3.0.8
+</para>
+</change>
+</change>
+
 <changes apply="nginx-module-modsecurity" ver="1.0.3" rev="1" basever="1.23.1"
          date="2022-07-19" time="19:06:54 +0400"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
