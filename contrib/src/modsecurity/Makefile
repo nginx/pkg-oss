@@ -16,7 +16,6 @@ $(TARBALLS)/modsecurity-$(MODSECURITY_GITHASH).tar.xz:
 modsecurity: modsecurity-$(MODSECURITY_GITHASH).tar.xz .sum-modsecurity
 	$(UNPACK)
 	$(APPLY) $(SRC)/modsecurity/older-libmaxminddb-compatibility.patch
-	$(APPLY) $(SRC)/modsecurity/PR2580.patch
 	$(MOVE)
 
 .modsecurity: modsecurity

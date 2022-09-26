@@ -19,8 +19,7 @@ MODULE_SOURCES_modsecurity=	modsecurity-$(MODSECURITY_GITHASH).tar.xz \
 				secrules-language-tests-$(SECRULES_LANGUAGE_TESTS_GITHASH).tar.xz \
 				modsecurity-python-bindings-$(MODSECURITY_PYTHON_BINDINGS_GITHASH).tar.xz
 
-MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/older-libmaxminddb-compatibility.patch \
-				$(CONTRIB)/src/modsecurity/PR2580.patch
+MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/older-libmaxminddb-compatibility.patch
 
 MODULE_CONFARGS_modsecurity=	--add-dynamic-module=modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH)
 
