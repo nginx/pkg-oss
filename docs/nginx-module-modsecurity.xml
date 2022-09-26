@@ -14,7 +14,7 @@ ModSecurity updated to 3.0.8 release (+commits up to 82f75dc0ce134c639df6c33bd61
 https://github.com/SpiderLabs/ModSecurity/releases/tag/v3.0.8
 </para>
 </change>
-</change>
+</changes>
 
 <changes apply="nginx-module-modsecurity" ver="1.0.3" rev="1" basever="1.23.1"
          date="2022-07-19" time="19:06:54 +0400"
