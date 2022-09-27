@@ -2,7 +2,9 @@
 
 DEST?=	tmp
 VERSIONMASK?=	0
-XSLS?=	xslscript.pl
+CONTRIB?=	../contrib
+CONTRIB:=	$(abspath $(CONTRIB))
+XSLS?=	$(CONTRIB)/xslscript/xslscript.pl
 
 PACKAGES=	nginx							\
 		nginx-module-auth-spnego				\
@@ -30,6 +32,9 @@ changes:	$(DEST)/CHANGES
 
 changelogs:	$(addsuffix .rpm-changelog, $(addprefix $(DEST)/, $(PACKAGES))) \
 		$(addsuffix .deb-changelog, $(addprefix $(DEST)/, $(PACKAGES)))
+
+$(XSLS):
+	cd $(CONTRIB) && make .xslscript
 
 $(DEST)/CHANGES:		changes.dtd				\
 				nginx.xml				\
@@ -62,7 +67,7 @@ $(DEST)/%.deb-changelog:	changes.dtd 				\
 		--stringparam versionmask $(VERSIONMASK)		\
 		-o $@ changes.xslt $*.xml
 
-changes.xslt:	changes.xsls
+changes.xslt:	changes.xsls $(XSLS)
 	$(XSLS) -o $@ $<
 
 clean:
