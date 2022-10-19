@@ -5,6 +5,18 @@
 <change_log title="nginx_module_brotli">
 
 
+<changes apply="nginx-module-brotli" ver="1.0.0" rev="1" basever="1.23.2"
+         date="2022-10-19" time="13:32:28 +0400"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.23.2-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-brotli" ver="1.0.0" rev="1" basever="1.23.1"
          date="2022-07-19" time="19:06:54 +0400"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
