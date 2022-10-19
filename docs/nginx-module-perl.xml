@@ -5,6 +5,18 @@
 <change_log title="nginx_module_perl">
 
 
+<changes apply="nginx-module-perl" ver="1.22.1" rev="1"
+         date="2022-10-19" time="13:37:38 +0400"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.22.1-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-perl" ver="1.22.0" rev="1"
          date="2022-05-24" time="19:24:55 +0400"
          packager="Konstantin Pavlov &lt;thresh@nginx.com&gt;">
