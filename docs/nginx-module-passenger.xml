@@ -5,6 +5,19 @@
 <change_log title="nginx_module_passenger">
 
 
+<changes apply="nginx-module-passenger" ver="6.0.15" rev="1" basever="1.23.2"
+         date="2022-11-09" time="12:00:00 +0400"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Passenger version updated to 6.0.15
+https://github.com/phusion/passenger/releases/tag/release-6.0.15
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-passenger" ver="6.0.14" rev="1" basever="1.23.2"
          date="2022-10-19" time="13:32:28 +0400"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
