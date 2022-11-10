@@ -5,6 +5,19 @@
 <change_log title="nginx_module_headers_more">
 
 
+<changes apply="nginx-module-headers-more" ver="0.34" rev="1" basever="1.23.2"
+         date="2022-11-09" time="12:00:00 +0400"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated headers-more to git hash bea1be3bbf6af28f6aa8cf0c01c07ee1637e2bd0
+which is version 0.34
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-headers-more" ver="0.33" rev="1" basever="1.23.2"
          date="2022-10-19" time="13:32:28 +0400"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
