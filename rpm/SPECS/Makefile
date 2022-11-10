@@ -382,11 +382,14 @@ test: base nginx-tests
 	for so in `find module-*/ -maxdepth 1 -type f -name "*module.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
+	if [ -d $$pwd/module-modsecurity ]; then \
+		export LD_LIBRARY_PATH=$$pwd/module-modsecurity/../modsecurity/local/lib:$$LD_LIBRARY_PATH ; \
+	fi ;  \
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
 	if [ -d $$pwd/module-opentracing ]; then \
-		export LD_LIBRARY_PATH=$$pwd/module-opentracing/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
+		export LD_LIBRARY_PATH=$$pwd/module-opentracing/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib:$$LD_LIBRARY_PATH ; \
 	fi ;  \
 	if [ -d $$pwd/module-lua ]; then \
 		globals_http="lua_package_path '$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
@@ -405,6 +408,9 @@ test-debug: base nginx-tests
 	for so in `find module-*/ -maxdepth 1 -type f -name "*module-debug.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
+	if [ -d $$pwd/module-modsecurity ]; then \
+		export LD_LIBRARY_PATH=$$pwd/module-modsecurity/../modsecurity-$(MODSECURITY_GITHASH)/local/lib:$$LD_LIBRARY_PATH ; \
+	fi ;  \
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
 	fi ; \

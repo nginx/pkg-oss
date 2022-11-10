@@ -272,7 +272,7 @@ test: base nginx-tests
 		globals="$$globals env PERL5LIB=$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl:$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
 	if [ -d $$pwd/module-modsecurity ]; then \
-		export LD_LIBRARY_PATH=$$pwd/abuild-module-modsecurity/src/modsecurity-v$(MODSECURITY_VERSION)/local/lib ; \
+		export LD_LIBRARY_PATH=$$pwd/abuild-module-modsecurity/src/modsecurity/local/lib ; \
 	fi ; \
 	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/abuild-module-opentracing/src/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
