@@ -8,14 +8,15 @@
 +export PREFIX= /usr
  export MULTILIB= lib
  ##############################################################################
- 
-@@ -33,9 +33,9 @@
+
+@@ -33,10 +33,10 @@
  INSTALL_BIN=   $(DPREFIX)/bin
  INSTALL_LIB=   $(DPREFIX)/$(MULTILIB)
  INSTALL_SHARE= $(DPREFIX)/share
--INSTALL_INC=   $(DPREFIX)/include/luajit-$(MAJVER).$(MINVER)
-+INSTALL_INC=   $(DPREFIX)/include/nginx-luajit-$(MAJVER).$(MINVER)
- 
+-INSTALL_DEFINC= $(DPREFIX)/include/luajit-$(MAJVER).$(MINVER)
++INSTALL_DEFINC= $(DPREFIX)/include/nginx-luajit-$(MAJVER).$(MINVER)
+ INSTALL_INC=   $(INSTALL_DEFINC)
+
 -INSTALL_LJLIBD= $(INSTALL_SHARE)/luajit-$(VERSION)
 +INSTALL_LJLIBD= $(INSTALL_SHARE)/nginx-luajit-2.1
  INSTALL_JITLIB= $(INSTALL_LJLIBD)/jit
