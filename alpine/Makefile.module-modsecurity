@@ -9,7 +9,7 @@ include $(CONTRIB)/src/secrules-language-tests/version
 include $(CONTRIB)/src/modsecurity-python-bindings/version
 
 MODULE_VERSION_modsecurity=	$(MODSECURITY_NGINX_VERSION)
-MODULE_RELEASE_modsecurity=	2
+MODULE_RELEASE_modsecurity=	1
 
 MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
 

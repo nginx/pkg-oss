@@ -5,7 +5,7 @@ MODULE_SUMMARY_auth_spnego=	3rd-party kerberos authentication dynamic module
 include $(CONTRIB)/src/spnego-http-auth-nginx-module/version
 
 MODULE_VERSION_auth_spnego=	$(SPNEGO_HTTP_AUTH_NGINX_MODULE_VERSION)
-MODULE_RELEASE_auth_spnego=	2
+MODULE_RELEASE_auth_spnego=	1
 
 MODULE_VERSION_PREFIX_auth_spnego=$(MODULE_TARGET_PREFIX)
 
