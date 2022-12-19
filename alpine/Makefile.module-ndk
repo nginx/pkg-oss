@@ -23,9 +23,9 @@ MODULE_CC_OPT_ndk=-DNDK_SET_VAR -DNDK_UPSTREAM_LIST
 MODULE_CC_OPT_DEBUG_ndk=$(MODULE_CC_OPT_ndk)
 
 ifeq ($(MODULE_TARGET), plus)
-NDK_DEPENDENCY_TAG=nginx-plus-module-ndk-r$(PLUS_VERSION)
+NDK_DEPENDENCY_TAG=nginx-plus-module-ndk nginx-plus-module-ndk-r$(PLUS_VERSION)
 else
-NDK_DEPENDENCY_TAG=nginx-module-ndk-r$(BASE_VERSION)
+NDK_DEPENDENCY_TAG=nginx-module-ndk nginx-module-ndk-r$(BASE_VERSION)
 endif
 
 define MODULE_POST_ndk

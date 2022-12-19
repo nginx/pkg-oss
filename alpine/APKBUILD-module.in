@@ -11,7 +11,7 @@ pkgdesc="%%SUMMARY%%"
 url="https://nginx.org/"
 arch="all"
 license="2-clause BSD-like license"
-depends="nginx-r$_base_version %%MODULE_DEPENDS%%"
+depends="nginx~$_base_version nginx-r$_base_version %%MODULE_DEPENDS%%"
 makedepends="linux-headers openssl-dev pcre2-dev zlib-dev %%MODULE_BUILD_DEPENDS%%"
 provides="$pkgname-r$_base_version %%MODULE_PROVIDES%%"
 %%ADD_CONTROL_TAGS%%
