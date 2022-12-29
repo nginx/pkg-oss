@@ -25,7 +25,10 @@ endef
 export MODULE_ADD_CONTROL_TAGS_njs
 
 define MODULE_PREBUILD_njs
-	cd ../njs-$(NJS_VERSION) \&\& ./configure \&\& make njs \&\& mv build build-cli
+	cd ../njs-$(NJS_VERSION) \&\& \
+	./configure --cc-opt="$$CFLAGS" --ld-opt="$$LDFLAGS" \&\& \
+	make njs \&\& \
+	mv build build-cli
 endef
 export MODULE_PREBUILD_njs
 

@@ -23,7 +23,10 @@ endef
 export MODULE_DEFINITIONS_njs
 
 define MODULE_PREBUILD_njs
-cd %{bdir}/njs-$(NJS_VERSION) \&\& ./configure \&\& make njs \&\& mv build build-cli
+cd %{bdir}/njs-$(NJS_VERSION) \&\& \
+./configure --cc-opt=\"%{WITH_CC_OPT}\" --ld-opt=\"%{WITH_LD_OPT}\" \&\& \
+make njs \&\& \
+mv build build-cli
 endef
 export MODULE_PREBUILD_njs
 
