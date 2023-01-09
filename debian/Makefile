@@ -189,7 +189,6 @@ rules-base: $(BASE_SRC) nginx.deb-changelog
 			$(DOCS)/nginx-modules-reference.pdf \
 			nginx.subscription-check.sh \
 			debuild-base/$(SRCDIR)/debian/ ; \
-		cp -r $(DOCS)/swagger-ui/ debuild-base/$(SRCDIR)/debian/ ; \
 		cp $(CONTRIB)/tarballs/dashboard.html debuild-base/$(SRCDIR)/debian/ ; \
 		mv debuild-base/$(SRCDIR)/debian/nginx-plus.conf debuild-base/$(SRCDIR)/debian/nginx.conf ; \
 		( cd debuild-base/$(SRCDIR) && \

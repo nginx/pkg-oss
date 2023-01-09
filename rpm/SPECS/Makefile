@@ -143,7 +143,7 @@ nginx.rpm-changelog:
 
 nginx.spec: nginx.rpm-changelog
 ifeq ($(BASE_TARGET), plus)
-	cp $(DOCS)/swagger-ui/* $(DOCS)/nginx-modules-reference.pdf $(SRCPATH)
+	cp $(DOCS)/nginx-modules-reference.pdf $(SRCPATH)
 	cp $(CONTRIB)/tarballs/dashboard.html $(SRCPATH)
 	cp $(DOCS)/EULA* $(SRCPATH)
 endif

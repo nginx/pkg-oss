@@ -165,7 +165,6 @@ abuild-base: $(BASE_SRC)
 	cp $(DOCS)/nginx.copyright abuild-base/COPYRIGHT ; \
 	if [ "$(BASE_TARGET)" = "plus" ]; then \
 		cp -v $(DOCS)/EULA-* $(CONTRIB)/tarballs/dashboard.html $(DOCS)/nginx-modules-reference.pdf abuild-base/ ; \
-		cp -vr $(DOCS)/swagger-ui abuild-base/; \
 	fi; \
 	cat nginx$(BASE_SUFFIX).initd.in | sed -e 's#%%DAEMON%%#nginx#g' > abuild-base/nginx$(BASE_SUFFIX).initd ; \
 	cat nginx$(BASE_SUFFIX).initd.in | sed -e 's#%%DAEMON%%#nginx-debug#g' > abuild-base/nginx$(BASE_SUFFIX)-debug.initd ; \
