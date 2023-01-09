@@ -39,7 +39,7 @@ config.env.%:
 	if test -e $(CURDIR)/man ; then  cp -Pa $(CURDIR)/man $(BUILDDIR_$*)/ ; fi
 	if test -e $(CURDIR)/docs ; then cp -Pa $(CURDIR)/docs $(BUILDDIR_$*)/ ; fi
 	cp -Pa $(CURDIR)/src $(BUILDDIR_$*)/
-	test -d $(CURDIR)/debian/extra && cp -Pa $(CURDIR)/debian/extra $(BUILDDIR_$*)/
+	if test -d $(CURDIR)/debian/extra ; then  cp -Pa $(CURDIR)/debian/extra $(BUILDDIR_$*)/ ; fi
 	touch $@
 
 config.pre.nginx:
