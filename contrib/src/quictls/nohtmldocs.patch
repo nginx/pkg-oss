@@ -1,0 +1,28 @@
+--- quictls-3.0.7/Configurations/unix-Makefile.tmpl	2022-11-02 15:36:22.000000000 +0000
++++ quictls-3.0.7/Configurations/unix-Makefile.tmpl	2022-12-08 22:16:43.803713497 +0000
+@@ -500,11 +500,11 @@
+ {- dependmagic('build_libs'); -}: build_libs_nodep
+ {- dependmagic('build_modules'); -}: build_modules_nodep
+ {- dependmagic('build_programs'); -}: build_programs_nodep
+ 
+ build_generated_pods: $(GENERATED_PODS)
+-build_docs: build_man_docs build_html_docs
++build_docs: build_man_docs
+ build_man_docs: $(MANDOCS1) $(MANDOCS3) $(MANDOCS5) $(MANDOCS7)
+ build_html_docs: $(HTMLDOCS1) $(HTMLDOCS3) $(HTMLDOCS5) $(HTMLDOCS7)
+ 
+ build_generated: $(GENERATED_MANDATORY)
+ build_libs_nodep: libcrypto.pc libssl.pc openssl.pc
+@@ -609,11 +609,11 @@
+ 
+ install_sw: install_dev install_engines install_modules install_runtime
+ 
+ uninstall_sw: uninstall_runtime uninstall_modules uninstall_engines uninstall_dev
+ 
+-install_docs: install_man_docs install_html_docs
++install_docs: install_man_docs
+ 
+ uninstall_docs: uninstall_man_docs uninstall_html_docs
+ 	$(RM) -r $(DESTDIR)$(DOCDIR)
+ 
+ {- output_off() if $disabled{fips}; "" -}
