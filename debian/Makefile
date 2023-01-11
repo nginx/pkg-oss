@@ -10,6 +10,11 @@ BASE_SUFFIX=-plus
 DOCS?=		../docs-plus
 MODULE_TARGET?=	plus
 endif
+ifeq ($(BASE_TARGET), quic)
+BASE_SUFFIX=-quic
+DOCS?=		../docs-quic
+MODULE_TARGET?=	quic
+endif
 
 DOCS?=		../docs
 MODULE_TARGET?=	oss
@@ -31,6 +36,13 @@ MODULE_SUMMARY_PREFIX=NGINX Plus
 TARGET_VERSION=$(PLUS_VERSION)
 BASE_ORIG_NAME=nginx-plus_$(PLUS_VERSION).orig.tar.gz
 MODULE_PACKAGE_URL=	https://www.nginx.com/
+else ifeq ($(MODULE_TARGET), quic)
+MODULE_SUMMARY_PREFIX=  nginx-quic
+TARGET_VERSION=$(BASE_VERSION)
+MODULE_SUFFIX=-quic
+BASE_ORIG_NAME=nginx-quic_$(BASE_VERSION).orig.tar.gz
+MODULE_PACKAGE_URL=     https://nginx.org/
+MODULE_PACKAGE_LICENSE=2-clause BSD-like license
 else
 MODULE_SUMMARY_PREFIX=nginx
 TARGET_VERSION=$(BASE_VERSION)
@@ -107,6 +119,13 @@ BASE_CONFIGURE_ARGS+= \
 	--with-stream_proxy_protocol_vendor_module
 endif
 
+ifeq ($(BASE_TARGET), quic)
+BASE_CONFIGURE_ARGS+= \
+	--build=nginx-quic-$(NGINX_QUIC_SOURCETAG) \
+ 	--with-http_v3_module \
+	--with-stream_quic_module
+endif
+
 export CR=\\n
 
 modname = $(shell echo $1 | tr '-' '_')
@@ -131,6 +150,20 @@ all:	base base-modules
 
 quictls:
 	make -f Makefile.quictls
+
+quic: quic-base quic-base-modules
+
+quic-all:
+	BASE_TARGET=quic MODULE_TARGET=quic make all modules test
+
+quic-base:
+	BASE_TARGET=quic make base
+
+quic-base-modules:
+	BASE_TARGET=quic MODULE_TARGET=quic make base-modules
+
+quic-modules:
+	BASE_TARGET=quic MODULE_TARGET=quic make modules
 
 base-modules:	$(addprefix module-, $(BASE_MODULES))
 
@@ -194,6 +227,15 @@ rules-base: $(BASE_SRC) nginx.deb-changelog
 			find debian/ -type f -exec file --mime {} \; | fgrep 'charset=binary' | cut -d ':' -f 1 > include-binaries && \
 			mv include-binaries debian/source/ \
 		) ; \
+	elif [ "$(BASE_TARGET)" = "quic" ]; then \
+		( cd debuild-base/$(SRCDIR) && \
+			make -f docs/GNUmakefile changes ; \
+		) ; \
+		cp	debuild-base/$(SRCDIR)/tmp/nginx-$(BASE_VERSION)/CHANGES \
+			debuild-base/$(SRCDIR)/tmp/nginx-$(BASE_VERSION)/CHANGES.ru \
+			debuild-base/$(SRCDIR)/debian/ ; \
+		rm -f debuild-base/$(SRCDIR)/tmp/nginx-$(BASE_VERSION)/CHANGES \
+			debuild-base/$(SRCDIR)/tmp/nginx-$(BASE_VERSION)/CHANGES.ru ; \
 	else \
 		cp	debuild-base/$(SRCDIR)/CHANGES \
 			debuild-base/$(SRCDIR)/CHANGES.ru \
@@ -333,6 +375,20 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 
 .deps-module-%:
 	touch $@
+
+nginx-tests-quic:
+	@{ \
+	if [ ! -L "nginx-tests-quic" ]; then \
+	    echo "===> Cloning QUIC tests" ; \
+	    rm -rf ../nginx-tests; \
+	    hg clone -r quic https://hg.nginx.org/nginx-tests-quic ../nginx-tests; \
+	    ln -s ../nginx-tests nginx-tests-quic; \
+	fi ; \
+	}
+
+ifeq ($(BASE_TARGET), quic)
+nginx-tests: nginx-tests-quic
+endif
 
 nginx-tests:
 	@{ \

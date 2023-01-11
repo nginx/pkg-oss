@@ -1,0 +1,33 @@
+Source: nginx-quic
+Section: httpd
+Priority: optional
+Maintainer: %%PACKAGE_VENDOR%%
+Build-Depends: debhelper (>= 11),
+               dpkg-dev (>= 1.16.1~),
+               quilt (>= 0.46-7~),
+               lsb-release,
+               libssl81-dev,
+               libpcre2-dev,
+               pkg-config,
+               zlib1g-dev
+Standards-Version: 4.1.4
+Homepage: https://nginx.org
+
+Package: nginx-quic
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, lsb-base (>= 3.0-6), adduser
+Provides: httpd, nginx-quic, nginx-quic-r%%BASE_VERSION%%
+Conflicts: nginx-common, nginx-core, nginx
+Replaces: nginx-common, nginx-core, nginx
+Description: high performance web server
+ nginx [engine x] is an HTTP and reverse proxy server, as well as
+ a mail proxy server.
+ This is a package with experimental QUIC support.
+
+Package: nginx-quic-dbg
+Architecture: any
+Section: debug
+Priority: optional
+Depends: ${misc:Depends}, nginx-quic (= ${binary:Version})
+Description: nginx debug symbols
+ This package contains the debugging symbols for nginx with QUIC support.

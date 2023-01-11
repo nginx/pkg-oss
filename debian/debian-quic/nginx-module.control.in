@@ -1,0 +1,33 @@
+Source: nginx-quic-module-%%MODULE%%
+Section: httpd
+Priority: optional
+Maintainer: %%PACKAGE_VENDOR%%
+Build-Depends: debhelper (>= 11),
+               dpkg-dev (>= 1.16.1~),
+               quilt (>= 0.46-7~),
+               lsb-release,
+               libssl81-dev,
+               libpcre2-dev,
+               pkg-config,
+               zlib1g-dev%%MODULE_BUILD_DEPENDS%%
+Standards-Version: 4.1.4
+Homepage: %%MODULE_PACKAGE_URL%%
+
+Package: nginx-quic-module-%%MODULE%%
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         nginx-quic-r%%BASE_VERSION%%%%MODULE_DEPENDS%%%%ADD_CONTROL_TAGS%%
+Provides: nginx-quic-module-%%MODULE%%-r%%BASE_VERSION%%
+Description: %%SUMMARY%%
+ %%SHORT_SUMMARY%% for nginx-quic
+
+Package: nginx-quic-module-%%MODULE%%-dbg
+Architecture: any
+Section: debug
+Priority: optional
+Depends: nginx-quic (= %%BASE_VERSION%%-%%BASE_RELEASE%%~%%CODENAME%%),
+         nginx-quic-module-%%MODULE%% (= %%VERSION_PREFIX%%%%MODULE_VERSION%%-%%MODULE_RELEASE%%~%%CODENAME%%),
+         ${misc:Depends}
+Description: debug symbols for the nginx-quic-module-%%MODULE%%
+ %%SHORT_SUMMARY%% for nginx-quic (debug symbols)

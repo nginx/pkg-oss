@@ -1,0 +1,9 @@
+debian/nginx.conf			etc/nginx
+conf/mime.types				etc/nginx
+conf/scgi_params			etc/nginx
+conf/fastcgi_params			etc/nginx
+conf/uwsgi_params			etc/nginx
+docs/html/index.html				usr/share/nginx/html
+docs/html/50x.html				usr/share/nginx/html
+debian/build-nginx/objs/nginx		usr/sbin
+debian/build-nginx-debug/objs/nginx-debug	usr/sbin

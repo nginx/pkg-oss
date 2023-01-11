@@ -1,0 +1,6 @@
+# there is no separate man page for nginx-debug
+nginx-quic binary: binary-without-manpage usr/sbin/nginx-debug
+# the name is not wrong
+nginx-quic: wrong-name-for-upstream-changelog usr/share/doc/nginx/CHANGES.ru.gz
+# nginx-debug is not intended to be registered in rc.d
+nginx-quic: script-in-etc-init.d-not-registered-via-update-rc.d etc/init.d/nginx-debug
