@@ -10,6 +10,11 @@ BASE_SUFFIX=-plus
 DOCS?=		../../docs-plus
 MODULE_TARGET?=	plus
 endif
+ifeq ($(BASE_TARGET), quic)
+BASE_SUFFIX=-quic
+DOCS?=		../../docs-quic
+MODULE_TARGET?=	quic
+endif
 
 DOCS?=		../../docs
 MODULE_TARGET?=	oss
@@ -32,6 +37,12 @@ TARGET_VERSION=$(PLUS_VERSION)
 MODULE_SUFFIX=-plus
 MODULE_PACKAGE_URL=	https://www.nginx.com/
 MODULE_PACKAGE_LICENSE=	Proprietary (EULA included)
+else ifeq ($(MODULE_TARGET), quic)
+MODULE_SUMMARY_PREFIX=  nginx-quic
+TARGET_VERSION=$(BASE_VERSION)
+MODULE_SUFFIX=-quic
+MODULE_PACKAGE_URL=     https://nginx.org/
+MODULE_PACKAGE_LICENSE=2-clause BSD-like license
 else
 MODULE_SUMMARY_PREFIX=	nginx
 TARGET_VERSION=$(BASE_VERSION)
@@ -103,6 +114,13 @@ BASE_CONFIGURE_ARGS+= \
 	--with-stream_proxy_protocol_vendor_module
 endif
 
+ifeq ($(BASE_TARGET), quic)
+BASE_CONFIGURE_ARGS+= \
+	--build=nginx-quic-$(NGINX_QUIC_SOURCETAG) \
+	--with-http_v3_module \
+	--with-stream_quic_module
+endif
+
 export CR=\\n
 
 modname = $(shell echo $1 | tr '-' '_')
@@ -140,6 +158,20 @@ quictls.spec:
 
 quictls:
 	make -f Makefile.quictls
+
+quic: quic-base quic-base-modules
+
+quic-all:
+	BASE_TARGET=quic MODULE_TARGET=quic make all modules test
+
+quic-base:
+	BASE_TARGET=quic make base
+
+quic-base-modules:
+	BASE_TARGET=quic MODULE_TARGET=quic make base-modules
+
+quic-modules:
+	BASE_TARGET=quic MODULE_TARGET=quic make modules
 
 base:	nginx.spec $(SRCPATH)/$(BASE_SRC)
 	@echo "===> Building base package" ; \
@@ -372,6 +404,20 @@ check-compat-%:
 		;; \
 	esac
 
+nginx-tests-quic:
+	@{ \
+	if [ ! -L "nginx-tests-quic" ]; then \
+	    echo "===> Cloning QUIC tests" ; \
+	    rm -rf ../nginx-tests; \
+	    hg clone -r quic https://hg.nginx.org/nginx-tests-quic ../nginx-tests; \
+	    ln -s ../nginx-tests nginx-tests-quic; \
+	fi ; \
+	}
+
+ifeq ($(BASE_TARGET), quic)
+nginx-tests: nginx-tests-quic
+endif
+
 nginx-tests:
 	@{ \
 	if [ -d "../nginx-tests" ]; then \
@@ -460,6 +506,7 @@ test-module-%: base nginx-tests module-%
 clean:
 	@rm -f base module-*
 	@rm -f nginx.spec nginx-module-*.spec nginx-module-*.skip
+	@rm -f nginx-quic.spec
 	@make -f Makefile.quictls clean
 	@rm -rf nginx-tests
 	@rm -f $(BASE_SRC) $(SRCPATH)/$(BASE_SRC)
