@@ -1,0 +1,29 @@
+SHELL=/bin/bash
+CONTRIB?=$(abspath ../../contrib)
+include $(CONTRIB)/src/quictls/version
+
+default: quictls
+all: default
+clean: quictls-clean
+
+quictls-clean:
+	rm -rf quictls .deps-quictls quictls.spec
+
+deps-quictls: .deps-quictls
+.deps-quictls:
+	cd $(CONTRIB) && make .sum-quictls
+	cp --preserve -f    $(CONTRIB)/src/quictls/*.patch \
+	                    $(CONTRIB)/tarballs/quictls-$(QUICTLS_VERSION).tar.xz \
+	              ../SOURCES/
+	touch $@
+
+quictls.spec:
+	@echo "===> Creating $@"
+	sed -e 's/%%QUICTLS_VERSION%%/$(QUICTLS_VERSION)/' \
+	quictls.spec.in > $@
+
+quictls: quictls.spec deps-quictls
+	$(SHELL) -c "time -p rpmbuild -D \"_topdir `pwd`/../\" -ba quictls.spec" && \
+	ln -s ../BUILD/quictls-$(QUICTLS_VERSION) ../BUILD/quictls && \
+	ln -s ../BUILD/quictls-$(QUICTLS_VERSION) quictls
+

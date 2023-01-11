@@ -129,11 +129,17 @@ base-modules:	$(addprefix module-, $(BASE_MODULES))
 
 modules:	$(addprefix module-, $(MODULES))
 
-specs:	nginx.spec $(addsuffix .spec, $(addprefix nginx-module-, $(MODULES)))
+specs:	nginx.spec $(addsuffix .spec, $(addprefix nginx-module-, $(MODULES))) quictls.spec
 
 $(SRCPATH)/$(BASE_SRC):
 	cd $(CONTRIB) && make .sum-nginx$(BASE_SUFFIX)
 	cd $(SRCPATH) && ln -s $(CONTRIB)/tarballs/$(BASE_SRC) $(BASE_SRC)
+
+quictls.spec:
+	make -f Makefile.quictls quictls.spec
+
+quictls:
+	make -f Makefile.quictls
 
 base:	nginx.spec $(SRCPATH)/$(BASE_SRC)
 	@echo "===> Building base package" ; \
@@ -454,6 +460,7 @@ test-module-%: base nginx-tests module-%
 clean:
 	@rm -f base module-*
 	@rm -f nginx.spec nginx-module-*.spec nginx-module-*.skip
+	@make -f Makefile.quictls clean
 	@rm -rf nginx-tests
 	@rm -f $(BASE_SRC) $(SRCPATH)/$(BASE_SRC)
 	@rm -f nginx.rpm-changelog nginx-*.rpm.changelog nginx-module-*.rpm-changelog

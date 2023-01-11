@@ -1,0 +1,207 @@
+%define ver_prefix 81
+%define soversion %{ver_prefix}.3
+
+%global _performance_build 1
+
+Summary: Utilities from the general purpose cryptography library with TLS implementation
+Name: quictls
+Version: %%QUICTLS_VERSION%%
+Release: 1%{?dist}.ngx
+Epoch: 1
+Source: quictls-%{version}.tar.xz
+Patch0: nohtmldocs.patch
+Patch1: man-section.patch
+
+License: ASL 2.0
+URL: https://github.com/quictls
+BuildRequires: gcc
+BuildRequires: coreutils, perl-interpreter, sed, zlib-devel, /usr/bin/cmp
+BuildRequires: /usr/bin/rename
+BuildRequires: /usr/bin/pod2man
+BuildRequires: /usr/sbin/sysctl
+BuildRequires: perl(Test::Harness), perl(Test::More), perl(Math::BigInt)
+BuildRequires: perl(Module::Load::Conditional), perl(File::Temp)
+BuildRequires: perl(Time::HiRes), perl(IPC::Cmd)
+BuildRequires: perl(FindBin), perl(lib), perl(File::Compare), perl(File::Copy), perl(bigint)
+BuildRequires: git-core
+BuildRequires: systemtap-sdt-devel
+Requires: coreutils
+Requires: %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
+
+%description
+The OpenSSL toolkit provides support for secure communications between
+machines. OpenSSL includes a certificate management tool and shared
+libraries which provide various cryptographic algorithms and
+protocols.
+This package additionally contains patches to create QUIC compatible API
+atop of the original OpenSSL.
+
+%package libs
+Summary: A general purpose cryptography library with TLS implementation
+Requires: ca-certificates >= 2008-5
+
+%description libs
+OpenSSL is a toolkit for supporting cryptography. The quictls-libs
+package contains the libraries that are used by various applications which
+support cryptographic algorithms and protocols.
+This package additionally contains patches to create QUIC compatible API
+atop of the original OpenSSL.
+
+%package devel
+Summary: Files for development of applications which will use OpenSSL
+Requires: %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: pkgconfig
+
+%description devel
+OpenSSL is a toolkit for supporting cryptography. The quictls-devel
+package contains include files needed to develop applications which
+support various cryptographic algorithms and protocols.
+This package additionally contains patches to create QUIC compatible API
+atop of the original OpenSSL.
+
+%prep
+%autosetup -S git
+
+%build
+
+# Figure out which flags we want to use.
+# default
+sslarch=%{_os}-%{_target_cpu}
+%ifarch x86_64
+sslflags=enable-ec_nistp_64_gcc_128
+%endif
+%ifarch s390x
+sslarch="linux64-s390x"
+%endif
+%ifarch %{arm}
+sslarch=linux-armv4
+%endif
+%ifarch aarch64
+sslarch=linux-aarch64
+sslflags=enable-ec_nistp_64_gcc_128
+%endif
+
+ktlsopt=enable-ktls
+
+# Add -Wa,--noexecstack here so that libcrypto's assembler modules will be
+# marked as not requiring an executable stack.
+# Also add -DPURIFY to make using valgrind with openssl easier as we do not
+# want to depend on the uninitialized memory as a source of entropy anyway.
+RPM_OPT_FLAGS="$RPM_OPT_FLAGS -Wa,--noexecstack -DPURIFY $RPM_LD_FLAGS"
+
+export HASHBANGPERL=/usr/bin/perl
+
+# Configure the build tree.  Override OpenSSL defaults with known-good defaults
+# usable on all platforms.  The Configure script already knows to use -fPIC and
+# RPM_OPT_FLAGS, so we can skip specifiying them here.
+./Configure shlib_variant=%{ver_prefix} \
+	--prefix=%{_prefix} --openssldir=%{_sysconfdir}/pki/%{name} --libdir=%{_lib} ${sslflags} \
+	zlib enable-camellia enable-seed enable-rfc3779 \
+	enable-cms enable-md2 enable-rc5 ${ktlsopt} \
+	no-mdc2 no-ec2m no-sm2 no-sm4 \
+	shared  ${sslarch} $RPM_OPT_FLAGS '-DDEVRANDOM="\"/dev/urandom\""'
+
+perl configdata.pm -d
+
+make %{?_smp_mflags} all
+
+# Clean up the .pc files
+for i in libcrypto.pc libssl.pc openssl.pc ; do
+  sed -i '/^Libs.private:/{s/-L[^ ]* //;s/-Wl[^ ]* //}' $i
+done
+
+%check
+# Verify that what was compiled actually works.
+make test HARNESS_JOBS=8
+
+%define __provides_exclude_from %{_libdir}/openssl
+
+%install
+[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
+# Install OpenSSL.
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_includedir},%{_libdir},%{_mandir},%{_libdir}/openssl,%{_pkgdocdir}}
+
+%make_install
+
+rename so.%{soversion} so.%{ver_prefix}.%{version} $RPM_BUILD_ROOT%{_libdir}/*.so.%{soversion}
+for lib in $RPM_BUILD_ROOT%{_libdir}/*.so.%{ver_prefix}.%{version} ; do
+       chmod 755 ${lib}
+       ln -s -f `basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{ver_prefix}.%{version}`
+       ln -s -f `basename ${lib}` $RPM_BUILD_ROOT%{_libdir}/`basename ${lib} .%{ver_prefix}.%{version}`.%{soversion}
+done
+
+# Remove static libraries
+for lib in $RPM_BUILD_ROOT%{_libdir}/*.a ; do
+	rm -f ${lib}
+done
+
+# Rename man pages so that they don't conflict with other system man pages.
+pushd $RPM_BUILD_ROOT%{_mandir}
+mv man5/config.5ssl81 man5/%{name}.5ssl81
+popd
+
+# Transformation for quictls
+# derived from 'openssl11' packages
+mkdir -p $RPM_BUILD_ROOT{%{_libdir},%{_includedir}}/%{name}/
+mv -f $RPM_BUILD_ROOT%{_mandir}/man1/{openssl.1ssl81,%{name}.1}
+mv -f $RPM_BUILD_ROOT%{_includedir}/{openssl,%{name}/openssl}/
+mv -f $RPM_BUILD_ROOT%{_bindir}/{openssl,%{name}}
+rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/pki/%{name}/{misc,openssl.cnf.dist,ct_log_list.cnf*,certs,private}
+rm -f $RPM_BUILD_ROOT%{_libdir}/*.so
+
+for pc in libcrypto libssl openssl; do
+  sed -e 's@\(Libs: -L${libdir}\)@\1 -L${libdir}/%{name}@' \
+      -e 's@\(Cflags: -I${includedir}\)@\1 -I${includedir}/%{name}@' \
+      -e 's@\(Requires.*:.*\)\(libssl\)@\1\2%{ver_prefix}@g' \
+      -e 's@\(Requires.*:.*\)\(libcrypto\)@\1\2%{ver_prefix}@g' \
+      $RPM_BUILD_ROOT%{_libdir}/pkgconfig/${pc}.pc > $RPM_BUILD_ROOT%{_libdir}/pkgconfig/${pc}%{ver_prefix}.pc
+  touch -c -r $RPM_BUILD_ROOT%{_libdir}/pkgconfig/${pc}.pc $RPM_BUILD_ROOT%{_libdir}/pkgconfig/${pc}%{ver_prefix}.pc
+  rm -f $RPM_BUILD_ROOT%{_libdir}/pkgconfig/${pc}.pc
+done
+
+# let 'pkg-config * quictls' work properly
+ln -s openssl%{ver_prefix}.pc $RPM_BUILD_ROOT%{_libdir}/pkgconfig/%{name}.pc
+ln -s ../libcrypto.so.%{soversion} $RPM_BUILD_ROOT%{_libdir}/%{name}/libcrypto.so
+ln -s ../libssl.so.%{soversion} $RPM_BUILD_ROOT%{_libdir}/%{name}/libssl.so
+
+rm -rf $RPM_BUILD_ROOT%{_libdir}/ossl-modules
+
+# No quictls-perl, because it wouldn't be really different or newer
+rm -rf $RPM_BUILD_ROOT%{_mandir}/man1/{CA.pl,c_rehash,*tsget}*
+rm -rf $RPM_BUILD_ROOT%{_bindir}/c_rehash
+
+%files
+%{!?_licensedir:%global license %%doc}
+%license LICENSE.txt
+%doc NEWS.md README.md
+%{_bindir}/%{name}
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man7/*
+
+%files libs
+%{!?_licensedir:%global license %%doc}
+%license LICENSE.txt
+%dir %{_sysconfdir}/pki/quictls
+%config(noreplace) %{_sysconfdir}/pki/quictls/openssl.cnf
+%attr(0755,root,root) %{_libdir}/libcrypto.so.%{ver_prefix}.%{version}
+%{_libdir}/libcrypto.so.%{soversion}
+%attr(0755,root,root) %{_libdir}/libssl.so.%{ver_prefix}.%{version}
+%{_libdir}/libssl.so.%{soversion}
+%attr(0755,root,root) %{_libdir}/engines-%{soversion}
+
+
+%files devel
+%doc CHANGES.md doc/dir-locals.example.el doc/openssl-c-indent.el
+%{_prefix}/include/%{name}
+%{_libdir}/%{name}/*.so
+%{_mandir}/man3/*
+%{_libdir}/pkgconfig/*.pc
+
+%post libs -p /sbin/ldconfig
+
+%postun libs -p /sbin/ldconfig
+
+%changelog
+* Thu Dec 01 2022 Nginx Packaging <nginx-packaging@f5.com> - 1:3.0.7-1.ngx
+- Initial build based on reworked openssl11 spec from Fedora
