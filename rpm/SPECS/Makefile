@@ -4,14 +4,15 @@ CONTRIB?=	../../contrib
 CONTRIB:=	$(abspath $(CONTRIB))
 
 BASE_TARGET?=	oss
-MODULE_TARGET?=	oss
 
 ifeq ($(BASE_TARGET), plus)
 BASE_SUFFIX=-plus
 DOCS?=		../../docs-plus
+MODULE_TARGET?=	plus
 endif
 
 DOCS?=		../../docs
+MODULE_TARGET?=	oss
 
 include $(CONTRIB)/src/nginx$(BASE_SUFFIX)/version
 
