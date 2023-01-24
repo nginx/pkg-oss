@@ -1,0 +1,186 @@
+#!/usr/bin/make -f
+# Sample debian.rules file - for GNU Hello (1.3).
+# Copyright 1994,1995 by Ian Jackson.
+# I hereby give you perpetual unlimited permission to copy,
+# modify and relicense this file, provided that you do not remove
+# my name from the file itself.  (I assert my moral right of
+# paternity under the Copyright, Designs and Patents Act 1988.)
+# This file may have to be extensively modified
+#
+# Modified to be a prototype for debmake by Christoph Lameter <clameter@debian.org>
+include /usr/share/dpkg/architecture.mk
+include /usr/share/dpkg/pkg-info.mk
+
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all future=+lfs
+#export DEB_CFLAGS_MAINT_APPEND = -DOPENSSL_TLS_SECURITY_LEVEL=2
+
+SHELL=/bin/bash
+
+package=quictls
+
+# For generating the manpages
+export VERSION=$(DEB_VERSION_UPSTREAM)
+
+ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+	export CROSS_COMPILE ?= $(DEB_HOST_GNU_TYPE)-
+endif
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	MAKEFLAGS += -j$(NUMJOBS)
+endif
+
+CONFARGS  = --prefix=/usr --openssldir=/usr/lib/quictls --libdir=lib/$(DEB_HOST_MULTIARCH) no-mdc2 enable-rfc3779 enable-cms no-capieng
+CONFARGS  += shlib_variant=81 enable-ktls zlib enable-camellia enable-seed
+OPT_alpha = ev4 ev5
+ARCHOPTS  = OPT_$(DEB_HOST_ARCH)
+OPTS      = $($(ARCHOPTS))
+
+ifeq (,$(findstring terse,$(DEB_BUILD_OPTIONS)))
+	TESTSUITE_FLAGS = HARNESS_VERBOSE=yes
+else
+	TESTSUITE_FLAGS =
+endif
+
+ifeq ($(DEB_HOST_ARCH_CPU), amd64)
+	CONFARGS += enable-ec_nistp_64_gcc_128
+endif
+
+%:
+	dh $@ --without autoreconf
+
+override_dh_auto_configure:
+	test -z "$(OPTS)" || for opt in $(OPTS); \
+	do \
+		set -xe; \
+		mkdir build_$$opt; \
+		cd build_$$opt ; \
+		../Configure shared $(CONFARGS) debian-$(DEB_HOST_ARCH)-$$opt; \
+		perl configdata.pm -d; \
+		cd .. ;\
+	done
+	# Debian Perl policy 5.1 (Script Magic)
+	mkdir build_shared; cd build_shared; HASHBANGPERL=/usr/bin/perl ../Configure shared $(CONFARGS) linux-$(DEB_BUILD_GNU_CPU) ;perl configdata.pm -d
+
+override_dh_auto_build-indep:
+	$(MAKE) -C build_shared all
+
+override_dh_auto_build-arch:
+	#$(MAKE) -C build_static all
+	test -z "$(OPTS)" || for opt in $(OPTS); \
+	do \
+		set -xe; \
+		$(MAKE) -C build_$$opt all; \
+	done
+	ln -sf apps/openssl.pod crypto/crypto.pod ssl/ssl.pod doc/
+	$(MAKE) -C build_shared all
+
+override_dh_auto_test-indep:
+
+override_dh_auto_test-arch:
+ifneq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+	@echo Skipping tests
+else
+	test -z "$(OPTS)" || for opt in $(OPTS); \
+	do \
+		set -xe; \
+		$(MAKE) -C build_$$opt test $(TESTSUITE_FLAGS); \
+	done
+	$(MAKE) -C build_shared test $(TESTSUITE_FLAGS)
+endif
+
+override_dh_auto_clean:
+	rm -rf build_static build_shared
+	test -z "$(OPTS)" || for opt in $(OPTS); \
+	do \
+		set -xe; \
+		rm -rf build_$$opt; \
+	done
+	rm -f doc/openssl.pod doc/crypto.pod doc/ssl.pod
+	dh_auto_clean
+
+override_dh_auto_install-arch:
+	dh_installdirs
+	$(MAKE) -C build_shared install DESTDIR=`pwd`/debian/tmp
+	find debian/tmp -name '*.a' -delete
+	mkdir -p debian/tmp/etc/quictls
+	mv debian/tmp/usr/lib/quictls/{certs,openssl.cnf,private} debian/tmp/etc/quictls
+	ln -s /etc/quictls/{certs,openssl.cnf,private} debian/tmp/usr/lib/quictls
+
+	cp -auv build_shared/lib*.so* debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/
+	for opt in $(OPTS); \
+		do set -xe; \
+		mkdir -p debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/$$opt; \
+		cp -auv build_$$opt/lib*.so* debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/$$opt/; \
+	done
+
+	#
+	# customise it to be 'quictls'
+	#
+
+	mkdir -p debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/quictls
+	mv debian/tmp/usr/include/openssl debian/tmp/usr/include/quictls
+	mv debian/tmp/usr/include/quictls/opensslconf.h debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/quictls/
+	mv debian/tmp/usr/include/quictls/configuration.h debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/quictls/
+
+	mv debian/tmp/usr/bin/openssl debian/tmp/usr/bin/quictls
+	rm debian/tmp/usr/bin/c_rehash
+	mkdir -p debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/quictls
+	mv debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/libssl.so.81.3 debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/quictls/libssl.so
+	mv debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/libcrypto.so.81.3 debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/quictls/libcrypto.so
+	rm debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*so
+	ln -s quictls/libssl.so debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/libssl.so.81.3
+	ln -s quictls/libcrypto.so debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/libcrypto.so.81.3
+	mkdir debian/tmp/usr/include/quictls/openssl debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/quictls/openssl
+	mv debian/tmp/usr/include/quictls/*h debian/tmp/usr/include/quictls/openssl/
+	mv debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/quictls/*h debian/tmp/usr/include/$(DEB_HOST_MULTIARCH)/quictls/openssl
+
+	rm -rf debian/tmp/usr/lib/quictls/misc
+	rm -rf debian/tmp/usr/lib/quictls/{ct_log_list.cnf*,openssl.cnf.dist}
+	rm -rf debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/ossl-modules/
+
+	# man3 is removed as we don't build -docs package
+	rm -rf debian/tmp/usr/share/man/man3;
+	mv debian/tmp/usr/share/man/man1/openssl.1ssl81 debian/tmp/usr/share/man/man1/quictls.1;
+
+	# Clean up .pc files
+	for pc in libcrypto libssl openssl; do \
+	  sed -e 's@\(Libs: -L$${libdir}\)@\1 -L$${libdir}/quictls@' \
+	      -e 's@\(Cflags: -I$${includedir}\)@\1 -I$${includedir}/quictls@' \
+	      -e 's@\(Requires.*:.*\)\(libssl\)@\1\281@g' \
+	      -e 's@\(Requires.*:.*\)\(libcrypto\)@\1\281@g' \
+	      -e '/^Libs.private:/{s/-L[^ ]* //;s/-Wl[^ ]* //}' \
+	      debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig/$${pc}.pc > debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig/$${pc}81.pc; \
+	  touch -c -r debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig/$${pc}.pc debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig/$${pc}81.pc; \
+	  rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig/$${pc}.pc; \
+	done
+
+	# let 'pkg-config * quictls' work properly
+	ln -s openssl81.pc debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig/quictls.pc
+
+override_dh_installchangelogs:
+	dh_installchangelogs CHANGES.md
+
+override_dh_fixperms:
+	if [ -d debian/quictls/etc/quictls/private ] ; then \
+		chmod 700 debian/quictls/etc/quictls/private ; \
+	fi
+	dh_fixperms -a -X etc/quictls/private
+
+override_dh_compress:
+	dh_compress
+	# symlink doc files
+	for p in quictls libssl81-dev; do \
+	  for f in changelog.Debian.gz changelog.gz copyright; do \
+	    ln -sf ../libssl81/$$f debian/$$p/usr/share/doc/$$p/$$f; \
+	  done; \
+	done
+
+override_dh_perl:
+	dh_perl -d
+
+override_dh_makeshlibs:
+	dh_makeshlibs -a -V -Xengines -Xossl-modules -- -c4
+
+override_dh_shlibdeps:
+	dh_shlibdeps -a -L libssl81

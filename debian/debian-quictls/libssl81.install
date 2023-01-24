@@ -1,0 +1,3 @@
+usr/lib/*/quictls/*
+usr/lib/*/*.so.81.*
+usr/lib/*/engines-*/*.so

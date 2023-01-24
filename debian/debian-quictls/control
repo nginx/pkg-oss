@@ -1,0 +1,64 @@
+Source: quictls
+Build-Depends: debhelper-compat (= 12), m4, bc, dpkg-dev (>= 1.15.7)
+Section: utils
+Priority: optional
+Maintainer: Nginx packaging <nginx-packaging@f5.com>
+Standards-Version: 4.5.0
+Vcs-Browser: https://hg.nginx.org/pkg-quic
+Homepage: https://github.com/quictls/openssl/
+Rules-Requires-Root: no
+
+Package: quictls
+Architecture: any
+Multi-Arch: foreign
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: ca-certificates
+Description: Secure Sockets Layer toolkit - cryptographic utility
+ This package is part of the OpenSSL project's implementation of the SSL
+ and TLS cryptographic protocols for secure communication over the
+ Internet.
+ .
+ It contains the general-purpose command line binary /usr/bin/quictls,
+ useful for cryptographic operations such as:
+  * creating RSA, DH, and DSA key parameters;
+  * creating X.509 certificates, CSRs, and CRLs;
+  * calculating message digests;
+  * encrypting and decrypting with ciphers;
+  * testing SSL/TLS clients and servers;
+  * handling S/MIME signed or encrypted mail.
+ .
+ This package additionally contains patches to create QUIC compatible API
+ atop of the original OpenSSL.
+
+Package: libssl81
+Section: libs
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Secure Sockets Layer toolkit - shared libraries
+ This package is part of the OpenSSL project's implementation of the SSL
+ and TLS cryptographic protocols for secure communication over the
+ Internet.
+ .
+ It provides the libssl and libcrypto shared libraries.
+ .
+ This package additionally contains patches to create QUIC compatible API
+ atop of the original OpenSSL.
+
+Package: libssl81-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: libssl81 (= ${binary:Version}), ${misc:Depends}
+Description: Secure Sockets Layer toolkit - development files
+ This package is part of the OpenSSL project's implementation of the SSL
+ and TLS cryptographic protocols for secure communication over the
+ Internet.
+ .
+ It contains development libraries, header files, and manpages for libssl
+ and libcrypto.
+ .
+ This package additionally contains patches to create QUIC compatible API
+ atop of the original OpenSSL.
+

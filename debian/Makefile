@@ -129,6 +129,9 @@ list: list-base list-all-modules
 all:	base base-modules
 	@echo "===> all done"
 
+quictls:
+	make -f Makefile.quictls
+
 base-modules:	$(addprefix module-, $(BASE_MODULES))
 
 modules:	$(addprefix module-, $(MODULES))
@@ -462,6 +465,7 @@ check-modules:
 clean:
 	@rm -rf base module-* rules-base rules-module-* debuild-base debuild-module-* nginx-tests $(BASE_SRC) .deps-module-*
 	@rm -f nginx.deb-changelog nginx-*.deb.changelog nginx-module-*.deb-changelog nginx-module-*.skip
+	@make -f Makefile.quictls clean
 
 .PHONY:	default list list-base list-all-modules list-base-modules all modules rules test test-debug check-modules clean
 

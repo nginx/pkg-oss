@@ -1,0 +1,31 @@
+CONTRIB?=$(abspath ../contrib)
+include $(CONTRIB)/src/quictls/version
+CODENAME=$(shell lsb_release -cs)
+NPROC=$(shell getconf _NPROCESSORS_ONLN)
+SHELL=/bin/bash
+
+default: quictls
+all: default
+clean: quictls-clean
+
+quictls-clean:
+	rm -rf debuild-quictls .deps-quictls quictls
+
+.deps-quictls:
+	mkdir debuild-quictls
+	cd $(CONTRIB) && make .sum-quictls
+	cp $(CONTRIB)/tarballs/quictls-$(QUICTLS_VERSION).tar.xz debuild-quictls/quictls_$(QUICTLS_VERSION).orig.tar.xz
+	tar -C debuild-quictls -xf debuild-quictls/quictls_$(QUICTLS_VERSION).orig.tar.xz
+	cp -ar debian-quictls debuild-quictls/quictls-$(QUICTLS_VERSION)/debian
+	for p in $(CONTRIB)/src/quictls/*.patch; do \
+		basename $$p >> debuild-quictls/quictls-$(QUICTLS_VERSION)/debian/patches/series ; \
+		cp -f $$p debuild-quictls/quictls-$(QUICTLS_VERSION)/debian/patches/ ; \
+	done;
+	sed -i debuild-quictls/quictls-$(QUICTLS_VERSION)/debian/changelog \
+		-e 's#%%CODENAME%%#$(CODENAME)#g'
+	touch $@
+
+quictls: .deps-quictls
+	cd debuild-quictls/quictls-$(QUICTLS_VERSION) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc
+	find debuild-quictls/ -maxdepth 1 -type f -exec cp {} ../../ \;
+	ln -s debuild-quictls/quictls-$(QUICTLS_VERSION)/debian/quictls/usr/bin/quictls $@

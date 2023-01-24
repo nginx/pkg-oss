@@ -1,0 +1,21 @@
+quictls (3.0.7-1+quic~%%CODENAME%%) %%CODENAME%%; urgency=medium
+
+  * Initial build based on openssl ubuntu package
+
+ -- Nginx Packaging <nginx-packaging@f5.com>  Mon, 02 Jan 2023 12:00:00 -0000
+
+openssl (3.0.2-0ubuntu1.7) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: X.509 Email Address Buffer Overflow
+    - debian/patches/CVE-2022-3602-1.patch: fix off by one in punycode
+      decoder in crypto/punycode.c, test/build.info, test/punycode_test.c,
+      test/recipes/04-test_punycode.t.
+    - debian/patches/CVE-2022-3602-2.patch: ensure the result is zero
+      terminated in crypto/punycode.c.
+    - CVE-2022-3602
+  * SECURITY UPDATE: legacy custom cipher issue
+    - debian/patches/CVE-2022-3358.patch: fix usage of custom EVP_CIPHER
+      objects in crypto/evp/digest.c, crypto/evp/evp_enc.c.
+    - CVE-2022-3358
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 27 Oct 2022 13:06:56 -0400

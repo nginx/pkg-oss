@@ -1,0 +1,8 @@
+etc/quictls
+usr/bin/*
+usr/lib/quictls/certs
+usr/lib/quictls/private
+usr/lib/quictls/openssl.cnf
+usr/share/man/man1/*
+usr/share/man/man5/*
+usr/share/man/man7/*
