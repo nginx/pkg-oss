@@ -5,7 +5,7 @@ MODULE_SUMMARY_geoip2=	3rd-party GeoIP2 dynamic modules
 include $(CONTRIB)/src/ngx_http_geoip2_module/version
 
 MODULE_VERSION_geoip2=	$(GEOIP2_NGINX_MODULE_VERSION)
-MODULE_RELEASE_geoip2=	1
+MODULE_RELEASE_geoip2=	0.20230124
 
 MODULE_VERSION_PREFIX_geoip2=$(MODULE_TARGET_PREFIX)
 

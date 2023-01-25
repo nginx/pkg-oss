@@ -5,7 +5,7 @@ MODULE_SUMMARY_brotli=	3rd-party brotli compression dynamic modules
 include $(CONTRIB)/src/ngx_brotli/version
 
 MODULE_VERSION_brotli=	$(NGX_BROTLI_VERSION)
-MODULE_RELEASE_brotli=	1
+MODULE_RELEASE_brotli=	0.20230124
 
 MODULE_VERSION_PREFIX_brotli=$(MODULE_TARGET_PREFIX)
 

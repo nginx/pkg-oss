@@ -6,7 +6,7 @@ include $(CONTRIB)/src/ngx_devel_kit/version
 include $(CONTRIB)/src/set-misc-nginx-module/version
 
 MODULE_VERSION_set_misc=	$(SET_MISC_NGINX_MODULE_VERSION)
-MODULE_RELEASE_set_misc=	1
+MODULE_RELEASE_set_misc=	0.20230124
 
 MODULE_VERSION_PREFIX_set_misc=$(MODULE_TARGET_PREFIX)
 

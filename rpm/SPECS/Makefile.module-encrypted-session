@@ -6,7 +6,7 @@ include $(CONTRIB)/src/ngx_devel_kit/version
 include $(CONTRIB)/src/encrypted-session-nginx-module/version
 
 MODULE_VERSION_encrypted_session=	$(ENCRYPTED_SESSION_NGINX_MODULE_VERSION)
-MODULE_RELEASE_encrypted_session=	1
+MODULE_RELEASE_encrypted_session=	0.20230124
 
 MODULE_VERSION_PREFIX_encrypted_session=$(MODULE_TARGET_PREFIX)
 

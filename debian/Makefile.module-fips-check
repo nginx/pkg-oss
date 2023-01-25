@@ -5,7 +5,7 @@ MODULE_SUMMARY_fips_check=	3rd-party FIPS status check dynamic module
 include $(CONTRIB)/src/nginx-fips-check-module/version
 
 MODULE_VERSION_fips_check=	$(NGINX_FIPS_CHECK_MODULE_VERSION)
-MODULE_RELEASE_fips_check=	1
+MODULE_RELEASE_fips_check=	0.20230124
 
 MODULE_VERSION_PREFIX_fips_check=$(MODULE_TARGET_PREFIX)
 

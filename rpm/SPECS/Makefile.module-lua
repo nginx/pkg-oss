@@ -10,7 +10,7 @@ include $(CONTRIB)/src/lua-resty-core/version
 include $(CONTRIB)/src/lua-resty-lrucache/version
 
 MODULE_VERSION_lua=	$(LUA_NGINX_MODULE_VERSION)
-MODULE_RELEASE_lua=	1
+MODULE_RELEASE_lua=	0.20230124
 
 MODULE_VERSION_PREFIX_lua=$(MODULE_TARGET_PREFIX)
 

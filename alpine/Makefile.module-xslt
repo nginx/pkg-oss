@@ -3,7 +3,7 @@ MODULES+=	xslt
 MODULE_SUMMARY_xslt=		xslt dynamic module
 
 MODULE_VERSION_xslt=		$(TARGET_VERSION)
-MODULE_RELEASE_xslt=		1
+MODULE_RELEASE_xslt=	0.20230124
 
 MODULE_CONFARGS_xslt=		--with-http_xslt_module=dynamic
 

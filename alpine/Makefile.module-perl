@@ -3,7 +3,7 @@ MODULES+=	perl
 MODULE_SUMMARY_perl=		Perl dynamic module
 
 MODULE_VERSION_perl=		$(TARGET_VERSION)
-MODULE_RELEASE_perl=		1
+MODULE_RELEASE_perl=	0.20230124
 
 MODULE_CONFARGS_perl=		--with-http_perl_module=dynamic
 
