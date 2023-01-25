@@ -21,6 +21,10 @@ RELEASE?=	1
 VERSION_NJS?= $(shell curl -fs https://hg.nginx.org/njs/raw-file/default/src/njs.h | fgrep -m 1 'define NJS_VERSION' | cut -d '"' -f 2)
 RELEASE_NJS?= 1
 
+VERSION_QUIC?=	$(shell curl -fs https://hg.nginx.org/nginx-quic/raw-file/quic/src/core/nginx.h | fgrep 'define NGINX_VERSION' | cut -d '"' -f 2)
+RELEASE_QUIC?=	0.$(shell date +"%Y%m%d")
+SOURCETAG_QUIC?=$(shell curl -fs https://hg.nginx.org/nginx-quic/raw-rev/quic | head -n 6 | fgrep "Node ID" | cut -d\  -f 4  | cut -b 1-12)
+
 PACKAGER?=	Nginx Packaging <nginx-packaging@f5.com>
 
 TARBALL?=	https://nginx.org/download/nginx-$(VERSION).tar.gz
@@ -122,6 +126,42 @@ release-njs: version-check-njs njs-$(VERSION_NJS).tar.gz
 		echo "--> changelog for nginx-module-njs" ; \
 		CHANGESADD="\n\n\n<changes apply=\"nginx-module-njs\" ver=\"$(VERSION_NJS)\" rev=\"$(RELEASE_NJS)\" basever=\"$(CURRENT_VERSION)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nnjs updated to $(VERSION_NJS)\n</para>\n</change>\n\n</changes>" ; \
 		sed -i.bak -e "s,title=\"nginx_module_njs\">,title=\"nginx_module_njs\">$${CHANGESADD}," docs/nginx-module-njs.xml ; \
+		echo ; \
+		echo "Done. Please carefully check the diff. Use \"make revert\" to revert any changes." ; \
+		echo ; \
+	}
+
+release-quic:
+	@{ \
+		set -e ; \
+		echo "==> Preparing nginx-quic release $(VERSION_QUIC)-$(RELEASE_QUIC)" ; \
+		sed -e "s,^.*NGINX_VERSION :=.*,override NGINX_VERSION := $(VERSION_QUIC),g" -i.bak contrib/src/nginx-quic/version ; \
+		sed -e "s,^.*NGINX_QUIC_SOURCETAG :=.*,NGINX_QUIC_SOURCETAG := $(SOURCETAG_QUIC),g" -i.bak contrib/src/nginx-quic/version ; \
+		for f in $(BASE_MAKEFILES); do \
+			echo "--> $${f}" ; \
+			sed -e "s,^BASE_RELEASE=.*,BASE_RELEASE=	$(RELEASE_QUIC),g" \
+				-i.bak $${f} ; \
+		done ; \
+		reldate=`date +"%Y-%m-%d"` ; \
+		reltime=`date +"%H:%M:%S %z"` ; \
+		packager=`echo "$(PACKAGER)" | sed -e 's,<,\\\\\\&lt\;,' -e 's,>,\\\\\\&gt\;,'` ; \
+		CHANGESADD="\n\n\n<changes apply=\"nginx-quic\" ver=\"$(VERSION_QUIC)\" rev=\"$(RELEASE_QUIC)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nUpdated to $(VERSION_QUIC)-$(RELEASE_QUIC) (nginx-quic $(SOURCETAG_QUIC))\n</para>\n</change>\n\n</changes>" ; \
+		sed -i.bak -e "s,title=\"nginx-quic\">,title=\"nginx-quic\">$${CHANGESADD}," docs-quic/nginx-quic.xml ; \
+		for module in $(MODULES); do \
+			echo "--> changelog for nginx-quic-module-$${module}" ; \
+			module_underscore=`echo $${module} | tr '-' '_'` ; \
+			CHANGESADD="\n\n\n<changes apply=\"nginx-module-$${module}\" ver=\"$(VERSION_QUIC)\" rev=\"$(RELEASE_QUIC)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nbase version updated to $(VERSION_QUIC)-$(RELEASE_QUIC) (nginx-quic $(SOURCETAG_QUIC))\n</para>\n</change>\n\n</changes>" ; \
+			sed -i.bak -e "s,title=\"nginx_module_$${module_underscore}\">,title=\"nginx_module_$${module_underscore}\">$${CHANGESADD}," docs-quic/nginx-module-$${module}.xml ; \
+			sed -i.bak -e "s,MODULE_RELEASE_$${module_underscore}=.*,MODULE_RELEASE_$${module_underscore}=\t$(RELEASE_QUIC)," alpine/Makefile.module-$${module} debian/Makefile.module-$${module} rpm/SPECS/Makefile.module-$${module} ; \
+		done ; \
+		for module in $(EXTERNAL_MODULES); do \
+			echo "--> changelog for nginx-quic-module-$${module}" ; \
+			module_version=`fgrep apply docs-quic/nginx-module-$${module}.xml | head -1 | cut -d '"' -f 4` ; \
+			module_underscore=`echo $${module} | tr '-' '_'` ; \
+			CHANGESADD="\n\n\n<changes apply=\"nginx-module-$${module}\" ver=\"$${module_version}\" rev=\"$(RELEASE_QUIC)\" basever=\"$(VERSION_QUIC)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nbase version updated to $(VERSION_QUIC)-$(RELEASE_QUIC) (nginx-quic $(SOURCETAG_QUIC))\n</para>\n</change>\n\n</changes>" ; \
+			sed -i.bak -e "s,title=\"nginx_module_$${module_underscore}\">,title=\"nginx_module_$${module_underscore}\">$${CHANGESADD}," docs-quic/nginx-module-$${module}.xml ; \
+			sed -i.bak -e "s,MODULE_RELEASE_$${module_underscore}=.*,MODULE_RELEASE_$${module_underscore}=\t$(RELEASE_QUIC)," alpine/Makefile.module-$${module} debian/Makefile.module-$${module} rpm/SPECS/Makefile.module-$${module} ; \
+		done ; \
 		echo ; \
 		echo "Done. Please carefully check the diff. Use \"make revert\" to revert any changes." ; \
 		echo ; \
