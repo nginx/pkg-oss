@@ -456,7 +456,7 @@ clean:
 	@rm -f nginx.spec nginx-module-*.spec nginx-module-*.skip
 	@rm -rf nginx-tests
 	@rm -f $(BASE_SRC) $(SRCPATH)/$(BASE_SRC)
-	@rm -f nginx.rpm-changelog nginx-*.rpm.changelog nginx-module-*.rpm-changelog
+	@rm -f nginx.rpm-changelog nginx-*.rpm-changelog nginx-module-*.rpm-changelog
 	@rm -f .deps-module-*
 	@find $(SRCPATH)/ -type l -delete
 

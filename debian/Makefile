@@ -461,7 +461,7 @@ check-modules:
 
 clean:
 	@rm -rf base module-* rules-base rules-module-* debuild-base debuild-module-* nginx-tests $(BASE_SRC) .deps-module-*
-	@rm -f nginx.deb-changelog nginx-*.deb.changelog nginx-module-*.deb-changelog nginx-module-*.skip
+	@rm -f nginx.deb-changelog nginx-*.deb-changelog nginx-module-*.deb-changelog nginx-module-*.skip
 
 .PHONY:	default list list-base list-all-modules list-base-modules all modules rules test test-debug check-modules clean
 
