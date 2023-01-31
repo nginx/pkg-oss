@@ -156,14 +156,17 @@ rules-base: $(BASE_SRC) nginx.deb-changelog
 	mkdir -p debuild-base ; \
 	cp $(BASE_SRC) debuild-base/$(BASE_ORIG_NAME); \
 	tar -C debuild-base -xf debuild-base/$(BASE_ORIG_NAME) ; \
-	cp -ar debian debuild-base/$(SRCDIR)/debian ; \
+	mkdir -p debuild-base/$(SRCDIR)/debian ; \
+	mkdir -p debuild-base/$(SRCDIR)/debian/source ; \
+	echo "3.0 (quilt)" > debuild-base/$(SRCDIR)/debian/source/format ; \
+	echo "11" > debuild-base/$(SRCDIR)/debian/compat ; \
 	cp -ar debian$(BASE_SUFFIX)/. debuild-base/$(SRCDIR)/debian ; \
 	for patch in `find $(CONTRIB)/src/nginx$(BASE_SUFFIX)/ -type f -name '*.patch' -printf "%f\n" | sort`; do \
 		mkdir -p debuild-base/$(SRCDIR)/debian/patches ; \
 		echo $$patch >> debuild-base/$(SRCDIR)/debian/patches/series ; \
 		cp -v $(CONTRIB)/src/nginx$(BASE_SUFFIX)/$$patch debuild-base/$(SRCDIR)/debian/patches ; \
 	done ; \
-	sed debuild-base/$(SRCDIR)/debian/nginx.rules.in \
+	sed debuild-base/$(SRCDIR)/debian/nginx$(BASE_SUFFIX).rules.in \
 		-e 's#%%CODENAME%%#$(CODENAME)#g' \
 		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
 		> debuild-base/$(SRCDIR)/debian/rules ; \
@@ -174,7 +177,7 @@ rules-base: $(BASE_SRC) nginx.deb-changelog
 		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
 		-e 's#%%PLUS_RELEASE%%#$(PLUS_RELEASE)#g' \
 		> debuild-base/$(SRCDIR)/debian/changelog ; \
-	sed debuild-base/$(SRCDIR)/debian/nginx.control.in \
+	sed debuild-base/$(SRCDIR)/debian/nginx$(BASE_SUFFIX).control.in \
 		-e "s#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g" \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
@@ -252,7 +255,13 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 	orig_name="nginx$(MODULE_SUFFIX)-module-$${module_asis}_$${module_version}.orig.tar.gz" ; \
 	cp $(BASE_SRC) $${builddir}/$${orig_name} ; \
 	tar -C $${builddir} -xf $${builddir}/$${orig_name} ; \
-	cp -ar debian $${builddir}/$(SRCDIR)/debian ; \
+	mkdir -p $${builddir}/$(SRCDIR)/debian/extra ; \
+	mkdir -p $${builddir}/$(SRCDIR)/debian/source ; \
+	echo "3.0 (quilt)" > $${builddir}/$(SRCDIR)/debian/source/format ; \
+	echo "11" > $${builddir}/$(SRCDIR)/debian/compat ; \
+	for f in rules postinst; do \
+		cp debian/nginx-module.$$f.in $${builddir}/$(SRCDIR)/debian/nginx$(MODULE_SUFFIX)-module.$$f.in ; \
+	done ; \
 	cp -ar debian$(MODULE_SUFFIX)/. $${builddir}/$(SRCDIR)/debian ; \
 	for src in $(MODULE_SOURCES_$(call modname, $*)); do \
 		tar -C $${builddir}/$(SRCDIR)/debian/extra -xvf $(CONTRIB)/tarballs/$${src} ; \
@@ -276,7 +285,7 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 	buildenv=`echo "$$MODULE_ENV_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	preinstall=`echo "$$MODULE_PREINSTALL_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	post=`echo "$$MODULE_POST_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
-	sed $${builddir}/$(SRCDIR)/debian/nginx-module.control.in \
+	sed $${builddir}/$(SRCDIR)/debian/nginx$(MODULE_SUFFIX)-module.control.in \
 		-e "s#%%MODULE%%#$${module_asis}#g" \
 		-e "s#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g" \
 		-e "s#%%MODULE_PACKAGE_URL%%#$(MODULE_PACKAGE_URL)#g" \
@@ -304,7 +313,7 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 		-e "s#%%MODULE_VERSION%%#$(MODULE_VERSION_$(call modname, $*))#g" \
 		-e "s#%%MODULE_RELEASE%%#$(MODULE_RELEASE_$(call modname, $*))#g" \
 	> $${builddir}/$(SRCDIR)/debian/changelog ; \
-	sed $${builddir}/$(SRCDIR)/debian/nginx-module.rules.in \
+	sed $${builddir}/$(SRCDIR)/debian/nginx$(MODULE_SUFFIX)-module.rules.in \
 		-e "s#%%MODULE%%#$${module_asis}#g" \
 		-e "s#%%CODENAME%%#$(CODENAME)#g" \
 		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
@@ -321,7 +330,7 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 		-e "s#%%MODULE_LD_OPT_DEBUG%%#$(MODULE_LD_OPT_DEBUG_$(call modname, $*))#g" \
 		-e "s#%%MODULE_PREINSTALL%%#$${preinstall}#g" \
 	> $${builddir}/$(SRCDIR)/debian/rules ; \
-	sed $${builddir}/$(SRCDIR)/debian/nginx-module.postinst.in \
+	sed $${builddir}/$(SRCDIR)/debian/nginx$(MODULE_SUFFIX)-module.postinst.in \
 		-e "s#%%MODULE_POST%%#$$post#g" \
 	> $${builddir}/$(SRCDIR)/debian/nginx$(MODULE_SUFFIX)-module-$${module_asis}.postinst ; \
 	chmod +x $${builddir}/$(SRCDIR)/debian/rules ; \
