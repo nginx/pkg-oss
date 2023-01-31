@@ -92,9 +92,9 @@ install:
 	dh_installdirs
 	dh_install
 	mkdir -p $(INSTALLDIR)/usr/lib/nginx/modules
-	mkdir -p $(INSTALLDIR)/usr/share/doc/nginx
-	install -m 644 debian/CHANGES $(INSTALLDIR)/usr/share/doc/nginx/changelog
-	install -m 644 debian/nginx.default.conf $(INSTALLDIR)/etc/nginx/conf.d/default.conf
+	mkdir -p $(INSTALLDIR)/usr/share/doc/nginx-quic
+	install -m 644 debian/CHANGES $(INSTALLDIR)/usr/share/doc/nginx-quic/changelog
+	install -m 644 debian/nginx-quic.default.conf $(INSTALLDIR)/etc/nginx/conf.d/default.conf
 	ln -s /usr/lib/nginx/modules $(INSTALLDIR)/etc/nginx/modules
 
 binary-indep: build post-build install
@@ -105,13 +105,13 @@ binary-indep: build post-build install
 	sed -e 's/%%PROVIDES%%/nginx/g' \
 		-e 's/%%DEFAULTSTART%%/2 3 4 5/g' \
 		-e 's/%%DEFAULTSTOP%%/0 1 6/g' \
-		< debian/nginx.init.in > debian/nginx.init
+		< debian/nginx-quic.init.in > debian/nginx.init
 	dh_installinit -i -pnginx-quic --no-stop-on-upgrade --no-start --name=nginx
 	dh_installsystemd -i -pnginx-quic --name=nginx nginx.service
 	sed -e 's/%%PROVIDES%%/nginx-debug/g' \
 		-e 's/%%DEFAULTSTART%%//g' \
 		-e 's/%%DEFAULTSTOP%%/0 1 2 3 4 5 6/g' \
-		< debian/nginx.init.in > debian/nginx-debug.init
+		< debian/nginx-quic.init.in > debian/nginx-debug.init
 	dh_installinit -i -pnginx-quic --no-stop-on-upgrade --no-start --noscripts --name=nginx-debug
 	dh_installsystemd -i -pnginx-quic --name=nginx-debug --no-enable nginx-debug.service
 	dh_installlogrotate -i -pnginx-quic --name=nginx

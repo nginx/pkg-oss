@@ -3,6 +3,7 @@ Section: httpd
 Priority: optional
 Maintainer: %%PACKAGE_VENDOR%%
 Build-Depends: debhelper (>= 11),
+               dh-exec,
                dpkg-dev (>= 1.16.1~),
                quilt (>= 0.46-7~),
                lsb-release,
