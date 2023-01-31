@@ -5,7 +5,7 @@ MODULE_SUMMARY_passenger=	3rd-party Passenger dynamic module
 include $(CONTRIB)/src/passenger/version
 
 MODULE_VERSION_passenger=	$(PASSENGER_VERSION)
-MODULE_RELEASE_passenger=	0.20230124
+MODULE_RELEASE_passenger=	0.20230131
 
 MODULE_VERSION_PREFIX_passenger=$(MODULE_TARGET_PREFIX)
 

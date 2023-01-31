@@ -5,7 +5,7 @@ MODULE_SUMMARY_headers_more=	3rd-party headers-more dynamic module
 include $(CONTRIB)/src/headers-more-nginx-module/version
 
 MODULE_VERSION_headers_more=	$(HEADERS_MORE_NGINX_MODULE_VERSION)
-MODULE_RELEASE_headers_more=	0.20230124
+MODULE_RELEASE_headers_more=	0.20230131
 
 MODULE_VERSION_PREFIX_headers_more=$(MODULE_TARGET_PREFIX)
 

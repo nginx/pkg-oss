@@ -5,7 +5,7 @@ MODULE_SUMMARY_subs_filter=	3rd-party substitution dynamic module
 include $(CONTRIB)/src/ngx_http_substitutions_filter_module/version
 
 MODULE_VERSION_subs_filter=	$(SUBSTITUTIONS_FILTER_NGINX_MODULE_VERSION)
-MODULE_RELEASE_subs_filter=	0.20230124
+MODULE_RELEASE_subs_filter=	0.20230131
 
 MODULE_VERSION_PREFIX_subs_filter=$(MODULE_TARGET_PREFIX)
 

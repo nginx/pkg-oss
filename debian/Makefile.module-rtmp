@@ -5,7 +5,7 @@ MODULE_SUMMARY_rtmp=	3rd-party RTMP dynamic module
 include $(CONTRIB)/src/nginx-rtmp-module/version
 
 MODULE_VERSION_rtmp=	$(NGINX_RTMP_MODULE_VERSION)
-MODULE_RELEASE_rtmp=	0.20230124
+MODULE_RELEASE_rtmp=	0.20230131
 
 MODULE_VERSION_PREFIX_rtmp=$(MODULE_TARGET_PREFIX)
 
