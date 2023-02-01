@@ -33,12 +33,10 @@ APKBUILD_TEMPLATE=	APKBUILD-plus-module.in
 MODULE_SUFFIX=	-plus
 MODULE_SUMMARY_PREFIX=NGINX Plus
 TARGET_VERSION=$(PLUS_VERSION)
-MODULE_PACKAGE_PREFIX=nginx-plus-module
 else
 APKBUILD_TEMPLATE=	APKBUILD-module.in
 MODULE_SUMMARY_PREFIX=nginx
 TARGET_VERSION=$(BASE_VERSION)
-MODULE_PACKAGE_PREFIX=nginx-module
 endif
 
 MODULE_TARGET_PREFIX=$(TARGET_VERSION).
@@ -185,7 +183,7 @@ abuild-base: $(BASE_SRC)
 module-%: ${HOME}/.abuild/abuild.conf | abuild-module-%
 	@echo "===> Building nginx$(MODULE_SUFFIX)-$@ package"
 	@/usr/bin/time -p $(SHELL) -c "cd abuild-$@/ && abuild checksum && abuild unpack && abuild prepare && abuild -K build && abuild rootpkg" && \
-	ln -s abuild-$@/pkg/$(MODULE_PACKAGE_PREFIX)-$*/usr/lib/nginx/modules $@
+	ln -s abuild-$@/pkg/nginx$(MODULE_SUFFIX)-module-$*/usr/lib/nginx/modules $@
 
 abuild-module-%: $(BASE_SRC) .deps-module-%
 	@echo "===> Creating $@"
