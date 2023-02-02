@@ -11,7 +11,7 @@ pkgdesc="High performance web server"
 url="https://nginx.org/"
 arch="all"
 license="2-clause BSD-like license"
-provides="nginx-r$_base_version"
+provides="$pkgname-r$_base_version"
 provider_priority=$_base_release
 depends=""
 makedepends="linux-headers openssl-dev pcre2-dev zlib-dev"
@@ -25,16 +25,16 @@ install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgn
 subpackages="$pkgname-dbg"
 
 replaces="nginx-common nginx-initscripts nginx-lua nginx-rtmp"
-source="nginx-$_base_version.tar.gz
-	nginx.conf
-	nginx.default.conf
-	nginx.logrotate
-	nginx.initd
-	nginx-debug.initd
+source="$pkgname-$_base_version.tar.gz
+	$pkgname.conf
+	$pkgname.default.conf
+	$pkgname.logrotate
+	$pkgname.initd
+	$pkgname-debug.initd
 	COPYRIGHT
 	%%BASE_PATCHES%%
 	"
-builddir="$srcdir/nginx-$_base_version"
+builddir="$srcdir/$pkgname-$_base_version"
 
 _modules_dir="usr/lib/nginx/modules"
 
@@ -83,8 +83,8 @@ package() {
 
 	cd "$pkgdir"
 
-	install -Dm644 "$srcdir"/nginx.conf ./etc/nginx/nginx.conf
-	install -Dm644 "$srcdir"/nginx.default.conf ./etc/nginx/conf.d/default.conf
+	install -Dm644 "$srcdir"/$pkgname.conf ./etc/nginx/nginx.conf
+	install -Dm644 "$srcdir"/$pkgname.default.conf ./etc/nginx/conf.d/default.conf
 	install -Dm755 "$srcdir"/$pkgname.initd ./etc/init.d/nginx
 	install -Dm755 "$srcdir"/$pkgname-debug.initd ./etc/init.d/nginx-debug
 	install -Dm644 "$srcdir"/$pkgname.logrotate ./etc/logrotate.d/nginx
