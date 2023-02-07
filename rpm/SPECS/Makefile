@@ -322,8 +322,9 @@ check-compat-%:
 		fi ; \
 		;; \
 		lua) \
-		if [ `rpm --eval '%{_arch}'` = "ppc64le" ]; then \
-			echo "Lua module can not be built on ppc64le" > \
+		ARCH=`rpm --eval '%{_arch}'` ; \
+		if [ "$$ARCH" = "ppc64le" -o "$$ARCH" = "s390x" ]; then \
+			echo "Lua module can not be built on $$ARCH" > \
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \
