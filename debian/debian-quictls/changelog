@@ -1,3 +1,9 @@
+quictls (3.0.8-1+quic~%%CODENAME%%) %%CODENAME%%; urgency=medium
+
+  * Updated to 3.0.8-quic1, revision 183e548d93a6aeedab0fd6cb737923a93f807b83.
+
+ -- Nginx Packaging <nginx-packaging@f5.com>  Tue, 07 Feb 2023 14:00:00 +0800
+
 quictls (3.0.7-1+quic~%%CODENAME%%) %%CODENAME%%; urgency=medium
 
   * Initial build based on openssl ubuntu package

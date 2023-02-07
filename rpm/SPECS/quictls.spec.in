@@ -203,5 +203,8 @@ rm -rf $RPM_BUILD_ROOT%{_bindir}/c_rehash
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Feb 07 2023 Nginx Packaging <nginx-packaging@f5.com> - 1:3.0.8-1.ngx
+- Updated to 3.0.8-quic1, revision 183e548d93a6aeedab0fd6cb737923a93f807b83.
+
 * Thu Dec 01 2022 Nginx Packaging <nginx-packaging@f5.com> - 1:3.0.7-1.ngx
 - Initial build based on reworked openssl11 spec from Fedora
