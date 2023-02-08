@@ -302,7 +302,7 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 		-e "s#%%MODULE_DEPENDS%%#$(MODULE_DEPENDS_$(call modname, $*))#g" \
 		-e "s#%%ADD_CONTROL_TAGS%%#$${addcontroltags}#g" \
 	> $${builddir}/$(SRCDIR)/debian/control ; \
-	cat nginx-module-$*.deb-changelog | sed \
+	sed nginx-module-$*.deb-changelog \
 		-e "s#%%TARGET_VERSION%%#$(TARGET_VERSION)#g" \
 		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \

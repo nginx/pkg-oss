@@ -167,9 +167,9 @@ abuild-base: $(BASE_SRC)
 	if [ "$(BASE_TARGET)" = "plus" ]; then \
 		cp -v $(DOCS)/EULA-* $(CONTRIB)/tarballs/dashboard.html $(DOCS)/nginx-modules-reference.pdf abuild-base/ ; \
 	fi; \
-	cat nginx$(BASE_SUFFIX).initd.in | sed -e 's#%%DAEMON%%#nginx#g' > abuild-base/nginx$(BASE_SUFFIX).initd ; \
-	cat nginx$(BASE_SUFFIX).initd.in | sed -e 's#%%DAEMON%%#nginx-debug#g' > abuild-base/nginx$(BASE_SUFFIX)-debug.initd ; \
-	cat APKBUILD-base$(BASE_SUFFIX).in | sed \
+	sed nginx$(BASE_SUFFIX).initd.in -e 's#%%DAEMON%%#nginx#g' > abuild-base/nginx$(BASE_SUFFIX).initd ; \
+	sed nginx$(BASE_SUFFIX).initd.in -e 's#%%DAEMON%%#nginx-debug#g' > abuild-base/nginx$(BASE_SUFFIX)-debug.initd ; \
+	sed APKBUILD-base$(BASE_SUFFIX).in \
 		-e 's#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g' \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
@@ -215,7 +215,7 @@ abuild-module-%: $(BASE_SRC) .deps-module-%
 	buildenv=`echo "$$MODULE_ENV_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	preinstall=`echo "$$MODULE_PREINSTALL_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	post=`echo "$$MODULE_POST_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
-	cat $(APKBUILD_TEMPLATE) | sed \
+	sed $(APKBUILD_TEMPLATE) \
 		-e 's#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g' \
 		-e "s#%%MODULE%%#$${module_asis}#g" \
 		-e "s#%%SUMMARY%%#$(MODULE_SUMMARY_PREFIX) $(MODULE_SUMMARY_$(call modname, $*))#g" \
@@ -241,7 +241,7 @@ abuild-module-%: $(BASE_SRC) .deps-module-%
 		-e "s#%%MODULE_ENV%%#$${buildenv}#g" \
 		-e "s#%%MODULE_SRCDIR%%#$(MODULE_SRCDIR)#g" \
 	> $${builddir}/APKBUILD ; \
-	cat nginx-module.post-install.in | sed \
+	sed nginx-module.post-install.in \
 		-e "s#%%MODULE_POST%%#$$post#g" \
 	> $${postinstall_script} ; \
 	}

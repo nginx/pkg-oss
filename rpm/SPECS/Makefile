@@ -161,8 +161,8 @@ endif
 	for patch in $$patch_files; do \
 		cp -v $(CONTRIB)/src/nginx$(BASE_SUFFIX)/$$patch $(SRCPATH) ; \
 	done; \
-	cat nginx$(BASE_SUFFIX).spec.in | sed \
-		-e "s#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g" \
+	sed nginx$(BASE_SUFFIX).spec.in \
+		-e 's#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g' \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
 		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
@@ -170,7 +170,7 @@ endif
 		-e "s#%%BASE_PATCHES%%#$$patches#g" \
 		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
 		> nginx$(BASE_SUFFIX).spec ; \
-	cat nginx$(BASE_SUFFIX).rpm-changelog | sed \
+	sed nginx$(BASE_SUFFIX).rpm-changelog \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
 		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
@@ -251,7 +251,7 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 	buildenv=`echo "$$MODULE_ENV_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	files=`echo "$$MODULE_FILES_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
 	post=`echo "$$MODULE_POST_$(call modname, $*)" | sed -e ':a' -e 'N' -e '$$!ba' -e "s/\n/\$$CR/g"` ; \
-	cat $(MODULE_SPEC_TEMPLATE) | sed \
+	sed $(MODULE_SPEC_TEMPLATE) \
 		-e "s#%%NAME%%#$${pkgname}#g" \
 		-e "s#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g" \
 		-e "s#%%MODULE_PACKAGE_URL%%#$(MODULE_PACKAGE_URL)#g" \
@@ -284,7 +284,7 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		-e "s#%%MODULE_FILES%%#$${files}#g" \
 		-e "s#%%MODULE_POST%%#$${post}#g" \
 		> $@.tmp && \
-	cat nginx-module-$*.rpm-changelog | sed \
+	sed nginx-module-$*.rpm-changelog \
 		-e 's#%%TARGET_VERSION%%#$(TARGET_VERSION)#g' \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
