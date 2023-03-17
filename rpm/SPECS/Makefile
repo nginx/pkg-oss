@@ -346,11 +346,6 @@ check-compat-%:
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \
-		if [ "`rpm --eval '0%{?amzn}'`" -gt 2 ]; then \
-			echo "OpenTracing can not be built on Amazon Linux >2 due to (temporary) absence yaml-cpp library" > \
-			nginx-module-$${module}.skip ; \
-			exit ; \
-		fi ; \
 		if [ "`rpm --eval '%{_arch}'`" = "ppc64le" ]; then \
 			echo "OpenTracing can not be built on ppc64le" > \
 			nginx-module-$${module}.skip ; \
