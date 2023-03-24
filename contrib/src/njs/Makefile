@@ -12,6 +12,7 @@ $(TARBALLS)/njs-$(NJS_VERSION).tar.gz:
 
 njs: njs-$(NJS_VERSION).tar.gz .sum-njs
 	$(UNPACK)
+	$(APPLY) $(SRC)/njs/ngx_js_fetch.c.patch
 	$(MOVE)
 
 .njs: njs

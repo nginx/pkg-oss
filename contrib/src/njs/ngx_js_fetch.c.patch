@@ -1,0 +1,12 @@
+diff -r acacd5d3a276 -r 95f57822bdaa nginx/ngx_js_fetch.c
+--- a/nginx/ngx_js_fetch.c	Fri Mar 10 13:28:21 2023 -0800
++++ b/nginx/ngx_js_fetch.c	Fri Mar 10 14:15:29 2023 -0800
+@@ -860,6 +860,8 @@ ngx_js_ext_headers_constructor(njs_vm_t 
+         return NJS_ERROR;
+     }
+ 
++    headers->guard = GUARD_NONE;
++
+     rc = ngx_list_init(&headers->header_list, pool, 4, sizeof(ngx_js_tb_elt_t));
+     if (rc != NGX_OK) {
+         njs_vm_memory_error(vm);
