@@ -232,6 +232,12 @@ check-compat-%:
 	        nginx-module-$${module}.skip ; \
 	    fi ; \
 	    ;; \
+		otel) \
+		if [ "$(CODENAME)" = "bionic" ]; then \
+			echo "otel can not be built on Ubuntu 18.04 due to too old re2" > \
+			nginx-module-$${module}.skip ; \
+		fi ; \
+		;; \
 	esac
 
 nginx-module-%.deb-changelog:
