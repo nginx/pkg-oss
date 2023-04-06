@@ -19,7 +19,7 @@ MODULE_PATCHES_njs= $(CONTRIB)/src/njs/ngx_js_fetch.c.patch
 
 MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
 
-MODULE_BUILD_DEPENDS_njs=,libedit-dev
+MODULE_BUILD_DEPENDS_njs=,libedit-dev,libxml2-dev,libxslt-dev
 
 define MODULE_PREBUILD_njs
 	cd debian/extra/njs-$(NJS_VERSION) \&\& \

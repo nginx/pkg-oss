@@ -21,6 +21,9 @@ MODULE_PATCHES_njs= $(CONTRIB)/src/njs/ngx_js_fetch.c.patch
 
 define MODULE_DEFINITIONS_njs
 BuildRequires: libedit-devel
+BuildRequires: libxml2-devel
+BuildRequires: libxslt-devel
+BuildRequires: which
 endef
 export MODULE_DEFINITIONS_njs
 
