@@ -5,6 +5,34 @@
 <change_log title="nginx_module_lua">
 
 
+<changes apply="nginx-module-lua" ver="0.10.24" rev="1" basever="1.23.4"
+         date="2023-04-10" time="12:00:00 -0000"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+LuaJIT updated to 2.1-20230119
+</para>
+</change>
+<change>
+<para>
+Lua module updated to 0.10.24
+Including later bugfix: https://github.com/openresty/lua-nginx-module/commit/16de4bea620b6281f948b0d65341e31b2c90d597
+</para>
+</change>
+<change>
+<para>
+Lua resty core updated to 0.1.26
+</para>
+</change>
+<change>
+<para>
+Lua stream module updated to 0.0.13
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-lua" ver="0.10.22" rev="1" basever="1.23.4"
          date="2023-03-28" time="09:49:35 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">

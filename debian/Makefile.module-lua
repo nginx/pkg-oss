@@ -24,7 +24,7 @@ MODULE_SOURCES_lua=	ngx_devel_kit-$(MODULE_VERSION_ndk).tar.gz \
 MODULE_PATCHES_lua=	$(CONTRIB)/src/luajit2/Makefile.patch \
 			$(CONTRIB)/src/luajit2/src-luaconf.h.patch \
 			$(CONTRIB)/src/lua-nginx-module/config.patch \
-			$(CONTRIB)/src/lua-nginx-module/0001-bugfix-update-handling-of-multiple-headers-changed-i.patch \
+			$(CONTRIB)/src/lua-nginx-module/ngx_table_elt_t.patch \
 			$(CONTRIB)/src/stream-lua-nginx-module/config.patch
 
 MODULE_CONFARGS_lua=	--with-http_dav_module \
