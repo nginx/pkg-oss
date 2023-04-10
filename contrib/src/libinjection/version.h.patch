@@ -1,0 +1,182 @@
+From 5b69919656b7ea8c3a285ea5255fb8f7736c8ce8 Mon Sep 17 00:00:00 2001
+From: Felipe Zipitria <felipe.zipitria@owasp.org>
+Date: Sun, 26 Mar 2023 22:45:43 -0300
+Subject: [PATCH 1/4] fix: use version if not defined
+
+Signed-off-by: Felipe Zipitria <felipe.zipitria@owasp.org>
+---
+ src/version.h.in | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/version.h.in b/src/version.h.in
+index ed710ab..8296054 100644
+--- a/src/version.h.in
++++ b/src/version.h.in
+@@ -1 +1,3 @@
++#ifndef LIBINJECTION_VERSION
+ #define LIBINJECTION_VERSION "@PACKAGE_VERSION@"
++#endif
+
+From 60bde2bcddfc635f83263e0fd78c227706843a49 Mon Sep 17 00:00:00 2001
+From: Felipe Zipitria <felipe.zipitria@owasp.org>
+Date: Mon, 3 Apr 2023 15:28:09 -0300
+Subject: [PATCH 2/4] fix: move version back to c file to allow embedding
+
+Signed-off-by: Felipe Zipitria <felipe.zipitria@owasp.org>
+---
+ configure.ac            | 4 +++-
+ src/libinjection_sqli.c | 1 -
+ src/version.h.in        | 3 ---
+ 3 files changed, 3 insertions(+), 5 deletions(-)
+ delete mode 100644 src/version.h.in
+
+diff --git a/configure.ac b/configure.ac
+index 0a9e429..ffa01ef 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -191,12 +191,14 @@ if test x$use_gcov = xyes; then
+     [AC_MSG_ERROR("lcov testing requested but --coverage flag does not work")])
+ fi
+ 
++# Libinjection version to allow embedding
++AC_DEFINE_UNQUOTED([LIBINJECTION_VERSION], [["$PACKAGE_VERSION"]])
++
+ # Output files
+ AC_CONFIG_FILES([
+ 	Makefile
+ 	src/Makefile
+ 	src/fuzz/Makefile
+-    src/version.h
+     libinjection.pc
+ ])
+ 
+diff --git a/src/libinjection_sqli.c b/src/libinjection_sqli.c
+index b550d2e..afc6247 100644
+--- a/src/libinjection_sqli.c
++++ b/src/libinjection_sqli.c
+@@ -14,7 +14,6 @@
+ #include <assert.h>
+ #include <stddef.h>
+ 
+-#include "version.h"
+ #include "libinjection.h"
+ #include "libinjection_sqli.h"
+ #include "libinjection_sqli_data.h"
+diff --git a/src/version.h.in b/src/version.h.in
+deleted file mode 100644
+index 8296054..0000000
+--- a/src/version.h.in
++++ /dev/null
+@@ -1,3 +0,0 @@
+-#ifndef LIBINJECTION_VERSION
+-#define LIBINJECTION_VERSION "@PACKAGE_VERSION@"
+-#endif
+
+From d23c6ccf4f42b28f4921f142a77ffe8967733dc1 Mon Sep 17 00:00:00 2001
+From: Felipe Zipitria <felipe.zipitria@owasp.org>
+Date: Mon, 3 Apr 2023 15:37:23 -0300
+Subject: [PATCH 3/4] docs: add comment about defining version for embedding
+
+Signed-off-by: Felipe Zipitria <felipe.zipitria@owasp.org>
+---
+ README.md | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/README.md b/README.md
+index 61627ea..769a58a 100644
+--- a/README.md
++++ b/README.md
+@@ -77,8 +77,7 @@ Point releases are purely data changes.  These may be safely applied.
+ QUALITY AND DIAGNOSITICS
+ ========================
+ 
+-The continuous integration results at
+-https://travis-ci.org/client9/libinjection tests the following:
++The continuous integration results at GitHub tests the following:
+ 
+ - [x] build and unit-tests under GCC
+ - [x] build and unit-tests under Clang
+@@ -122,3 +121,11 @@ into your source tree:
+ * [src/libinjection_sqli_data.h](/src/libinjection_sqli_data.h)
+ * [COPYING](/COPYING)
+ 
++Usually the new autoconf build system takes care of the `LIBINJECTION_VERSION` definition.
++But that might now be available when you are embedding the above files.
++
++This is solved by manually defining the version you are embedding to your `CFLAGS`.
++
++E.g.: `CFLAGS="-DLIBINJECTION_VERSION=\"3.9.2.65-dfe6-dirty\""`
++
++An easy way to get the version tag is to execute `git describe` in this directory.
+
+From fa0387d692e4d9b78c3fdc1193d9a64a8ee2f7d7 Mon Sep 17 00:00:00 2001
+From: Felipe Zipitria <felipe.zipitria@owasp.org>
+Date: Mon, 3 Apr 2023 15:57:20 -0300
+Subject: [PATCH 4/4] fix: make clang analyzer happy
+
+Signed-off-by: Felipe Zipitria <felipe.zipitria@owasp.org>
+---
+ src/libinjection_sqli.c | 26 +++++++++++++++-----------
+ 1 file changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/src/libinjection_sqli.c b/src/libinjection_sqli.c
+index afc6247..651a9d5 100644
+--- a/src/libinjection_sqli.c
++++ b/src/libinjection_sqli.c
+@@ -18,6 +18,11 @@
+ #include "libinjection_sqli.h"
+ #include "libinjection_sqli_data.h"
+ 
++// make clang analyzer happy by defining a dummy version
++#ifndef LIBINJECTION_VERSION
++#define LIBINJECTION_VERSION "undefined"
++#endif
++
+ #define LIBINJECTION_SQLI_TOKEN_SIZE  sizeof(((stoken_t*)(0))->val)
+ #define LIBINJECTION_SQLI_MAX_TOKENS  5
+ 
+@@ -595,34 +600,33 @@ static size_t parse_operator2(struct libinjection_sqli_state * sf)
+     }
+ }
+ 
++/*
++ * Ok!   "  \"   "  one backslash = escaped!
++ *       " \\"   "  two backslash = not escaped!
++ *       "\\\"   "  three backslash = escaped!
++ */
++static int is_backslash_escaped(const char* end, const char* start)
++{
++    const char* ptr;
+ #ifndef __clang_analyzer__
+ /* Code not to be analyzed by clang.
+- * 
++ *
+  * Why we do this? Because there is a false positive here:
+  * libinjection_sqli.c:608:13: warning: Out of bound memory access (access exceeds upper limit of memory block) [alpha.security.ArrayBoundV2]
+  *       if (*ptr != '\\') {
+  *           ^~~~
+  * Specifically, this function deals with non-null terminated char arrays. This can be added
+  * as prerequisite, and is not written clearly. But the math in the for below holds.
+- */ 
+-/*
+- * Ok!   "  \"   "  one backslash = escaped!
+- *       " \\"   "  two backslash = not escaped!
+- *       "\\\"   "  three backslash = escaped!
+  */
+-static int is_backslash_escaped(const char* end, const char* start)
+-{
+-    const char* ptr;
+     for (ptr = end; ptr >= start; ptr--) {
+         if (*ptr != '\\') {
+             break;
+         }
+     }
+     /* if number of backslashes is odd, it is escaped */
+-
+     return (end - ptr) & 1;
+-}
+ #endif
++}
+ 
+ static size_t is_double_delim_escaped(const char* cur,  const char* end)
+ {

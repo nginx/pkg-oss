@@ -5,6 +5,23 @@
 <change_log title="nginx_module_modsecurity">
 
 
+<changes apply="nginx-module-modsecurity" ver="1.0.3" rev="3" basever="1.23.4"
+         date="2023-04-10" time="12:00:00 +0000"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated libmodsecurity to the lastest master
+https://github.com/SpiderLabs/ModSecurity/blob/49281b6c0a09eeaec2ca74881719ce3cc016e4d1/CHANGES
+</para>
+</change>
+<change>
+<para>
+Updated libinjection to 7f0400ec6ddab17cb7005f2beb92c84757016182
+Including patch from https://github.com/libinjection/libinjection/pull/43
+</para>
+</change>
+
+</changes>
 <changes apply="nginx-module-modsecurity" ver="1.0.3" rev="1" basever="1.23.4"
          date="2023-03-28" time="09:49:35 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">

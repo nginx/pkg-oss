@@ -9,7 +9,7 @@ include $(CONTRIB)/src/secrules-language-tests/version
 include $(CONTRIB)/src/modsecurity-python-bindings/version
 
 MODULE_VERSION_modsecurity=	$(MODSECURITY_NGINX_VERSION)
-MODULE_RELEASE_modsecurity= 2
+MODULE_RELEASE_modsecurity= 3
 
 MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
 
@@ -19,7 +19,8 @@ MODULE_SOURCES_modsecurity=	modsecurity-$(MODSECURITY_GITHASH).tar.xz \
 				secrules-language-tests-$(SECRULES_LANGUAGE_TESTS_GITHASH).tar.xz \
 				modsecurity-python-bindings-$(MODSECURITY_PYTHON_BINDINGS_GITHASH).tar.xz
 
-MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/older-libmaxminddb-compatibility.patch
+MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/older-libmaxminddb-compatibility.patch \
+	                        $(CONTRIB)/src/libinjection/version.h.patch
 
 MODULE_CONFARGS_modsecurity=	--add-dynamic-module=$(MODSRC_PREFIX)modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH)
 
