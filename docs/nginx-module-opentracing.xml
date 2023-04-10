@@ -5,6 +5,17 @@
 <change_log title="nginx_module_opentracing">
 
 
+<changes apply="nginx-module-opentracing" ver="0.29.0" rev="1" basever="1.23.4"
+         date="2023-04-10" time="12:00:00 -0000"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated nginx-opentracing to 0.29.0
+</para>
+</change>
+
+</changes>
+
 <changes apply="nginx-module-opentracing" ver="0.27.0" rev="1" basever="1.23.4"
          date="2023-03-28" time="09:49:35 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
