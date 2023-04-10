@@ -12,8 +12,6 @@ MODULE_SOURCES_njs=	njs-$(NJS_VERSION).tar.gz
 MODULE_CONFARGS_njs=	--with-stream \
 			--add-dynamic-module=$(MODSRC_PREFIX)njs-$(NJS_VERSION)/nginx
 
-MODULE_PATCHES_njs= $(CONTRIB)/src/njs/ngx_js_fetch.c.patch
-
 .deps-module-njs:
 	cd $(CONTRIB) && make .sum-njs
 	touch $@
