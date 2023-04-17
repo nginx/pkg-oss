@@ -10,7 +10,8 @@
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
 <change>
 <para>
-Updated auth spnego module to 1.1.1
+Updated auth spnego module to 1.1.1 (3575542b3147bd03a6c68a750c3662b0d72ed94e)
+to include https://github.com/stnoonan/spnego-http-auth-nginx-module/pull/139
 </para>
 </change>
 
