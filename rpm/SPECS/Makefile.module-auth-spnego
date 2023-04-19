@@ -11,7 +11,7 @@ MODULE_VERSION_PREFIX_auth_spnego=$(MODULE_TARGET_PREFIX)
 
 MODULE_SOURCES_auth_spnego=	spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHASH).tar.xz
 
-MODULE_PATCHES_auth_spnego=	$(CONTRIB)/src/spnego-http-auth-nginx-module/extra-patch-ngx_http_auth_spnego_module.c
+MODULE_PATCHES_auth_spnego=
 
 MODULE_CONFARGS_auth_spnego=	--with-http_ssl_module \
 				--add-dynamic-module=spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHASH)
