@@ -92,6 +92,9 @@ nginx %%SHORT_SUMMARY%%.
 %prep
 %setup -qcTn %{name}-%{base_version}
 tar --strip-components=1 -zxf %{SOURCE0}
+
+ln -s . nginx%{?base_suffix}
+
 %%MODULE_PREP_SOURCES%%
 %%MODULE_PREP_PATCHES%%
 

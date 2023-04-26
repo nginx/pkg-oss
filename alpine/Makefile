@@ -199,7 +199,9 @@ abuild-module-%: $(BASE_SRC) .deps-module-%
 		cp $(CONTRIB)/tarballs/$${src} $${builddir}/ ; \
 		sources="$${sources} $${src}" ; \
 	done ; \
-	for p in $(MODULE_PATCHES_$(call modname, $*)); do \
+	base_patches=`find $(CONTRIB)/src/nginx$(BASE_SUFFIX)/ \
+	        -type f -name '*.patch' | sort |tr "\\n" " "` ; \
+	for p in $(MODULE_PATCHES_$(call modname, $*)) $$base_patches; do \
 		dn=`dirname $${p}` ; \
 		bdn=`basename $${dn}` ; \
 		pn="$${bdn}~`basename $${p}`" ; \

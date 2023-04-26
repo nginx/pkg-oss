@@ -96,6 +96,8 @@ unpack() {
 				test -n "$sndir" && ln -s ${sndir} ${sn} ||: )
 		fi
 	done
+	bs=`echo nginx*-$_base_version`
+	ln -s $bs ${bs%-*}
 }
 
 prepare() {

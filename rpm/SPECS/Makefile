@@ -226,7 +226,9 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 	i=100 ; \
 	patches= ; \
 	preppatches= ; \
-	for src in $(MODULE_PATCHES_$(call modname, $*)); do \
+	base_patch_files=`find $(CONTRIB)/src/nginx$(BASE_SUFFIX)/ \
+	        -type f -name '*.patch' | sort`; \
+	for src in $(MODULE_PATCHES_$(call modname, $*)) $$base_patch_files; do \
 		dn=`dirname $${src}` ; \
 		bdn=`basename $${dn}` ; \
 		pn="$${bdn}_`basename $${src}`" ; \

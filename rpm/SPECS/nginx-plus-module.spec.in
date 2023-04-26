@@ -94,10 +94,11 @@ NGINX Plus: %%SHORT_SUMMARY%%.
 
 %prep
 %setup -qcTn %{name}-%{base_version}
-%if %{META_MODULE} == 0
-	tar --strip-components=1 -zxf %{SOURCE0}
-	if ! test -e configure ; then ln -s auto/configure ./ ; fi
-%endif
+tar --strip-components=1 -zxf %{SOURCE0}
+if ! test -e configure ; then ln -s auto/configure ./ ; fi
+
+ln -s . nginx%{?base_suffix}
+
 %%MODULE_PREP_SOURCES%%
 %%MODULE_PREP_PATCHES%%
 

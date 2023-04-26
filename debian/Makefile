@@ -276,6 +276,12 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 		bdn=`basename $${dn}` ; \
 		( cd $${builddir}/$(SRCDIR)/debian/extra/$${bdn} && patch -p1 < $${p} ) ; \
 	done ; \
+	base_patches=`find $(CONTRIB)/src/nginx$(BASE_SUFFIX)/ -type f -name '*.patch' -printf "%f\n"| sort `; \
+	for patch in $$base_patches; do \
+	        mkdir -p $${builddir}/$(SRCDIR)/debian/patches ; \
+	        echo $$patch >> $${builddir}/$(SRCDIR)/debian/patches/series ; \
+	        cp -v $(CONTRIB)/src/nginx$(BASE_SUFFIX)/$$patch $${builddir}/$(SRCDIR)/debian/patches ; \
+	done ; \
 	( cd $${builddir}/$(SRCDIR) && find debian/ -type f -exec file --mime {} \; | fgrep 'charset=binary' | cut -d ':' -f 1 > include-binaries && mv include-binaries debian/source/ ) ; \
 	module_copyright="nginx-module-$${module_asis}.copyright" ; \
 	cp -p $(DOCS)/$${module_copyright} $${builddir}/$(SRCDIR)/debian/copyright ; \
