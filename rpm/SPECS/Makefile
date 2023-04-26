@@ -202,8 +202,7 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 	sources= ; \
 	prepsources= ; \
 	for src in $(MODULE_SOURCES_$(call modname, $*)); do \
-		if [ -h $(SRCPATH)/$${src} ] ; then rm $(SRCPATH)/$${src} ; fi ; \
-		ln -s $(CONTRIB)/tarballs/$${src} $(SRCPATH)/$${src} ; \
+		ln -sf $(CONTRIB)/tarballs/$${src} $(SRCPATH)/$${src} ; \
 		s="`printf "Source%d: %s\n" $${i} $${src}`" ; \
 		sources="$${sources}\n$${s}" ; \
 		case "$${src}" in \
@@ -231,8 +230,7 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		dn=`dirname $${src}` ; \
 		bdn=`basename $${dn}` ; \
 		pn="$${bdn}_`basename $${src}`" ; \
-		if [ -h $(SRCPATH)/$${pn} ] ; then rm $(SRCPATH)/$${pn} ; fi ; \
-		ln -s $${src} $(SRCPATH)/$${pn} ; \
+		ln -sf $${src} $(SRCPATH)/$${pn} ; \
 		s="`printf "Patch%d: %s\n" $${i} $${pn}`" ; \
 		patches="$${patches}\n$${s}" ; \
 		s="`printf "cd %%{bdir}/$${bdn}"`" ; \
