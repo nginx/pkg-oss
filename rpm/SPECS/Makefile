@@ -85,6 +85,12 @@ BASE_CONFIGURE_ARGS=\
 	--with-http_stub_status_module \
 	--with-http_sub_module \
 	--with-http_v2_module \
+$$( if [ 0%{?rhel} -eq 7 ] || [ 0%{?suse_version} -eq 1315 ]; then \
+	continue; \
+else \
+	echo "--with-http_v3_module"; \
+fi; \
+) \
 	--with-mail \
 	--with-mail_ssl_module \
 	--with-stream \
