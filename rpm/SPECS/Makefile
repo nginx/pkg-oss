@@ -271,7 +271,7 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $*))#g" \
 		-e "s#%%VERSION%%#$(MODULE_VERSION_$(call modname, $*))#g" \
 		-e "s#%%RELEASE%%#$(MODULE_RELEASE_$(call modname, $*))#g" \
-		-e "s#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g" \
+		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
 		-e "s#%%BASE_SUFFIX%%#$(BASE_SUFFIX)#g" \
 		-e "s#%%MODULE_CONFIGURE_ARGS%%#$(MODULE_CONFARGS_$(call modname, $*))#g" \
 		-e "s#%%COPYRIGHT_SOURCE%%#$${module_copyright}#g" \
