@@ -6,19 +6,18 @@ set -e
 addnginxuser() {
     # creating nginx group if he isn't already there
     if ! getent group nginx >/dev/null; then
-        addgroup --system nginx >/dev/null
+        groupadd --system nginx >/dev/null
     fi
 
     # creating nginx user if he isn't already there
     if ! getent passwd nginx >/dev/null; then
-        adduser \
+        useradd \
           --system \
-          --disabled-login \
-          --ingroup nginx \
+          --gid nginx \
           --no-create-home \
           --home /nonexistent \
-          --gecos "nginx user" \
-          --shell /bin/false \
+          --comment "nginx user" \
+          --shell /usr/sbin/nologin \
           nginx  >/dev/null
     fi
 }
