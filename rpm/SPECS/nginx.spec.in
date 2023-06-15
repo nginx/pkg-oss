@@ -110,6 +110,10 @@ BuildRequires: pcre2-devel
 Provides: webserver
 Provides: nginx-r%{base_version}
 
+%if !(0%{?rhel} == 7)
+Recommends: logrotate
+%endif
+
 %description
 nginx [engine x] is an HTTP and reverse proxy server, as well as
 a mail proxy server.
