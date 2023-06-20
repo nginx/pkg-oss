@@ -25,7 +25,6 @@ PLUS_RELEASE=	1
 BASE_SRC=	nginx$(BASE_SUFFIX)-$(BASE_VERSION).tar.gz
 SRCDIR=	nginx$(BASE_SUFFIX)-$(BASE_VERSION)
 MODULE_SRCDIR=	$(SRCDIR)
-SRCPATH?=	../..
 MODSRC_PREFIX=	../
 
 ifeq ($(MODULE_TARGET), plus)
@@ -256,13 +255,13 @@ abuild-module-%: $(BASE_SRC) .deps-module-%
 
 nginx-tests:
 	@{ \
-	if [ -d "$(SRCPATH)/nginx-tests" ]; then \
-		echo "===> Copying tests from $(SRCPATH)/nginx-tests" ; \
-		cp -rP $(SRCPATH)/nginx-tests nginx-tests ; \
-	else \
-		echo "===> Cloning tests" ; \
-		hg clone https://hg.nginx.org/nginx-tests ; \
+	if [ ! -d "$(CONTRIB)/tarballs/nginx-tests" ]; then \
+	    curdir=`pwd` ; \
+	    cd $(CONTRIB) && make .sum-nginx-tests ; \
+	    cd $$curdir ; \
 	fi ; \
+	echo "===> Copying tests from $(CONTRIB)/tarballs/nginx-tests" ; \
+	cp -rP $(CONTRIB)/tarballs/nginx-tests nginx-tests ; \
 	}
 
 test: base nginx-tests

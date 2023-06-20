@@ -373,13 +373,13 @@ check-compat-%:
 
 nginx-tests:
 	@{ \
-	if [ -d "../nginx-tests" ]; then \
-		echo "===> Copying tests from ../nginx-tests" ; \
-		cp -rP ../nginx-tests nginx-tests ; \
-	else \
-		echo "===> Cloning tests" ; \
-		hg clone https://hg.nginx.org/nginx-tests ; \
+	if [ ! -d "$(CONTRIB)/tarballs/nginx-tests" ]; then \
+	    curdir=`pwd` ; \
+	    cd $(CONTRIB) && make .sum-nginx-tests ; \
+	    cd $$curdir ; \
 	fi ; \
+	echo "===> Copying tests from $(CONTRIB)/tarballs/nginx-tests" ; \
+	cp -rP $(CONTRIB)/tarballs/nginx-tests nginx-tests ; \
 	}
 
 test: base nginx-tests
