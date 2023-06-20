@@ -152,9 +152,10 @@ nginx.rpm-changelog:
 
 nginx.spec: nginx.rpm-changelog
 ifeq ($(BASE_TARGET), plus)
-	cp $(DOCS)/nginx-modules-reference.pdf $(SRCPATH)
-	cp $(CONTRIB)/tarballs/dashboard.html $(SRCPATH)
-	cp $(DOCS)/EULA* $(SRCPATH)
+	cp -v $(DOCS)/nginx-modules-reference.pdf $(SRCPATH)
+	cp -v $(CONTRIB)/tarballs/dashboard.html $(SRCPATH)
+	cp -v $(DOCS)/EULA* $(SRCPATH)
+	cp -v $(DOCS)/CHANGES $(SRCPATH)
 endif
 	@echo "===> Creating $@"
 	@{ \
