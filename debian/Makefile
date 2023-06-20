@@ -226,7 +226,7 @@ check-compat-%:
 	    fi ; \
 	    ;; \
 	    lua) \
-	    if [ "$(ARCH)" = "ppc64le" ]; then \
+	    if [ "$(ARCH)" = "ppc64le" -o "$(ARCH)" = "s390x" ]; then \
 	        echo "Lua can not be built on $(ARCH) due to issues with LuaJIT" > \
 	        nginx-module-$${module}.skip ; \
 	    fi ; \
