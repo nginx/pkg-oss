@@ -324,8 +324,9 @@ check-compat-%:
 		fi ; \
 		;; \
 		geoip2) \
-		if [ `rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 ]; then \
-			echo "GeoIP2 can not be built on SuSe linux < 15 due to libmaxminddb absence" > \
+		if [ `rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 -o \
+			 `rpm --eval '0%{?amzn}'` -eq 2 ]; then \
+			echo "GeoIP2 can not be built on SLES < 15 and Amazon Linux 2 due to libmaxminddb absence" > \
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \
