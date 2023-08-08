@@ -220,12 +220,6 @@ check-compat-%:
 	@module=`echo $@ | cut -d '-' -f 3- | tr '-' '_'` ; \
 	set -e ; \
 	case "$${module}" in \
-	    brotli) \
-	    if [ "$(CODENAME)" = "stretch" ]; then \
-	        echo "brotli can not be built on Debian 9" > \
-	        nginx-module-$${module}.skip ; \
-	    fi ; \
-	    ;; \
 	    lua) \
 	    if [ "$(ARCH)" = "ppc64le" -o "$(ARCH)" = "s390x" ]; then \
 	        echo "Lua can not be built on $(ARCH) due to issues with LuaJIT" > \
