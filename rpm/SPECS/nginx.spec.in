@@ -59,6 +59,7 @@ BuildRequires: libopenssl-devel
 %define _debugsource_template %{nil}
 %endif
 
+# This also applies to Amazon Linux 2023
 %if 0%{?fedora}
 %define _debugsource_template %{nil}
 %global _hardened_build 1
