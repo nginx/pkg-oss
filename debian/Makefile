@@ -48,7 +48,7 @@ NPROC=		$(shell getconf _NPROCESSORS_ONLN)
 MODSRC_PREFIX=	extra/
 BUILD_DIR=	$$(BUILDDIR_nginx)
 
-BASE_MODULES=	geoip image-filter njs perl xslt
+BASE_MODULES=	geoip image-filter njs otel perl xslt
 
 MODULES=
 
