@@ -5,10 +5,10 @@ CONTRIB:=	$(abspath $(CONTRIB))
 
 BASE_TARGET?=	oss
 
-ifeq ($(BASE_TARGET), plus)
-BASE_SUFFIX=-plus
-DOCS?=		../docs-plus
-MODULE_TARGET?=	plus
+ifneq ($(BASE_TARGET), oss)
+BASE_SUFFIX=-$(BASE_TARGET)
+DOCS?=		../docs$(BASE_SUFFIX)
+MODULE_TARGET?=	$(BASE_TARGET)
 endif
 
 DOCS?=		../docs
@@ -27,15 +27,15 @@ SRCDIR=	nginx$(BASE_SUFFIX)-$(BASE_VERSION)
 MODULE_SRCDIR=	$(SRCDIR)
 MODSRC_PREFIX=	../
 
-ifeq ($(MODULE_TARGET), plus)
-APKBUILD_TEMPLATE=	APKBUILD-plus-module.in
-MODULE_SUFFIX=	-plus
-MODULE_SUMMARY_PREFIX=NGINX Plus
-TARGET_VERSION=$(PLUS_VERSION)
-else
-APKBUILD_TEMPLATE=	APKBUILD-module.in
+ifeq ($(MODULE_TARGET), oss)
+APKBUILD_TEMPLATE=	alpine/APKBUILD-module.in
 MODULE_SUMMARY_PREFIX=nginx
 TARGET_VERSION=$(BASE_VERSION)
+else 
+APKBUILD_TEMPLATE=	alpine-$(MODULE_TARGET)/APKBUILD-$(MODULE_TARGET)-module.in
+MODULE_SUFFIX=	-$(MODULE_TARGET)
+MODULE_SUMMARY_PREFIX=NGINX Plus
+TARGET_VERSION=$(PLUS_VERSION)
 endif
 
 MODULE_TARGET_PREFIX=$(TARGET_VERSION).
@@ -94,9 +94,9 @@ BASE_CONFIGURE_ARGS=\
 	--with-stream_ssl_module \
 	--with-stream_ssl_preread_module
 
-ifeq ($(BASE_TARGET), plus)
+ifneq ($(BASE_TARGET), oss)
 BASE_CONFIGURE_ARGS+=\
-	--build=nginx-plus-r$(PLUS_VERSION) \
+	--build=nginx-$(BASE_TARGET)-r$(PLUS_VERSION) \
 	--with-http_auth_jwt_module \
 	--with-http_f4f_module \
 	--with-http_hls_module \
@@ -159,19 +159,19 @@ abuild-base: $(BASE_SRC)
 	set -e ; \
 	mkdir -p abuild-base ; \
 	cp $(BASE_SRC) abuild-base/ ; \
-	cp nginx$(BASE_SUFFIX).* abuild-base/ ; \
+	cp alpine$(BASE_SUFFIX)/* abuild-base/ ; \
 	patches=`find $(CONTRIB)/src/nginx$(BASE_SUFFIX)/ \
 		-type f -name '*.patch' -printf  "%f\n" | sort |tr "\\n" " "` ; \
 	for patch in $$patches; do \
 		cp -v $(CONTRIB)/src/nginx$(BASE_SUFFIX)/$$patch abuild-base/ ; \
 	done ;\
 	cp $(DOCS)/nginx.copyright abuild-base/COPYRIGHT ; \
-	if [ "$(BASE_TARGET)" = "plus" ]; then \
+	if [ "$(BASE_TARGET)" != "oss" ]; then \
 		cp -v $(DOCS)/EULA-* $(CONTRIB)/tarballs/dashboard.html $(DOCS)/nginx-modules-reference.pdf abuild-base/ ; \
 	fi; \
-	sed nginx$(BASE_SUFFIX).initd.in -e 's#%%DAEMON%%#nginx#g' > abuild-base/nginx$(BASE_SUFFIX).initd ; \
-	sed nginx$(BASE_SUFFIX).initd.in -e 's#%%DAEMON%%#nginx-debug#g' > abuild-base/nginx$(BASE_SUFFIX)-debug.initd ; \
-	sed APKBUILD-base$(BASE_SUFFIX).in \
+	sed alpine$(BASE_SUFFIX)/nginx$(BASE_SUFFIX).initd.in -e 's#%%DAEMON%%#nginx#g' > abuild-base/nginx$(BASE_SUFFIX).initd ; \
+	sed alpine$(BASE_SUFFIX)/nginx$(BASE_SUFFIX).initd.in -e 's#%%DAEMON%%#nginx-debug#g' > abuild-base/nginx$(BASE_SUFFIX)-debug.initd ; \
+	sed alpine$(BASE_SUFFIX)/APKBUILD-base$(BASE_SUFFIX).in \
 		-e 's#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g' \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
@@ -245,7 +245,7 @@ abuild-module-%: $(BASE_SRC) .deps-module-%
 		-e "s#%%MODULE_ENV%%#$${buildenv}#g" \
 		-e "s#%%MODULE_SRCDIR%%#$(MODULE_SRCDIR)#g" \
 	> $${builddir}/APKBUILD ; \
-	sed nginx-module.post-install.in \
+	sed alpine/nginx-module.post-install.in \
 		-e "s#%%MODULE_POST%%#$$post#g" \
 	> $${postinstall_script} ; \
 	}
