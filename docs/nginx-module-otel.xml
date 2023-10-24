@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE change_log SYSTEM "changes.dtd" >
 
-<change_log title="nginx-module-otel">
+<change_log title="nginx_module_otel">
 
 
 <changes apply="nginx-module-otel" ver="0.1.0" rev="1" basever="1.25.2"
