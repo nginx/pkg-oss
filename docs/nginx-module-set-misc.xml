@@ -5,6 +5,18 @@
 <change_log title="nginx_module_set_misc">
 
 
+<changes apply="nginx-module-set-misc" ver="0.33" rev="1" basever="1.25.3"
+         date="2023-10-24" time="09:10:31 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.25.3-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-set-misc" ver="0.33" rev="1" basever="1.25.2"
          date="2023-08-15" time="11:48:44 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
