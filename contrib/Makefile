@@ -44,7 +44,7 @@ download = $(error Neither curl nor wget found)
 endif
 
 download_pkg = $(call download,$(CONTRIB_NGINX)/$(2)/$(lastword $(subst /, ,$(@)))) || \
-	( $(call download,$(1)) && echo "Please upload $(lastword $(subst /, ,$(@))) to $(CONTRIB_NGINX)" )
+	( $(call download,$(1)) && echo "Please upload $(lastword $(subst /, ,$(@))) to $(CONTRIB_NGINX)" && echo "mkdir -p contrib/$(2); cd contrib/$(2) && curl -f -L -- \"$(1)\" > \"$(lastword $(subst /, ,$(@)))\" && cd ../.." )
 
 ifeq ($(shell which xz >/dev/null 2>&1 || echo FAIL),)
 XZ = xz
