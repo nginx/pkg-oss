@@ -237,7 +237,7 @@ fi
 # Sanitize module nickname (this is a debbuild requirement, probably needs to check for more characters)
 #
 while true; do
-	MODULE_NAME_CLEAN=`echo $MODULE_NAME | tr '[A-Z]' '[a-z]' | tr -d '[/_\-\.\t ]'`
+	MODULE_NAME_CLEAN=`echo $MODULE_NAME | tr '[A-Z]' '[a-z]' | tr '[/_\-\.\t ]' '\n' | grep -ve nginx | tr -d '\n'`
 	if [ "$MODULE_NAME_CLEAN" != "$MODULE_NAME" ] || [ -z $MODULE_NAME ]; then
 		echo "$ME: WARNING: Removed illegal characters from module nickname - using \"$MODULE_NAME_CLEAN\""
 		if [ -z $SAY_YES ]; then
