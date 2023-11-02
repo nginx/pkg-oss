@@ -5,6 +5,19 @@
 <change_log title="nginx_module_lua">
 
 
+<changes apply="nginx-module-lua" ver="0.10.25" rev="2" basever="1.25.3"
+         date="2023-11-02" time="12:00:00 -0000"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Return a mistakenly removed patch that fixes memory corruption in lua module:
+https://github.com/openresty/lua-nginx-module/commit/16de4bea620b6281f948b0d65341e31b2c90d597
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-lua" ver="0.10.25" rev="1" basever="1.25.3"
          date="2023-10-24" time="09:10:31 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
