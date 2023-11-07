@@ -21,7 +21,7 @@ MODULE_SOURCES_otel=    nginx-otel-$(NGINX_OTEL_VERSION).tar.xz \
             opentelemetry-proto-$(OPENTELEMETRY_PROTO_VERSION).tar.gz \
             protobuf-$(PROTOBUF_VERSION).tar.gz
 
-MODULE_PATCHES_otel=
+MODULE_PATCHES_otel=	$(CONTRIB)/src/abseil-cpp/b957f0ccd00481cd4fd663d8320aa02ae0564f18.patch
 
 MODULE_CONFARGS_otel=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-otel-$(NGINX_OTEL_VERSION)/
 
