@@ -24,7 +24,9 @@ MODULE_PATCHES_opentracing=	$(CONTRIB)/src/opentracing-cpp/CMakeLists.txt.patch 
 				$(CONTRIB)/src/jaeger-client-cpp/CMakeLists.txt.patch
 
 ifeq ($(shell test `rpm --eval '0%{?rhel}'` -gt 0 -a `rpm --eval '0%{?rhel}'` -lt 8 && echo 1),1)
-MODULE_PATCHES_opentracing+=	$(CONTRIB)/src/jaeger-client-cpp/CMakeLists.txt.suppress-gcc-version-check.patch
+MODULE_PATCHES_opentracing+=	$(CONTRIB)/src/jaeger-client-cpp/CMakeLists.txt.suppress-gcc-version-check.patch \
+				$(CONTRIB)/src/thrift/0001-Partially-revert-THRIFT-4861-Set-minimum-boost-to-1..patch \
+				$(CONTRIB)/src/thrift//0002-Fixed-build-with-GCC-4.8.5-on-RHEL-7.patch
 endif
 
 MODULE_CONFARGS_opentracing=	--add-dynamic-module=nginx-opentracing-$(NGINX_OPENTRACING_VERSION)/opentracing
