@@ -99,7 +99,7 @@ mkdir -p %{bdir}/thrift-$(THRIFT_VERSION)/bin/ || exit 1
 cd %{bdir}/json-$(JSON_VERSION) \&\& \
 mkdir .build \&\& \
 cd .build \&\& \
-cmake \
+%{_cmake_cmd} \
     -DJSON_BuildTests=OFF \
     -DJSON_BuildTests_INIT=OFF \
     -DJSON_Install=ON \
