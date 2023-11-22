@@ -9,7 +9,7 @@ include $(CONTRIB)/src/secrules-language-tests/version
 include $(CONTRIB)/src/modsecurity-python-bindings/version
 
 MODULE_VERSION_modsecurity=	$(MODSECURITY_NGINX_VERSION)
-MODULE_RELEASE_modsecurity=	3
+MODULE_RELEASE_modsecurity=	4
 
 MODULE_VERSION_PREFIX_modsecurity=$(MODULE_TARGET_PREFIX)
 
@@ -20,7 +20,7 @@ MODULE_SOURCES_modsecurity=	modsecurity-$(MODSECURITY_GITHASH).tar.xz \
 				modsecurity-python-bindings-$(MODSECURITY_PYTHON_BINDINGS_GITHASH).tar.xz
 
 MODULE_PATCHES_modsecurity=	$(CONTRIB)/src/modsecurity/older-libmaxminddb-compatibility.patch \
-                            $(CONTRIB)/src/libinjection/version.h.patch
+				$(CONTRIB)/src/modsecurity/libinjection-version.patch
 
 MODULE_CONFARGS_modsecurity=	--add-dynamic-module=modsecurity-nginx-$(MODSECURITY_NGINX_GITHASH)
 
@@ -52,6 +52,7 @@ define MODULE_PREBUILD_modsecurity
 cd %{bdir}/modsecurity-$(MODSECURITY_GITHASH) \&\& \
 rm -rf others/libinjection \&\& \
 ln -s ../../libinjection others/libinjection \&\& \
+sed -i.bak 's,@@LIBINJECTION_VERSION@@,$(LIBINJECTION_GITHASH),' others/Makefile.am \&\& \
 rm -rf test/test-cases/secrules-language-tests \&\& \
 ln -s ../../../secrules-language-tests test/test-cases/secrules-language-tests \&\& \
 rm -rf bindings/python \&\& \

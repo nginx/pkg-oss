@@ -1,6 +1,7 @@
 # ModSecurity
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/version
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/../libinjection/version
 
 MODSECURITY_GITURL := $(GITHUB)/SpiderLabs/ModSecurity.git
 
@@ -16,10 +17,12 @@ $(TARBALLS)/modsecurity-$(MODSECURITY_GITHASH).tar.xz:
 modsecurity: modsecurity-$(MODSECURITY_GITHASH).tar.xz .sum-modsecurity
 	$(UNPACK)
 	$(APPLY) $(SRC)/modsecurity/older-libmaxminddb-compatibility.patch
+	$(APPLY) $(SRC)/modsecurity/libinjection-version.patch
 	$(MOVE)
 
 .modsecurity: modsecurity
 	cd $< && \
+		sed -i.bak 's,@@LIBINJECTION_VERSION@@,$(LIBINJECTION_VERSION),' others/Makefile.am && \
 		./configure --prefix $(PREFIX) --without-lmdb --without-lua && \
 		make $(_SMP_MFLAGS) install && \
 		TERM=foo make check-TESTS

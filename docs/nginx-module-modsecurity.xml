@@ -5,6 +5,23 @@
 <change_log title="nginx_module_modsecurity">
 
 
+<changes apply="nginx-module-modsecurity" ver="1.0.3" rev="4" basever="1.25.3"
+         date="2023-11-21" time="17:00:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated libmodsecurity to 3.0.10.
+</para>
+</change>
+<change>
+<para>
+Updated libinjection to current git HEAD.
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-modsecurity" ver="1.0.3" rev="1" basever="1.25.3"
          date="2023-10-24" time="09:10:31 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
