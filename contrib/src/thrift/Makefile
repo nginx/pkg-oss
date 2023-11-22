@@ -13,10 +13,6 @@ $(TARBALLS)/thrift-$(THRIFT_VERSION).tar.gz:
 # patches reflect changes made in hunter version of thrift
 thrift: thrift-$(THRIFT_VERSION).tar.gz .sum-thrift
 	$(UNPACK)
-	$(APPLY) $(SRC)/thrift/CMakeLists.txt.patch
-	$(APPLY) $(SRC)/thrift/lib-cpp-CMakeLists.txt.patch
-	$(APPLY) $(SRC)/thrift/build-cmake-ThriftMacros.cmake.patch
-	$(APPLY) $(SRC)/thrift/build-cmake-Config.cmake.in.patch
 	$(MOVE)
 
 .thrift: thrift

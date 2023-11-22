@@ -1,6 +1,6 @@
---- a/CMakeLists.txt	2021-03-19 11:09:28.820154009 +0000
-+++ b/CMakeLists.txt	2021-03-19 11:12:02.684154009 +0000
-@@ -59,28 +59,26 @@
+--- a/CMakeLists.txt	2023-11-21 02:32:31.752485165 +0000
++++ b/CMakeLists.txt	2023-11-21 02:33:08.927742828 +0000
+@@ -59,31 +59,29 @@
    message(FATAL_ERROR "Must use gcc >= 4.9")
  endif()
  
@@ -23,7 +23,7 @@
 +# use our own prebuilt version of thrift
 +include_directories(${THRIFT_INC})
 +find_package(thrift CONFIG REQUIRED)
-+list(APPEND LIBS thrift::thrift_static)
++list(APPEND LIBS thrift::thrift)
  list(APPEND package_deps thrift)
  
 -
@@ -45,7 +45,11 @@
 +set(OPENTRACING_LIB OpenTracing::opentracing-static)
  list(APPEND package_deps OpenTracing)
  
- hunter_add_package(nlohmann_json)
+-hunter_add_package(nlohmann_json)
++#hunter_add_package(nlohmann_json)
+ find_package(nlohmann_json CONFIG REQUIRED)
+ list(APPEND LIBS nlohmann_json::nlohmann_json)
+ list(APPEND package_deps nlohmann_json)
 @@ -97,16 +95,8 @@
    "NOT JAEGERTRACING_BUILD_CROSSDOCK" ON)
  
