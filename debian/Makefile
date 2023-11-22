@@ -99,11 +99,13 @@ BASE_CONFIGURE_ARGS=\
 ifeq ($(BASE_TARGET), plus)
 BASE_CONFIGURE_ARGS+= \
 	--build=nginx-plus-r$(PLUS_VERSION) \
+	--mgmt-id-path=/var/lib/nginx/nginx.id \
 	--with-http_auth_jwt_module \
 	--with-http_f4f_module \
 	--with-http_hls_module \
 	--with-http_proxy_protocol_vendor_module \
 	--with-http_session_log_module \
+	--with-mgmt \
 	--with-stream_mqtt_filter_module \
 	--with-stream_mqtt_preread_module \
 	--with-stream_proxy_protocol_vendor_module
