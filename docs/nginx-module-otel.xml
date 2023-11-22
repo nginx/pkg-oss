@@ -4,6 +4,33 @@
 <change_log title="nginx_module_otel">
 
 
+<changes apply="nginx-module-otel" ver="0.1.0" rev="2" basever="1.25.3"
+         date="2023-11-21" time="17:00:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated grpc to 1.46.7.
+</para>
+</change>
+<change>
+<para>
+Updated opentelemetry-cpp to 1.11.0.
+</para>
+</change>
+<change>
+<para>
+Updated opentelemetry-proto to 1.0.0.
+</para>
+</change>
+<change>
+<para>
+base version updated to 1.25.3-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-otel" ver="0.1.0" rev="1" basever="1.25.3"
          date="2023-10-24" time="09:10:31 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
