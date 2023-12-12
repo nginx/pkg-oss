@@ -10,7 +10,7 @@ include $(CONTRIB)/src/opentelemetry-proto/version
 include $(CONTRIB)/src/protobuf/version
 
 MODULE_VERSION_otel=	$(NGINX_OTEL_VERSION)
-MODULE_RELEASE_otel=	2
+MODULE_RELEASE_otel=	3
 
 MODULE_VERSION_PREFIX_otel=$(MODULE_TARGET_PREFIX)
 
@@ -46,7 +46,7 @@ export NGX_OTEL_PROTO_DIR=$$builddir/../opentelemetry-proto-$(OPENTELEMETRY_PROT
 export CMAKE_PREFIX_PATH=$$builddir/prebuilt/ \&\& \
 cd $$builddir/../protobuf-$(PROTOBUF_VERSION) \&\& mkdir build \&\& cd build \&\& \
     cmake \
-    -DCMAKE_CXX_STANDARD=11 \
+    -DCMAKE_CXX_STANDARD=17 \
     -DCMAKE_CXX_EXTENSIONS=OFF \
     -DCMAKE_CXX_VISIBILITY_PRESET=hidden \
     -DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -60,7 +60,7 @@ cd $$builddir/../protobuf-$(PROTOBUF_VERSION) \&\& mkdir build \&\& cd build \&\
     make $$_make_opts install \&\& \
 cd $$builddir/../abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\& \
     cmake \
-    -DCMAKE_CXX_STANDARD=11 \
+    -DCMAKE_CXX_STANDARD=17 \
     -DCMAKE_CXX_EXTENSIONS=OFF \
     -DCMAKE_CXX_VISIBILITY_PRESET=hidden \
     -DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -75,7 +75,7 @@ cd $$builddir/../abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\
     make $$_make_opts install \&\& \
 cd $$builddir/../grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
     cmake \
-    -DCMAKE_CXX_STANDARD=11 \
+    -DCMAKE_CXX_STANDARD=17 \
     -DCMAKE_CXX_EXTENSIONS=OFF \
     -DCMAKE_CXX_VISIBILITY_PRESET=hidden \
     -DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -104,7 +104,7 @@ cd $$builddir/../grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
     make $$_make_opts install \&\& \
 cd $$builddir/../opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION) \&\& mkdir build \&\& cd build \&\& \
     cmake \
-    -DCMAKE_CXX_STANDARD=11 \
+    -DCMAKE_CXX_STANDARD=17 \
     -DCMAKE_CXX_EXTENSIONS=OFF \
     -DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
     -DCMAKE_CXX_VISIBILITY_PRESET=hidden \
