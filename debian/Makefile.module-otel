@@ -36,7 +36,7 @@ MODULE_CONFARGS_otel=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-otel-$(NGINX_OT
 		.sum-nginx-otel
 	touch $@
 
-MODULE_BUILD_DEPENDS_otel=,cmake,libre2-dev,libc-ares-dev
+MODULE_BUILD_DEPENDS_otel=,cmake,libre2-dev,libc-ares-dev,pkg-config
 
 define MODULE_PREBUILD_otel
 	set -ex \&\& \
