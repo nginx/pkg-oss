@@ -4,6 +4,16 @@
 <change_log title="nginx_module_otel">
 
 
+<changes apply="nginx-module-otel" ver="0.1.0" rev="4" basever="1.25.3"
+         date="2023-12-13" time="17:00:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated nginx-otel to git hash 1a43ddc6f198af8d5a1bccc4ddc9f9472ccdafc9.
+</para>
+</change>
+</changes>
+
 <changes apply="nginx-module-otel" ver="0.1.0" rev="2" basever="1.25.3"
          date="2023-11-21" time="17:00:00 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
