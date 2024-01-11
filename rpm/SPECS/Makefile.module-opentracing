@@ -119,7 +119,7 @@ nlohmann_json_DIR=%{bdir}/json-$(JSON_VERSION)/share/cmake/nlohmann_json \
 	-DBUILD_TESTING=OFF \
 	-DJAEGERTRACING_PLUGIN=ON \
 	-DCMAKE_BUILD_TYPE=Release \
-	-DHUNTER_CONFIGURATION_TYPES=Release \
+	-DHUNTER_ENABLED=OFF \
 	-DOPENTRACING_INC=%{bdir}/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include \
 ../ \&\& \
 make %{?_smp_mflags} || exit 1

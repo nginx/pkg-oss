@@ -89,7 +89,7 @@ define MODULE_PREBUILD_opentracing
 			-DBUILD_TESTING=OFF \
 			-DJAEGERTRACING_PLUGIN=ON \
 			-DCMAKE_BUILD_TYPE=Release \
-			-DHUNTER_CONFIGURATION_TYPES=Release \
+			-DHUNTER_ENABLED=OFF \
 			-DOPENTRACING_INC=$$builddir/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include \
 		../ \&\& \
 		DESTDIR=`pwd`/.. make $$_make_opts )

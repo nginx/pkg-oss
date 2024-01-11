@@ -88,7 +88,7 @@ define MODULE_PREBUILD_opentracing
 			-DBUILD_TESTING=OFF \
 			-DJAEGERTRACING_PLUGIN=ON \
 			-DCMAKE_BUILD_TYPE=Release \
-			-DHUNTER_CONFIGURATION_TYPES=Release \
+			-DHUNTER_ENABLED=OFF \
 			-DOPENTRACING_INC=$$(BUILDDIR_nginx)/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include \
 		../ \&\& \
 		$$(MAKE) -j$$(NUMJOBS)
