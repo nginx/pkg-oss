@@ -11,9 +11,7 @@ MODULE_VERSION_PREFIX_headers_more=$(MODULE_TARGET_PREFIX)
 
 MODULE_SOURCES_headers_more=	headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODULE_GITHASH).tar.xz
 
-MODULE_CONFARGS_headers_more=	--with-http_dav_module \
-				--with-http_realip_module \
-				--add-dynamic-module=$(MODSRC_PREFIX)headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODULE_GITHASH)
+MODULE_CONFARGS_headers_more=	--add-dynamic-module=$(MODSRC_PREFIX)headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODULE_GITHASH)
 
 .deps-module-headers-more:
 	cd $(CONTRIB) && make .sum-headers-more-nginx-module

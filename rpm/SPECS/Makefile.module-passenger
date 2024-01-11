@@ -13,8 +13,7 @@ MODULE_SOURCES_passenger=	passenger-$(PASSENGER_VERSION).tar.gz
 MODULE_PATCHES_passenger=	$(CONTRIB)/src/passenger/build-nginx.rb.patch \
 							$(CONTRIB)/src/passenger/src-nginx_module-ContentHandler.c.patch
 
-MODULE_CONFARGS_passenger=	--with-http_ssl_module \
-				--add-dynamic-module=passenger-$(PASSENGER_VERSION)/src/nginx_module
+MODULE_CONFARGS_passenger=	--add-dynamic-module=passenger-$(PASSENGER_VERSION)/src/nginx_module
 
 .deps-module-passenger:
 	cd $(CONTRIB) && make .sum-passenger

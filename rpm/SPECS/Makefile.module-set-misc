@@ -13,8 +13,7 @@ MODULE_VERSION_PREFIX_set_misc=$(MODULE_TARGET_PREFIX)
 MODULE_SOURCES_set_misc=	ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION).tar.gz \
 				set-misc-nginx-module-$(SET_MISC_NGINX_MODULE_VERSION).tar.gz
 
-MODULE_CONFARGS_set_misc=	--with-http_ssl_module \
-				--add-dynamic-module=ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION) \
+MODULE_CONFARGS_set_misc=	--add-dynamic-module=ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION) \
 				--add-dynamic-module=set-misc-nginx-module-$(SET_MISC_NGINX_MODULE_VERSION)
 
 .deps-module-set-misc:
