@@ -168,7 +168,7 @@ endif
 	patch_files=`find $(CONTRIB)/src/nginx$(BASE_SUFFIX)/ \
 		-type f -name '*.patch' -printf "%f\n" | sort`; \
 	patches=`for i in $$patch_files; do echo $$i; done | \
-			awk '{ printf "Patch%03d: %s\n", NR, $$0 }'`; \
+			awk '{ printf "Patch%03d: %s\\\n", NR, $$0 }'`; \
 	for patch in $$patch_files; do \
 		cp -v $(CONTRIB)/src/nginx$(BASE_SUFFIX)/$$patch $(SRCPATH) ; \
 	done; \
