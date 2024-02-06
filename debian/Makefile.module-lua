@@ -10,7 +10,7 @@ include $(CONTRIB)/src/lua-resty-core/version
 include $(CONTRIB)/src/lua-resty-lrucache/version
 
 MODULE_VERSION_lua=	$(LUA_NGINX_MODULE_VERSION)
-MODULE_RELEASE_lua=	3
+MODULE_RELEASE_lua=	4
 
 MODULE_VERSION_PREFIX_lua=$(MODULE_TARGET_PREFIX)
 
@@ -24,14 +24,11 @@ MODULE_SOURCES_lua=	ngx_devel_kit-$(MODULE_VERSION_ndk).tar.gz \
 MODULE_PATCHES_lua=	$(CONTRIB)/src/luajit2/Makefile.patch \
 			$(CONTRIB)/src/luajit2/src-luaconf.h.patch \
 			$(CONTRIB)/src/lua-nginx-module/config.patch \
-			$(CONTRIB)/src/lua-nginx-module/ngx_table_elt_t.patch \
 			$(CONTRIB)/src/stream-lua-nginx-module/config.patch
 
 MODULE_CONFARGS_lua=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION) \
 			--add-dynamic-module=$(MODSRC_PREFIX)lua-nginx-module-$(LUA_NGINX_MODULE_VERSION) \
 			--add-dynamic-module=$(MODSRC_PREFIX)stream-lua-nginx-module-$(STREAM_LUA_NGINX_MODULE_VERSION)
-
-MODULE_BUILD_DEPENDS_lua=,libpcre3-dev
 
 .deps-module-lua:
 	cd $(CONTRIB) && make \
@@ -61,9 +58,6 @@ define MODULE_PREBUILD_lua
 	mv $$(BUILDDIR_nginx)/extra/luajit2-$(LUAJIT2_VERSION)/usr/share/man/man1/luajit.1 $$(BUILDDIR_nginx)/extra/luajit2-$(LUAJIT2_VERSION)/usr/share/man/man1/nginx-luajit.1
 endef
 export MODULE_PREBUILD_lua
-
-MODULE_LD_OPT_lua=-lpcre
-MODULE_LD_OPT_DEBUG_lua=$(MODULE_LD_OPT_lua)
 
 define MODULE_ENV_lua
 LUAJIT_INC="$$(LUAJIT_INC_$$(shell echo $$@ | cut -d '.' -f 3))" LUAJIT_LIB="$$(LUAJIT_LIB_$$(shell echo $$@ | cut -d '.' -f 3))"

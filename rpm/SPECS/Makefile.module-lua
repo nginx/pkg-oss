@@ -10,7 +10,7 @@ include $(CONTRIB)/src/lua-resty-core/version
 include $(CONTRIB)/src/lua-resty-lrucache/version
 
 MODULE_VERSION_lua=	$(LUA_NGINX_MODULE_VERSION)
-MODULE_RELEASE_lua=	3
+MODULE_RELEASE_lua=	4
 
 MODULE_VERSION_PREFIX_lua=$(MODULE_TARGET_PREFIX)
 
@@ -24,7 +24,6 @@ MODULE_SOURCES_lua=	luajit2-$(LUAJIT2_VERSION).tar.gz \
 MODULE_PATCHES_lua=	$(CONTRIB)/src/luajit2/Makefile.patch \
 			$(CONTRIB)/src/luajit2/src-luaconf.h.patch \
 			$(CONTRIB)/src/lua-nginx-module/config.patch \
-			$(CONTRIB)/src/lua-nginx-module/ngx_table_elt_t.patch \
 			$(CONTRIB)/src/stream-lua-nginx-module/config.patch
 
 MODULE_CONFARGS_lua=	--add-dynamic-module=ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION) \
@@ -42,7 +41,6 @@ MODULE_CONFARGS_lua=	--add-dynamic-module=ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION)
 	touch $@
 
 define MODULE_DEFINITIONS_lua
-BuildRequires: pcre-devel
 Requires: $(NDK_DEPENDENCY_TAG)
 %define LUAJIT_INC %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/include/nginx-luajit-2.1
 %define LUAJIT_LIB %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/lib
@@ -55,9 +53,6 @@ DESTDIR="%{bdir}/luajit2-$(LUAJIT2_VERSION)" CFLAGS="-fPIC" make %{?_smp_mflags}
 mv %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/bin/luajit %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/bin/nginx-luajit
 endef
 export MODULE_PREBUILD_lua
-
-MODULE_LD_OPT_lua=-lpcre
-MODULE_LD_OPT_DEBUG_lua=$(MODULE_LD_OPT_lua)
 
 define MODULE_ENV_lua
 LUAJIT_INC="%{LUAJIT_INC}" \\

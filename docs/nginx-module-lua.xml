@@ -5,6 +5,23 @@
 <change_log title="nginx_module_lua">
 
 
+<changes apply="nginx-module-lua" ver="0.10.26" rev="4" basever="1.25.3"
+         date="2024-02-06" time="12:00:00 -0000"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Lua module updated to 0.10.26.
+</para>
+</change>
+<change>
+<para>
+Lua module now linked with PCRE2.
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-lua" ver="0.10.25" rev="3" basever="1.25.3"
          date="2023-11-02" time="12:00:00 -0000"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
