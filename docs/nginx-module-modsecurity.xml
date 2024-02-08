@@ -5,6 +5,17 @@
 <change_log title="nginx_module_modsecurity">
 
 
+<changes apply="nginx-module-modsecurity" ver="1.0.3" rev="5" basever="1.25.3"
+         date="2024-02-08" time="15:00:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated libmodsecurity to 3.0.12.
+</para>
+</change>
+</changes>
+
+
 <changes apply="nginx-module-modsecurity" ver="1.0.3" rev="4" basever="1.25.3"
          date="2023-11-21" time="17:00:00 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
