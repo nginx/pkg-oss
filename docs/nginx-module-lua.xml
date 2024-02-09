@@ -18,6 +18,11 @@ Lua module updated to 0.10.26.
 Lua module now linked with PCRE2.
 </para>
 </change>
+<change>
+<para>
+Lua resty core updated to 0.1.28.
+</para>
+</change>
 
 </changes>
 
