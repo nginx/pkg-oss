@@ -23,6 +23,11 @@ Lua module now linked with PCRE2.
 Lua resty core updated to 0.1.28.
 </para>
 </change>
+<change>
+<para>
+Lua stream module updated to 0.0.14.
+</para>
+</change>
 
 </changes>
 
