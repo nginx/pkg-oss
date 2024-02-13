@@ -104,6 +104,7 @@ release: version-check nginx-$(VERSION).tar.gz
 			module_underscore=`echo $${module} | tr '-' '_'` ; \
 			CHANGESADD="\n\n\n<changes apply=\"nginx-module-$${module}\" ver=\"$${module_version}\" rev=\"$(RELEASE)\" basever=\"$(VERSION)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nbase version updated to $(VERSION)-$(RELEASE)\n</para>\n</change>\n\n</changes>" ; \
 			sed -i.bak -e "s,title=\"nginx_module_$${module_underscore}\">,title=\"nginx_module_$${module_underscore}\">$${CHANGESADD}," docs/nginx-module-$${module}.xml ; \
+			sed -i.bak -e "s,^MODULE_RELEASE_$${module_underscore}=.*,MODULE_RELEASE_$${module_underscore}=\t1," {alpine,debian,rpm/SPECS}/Makefile.module-$${module} ; \
 		done ; \
 		echo ; \
 		echo "Done. Please carefully check the diff. Use \"make revert\" to revert any changes." ; \
