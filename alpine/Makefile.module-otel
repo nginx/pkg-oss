@@ -74,6 +74,7 @@ cd $$builddir/../abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\
     ../ \&\& \
     make $$_make_opts install \&\& \
 cd $$builddir/../grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
+    CXXFLAGS='-DGRPC_NO_XDS -DGRPC_NO_RLS' \
     cmake \
     -DCMAKE_CXX_STANDARD=17 \
     -DCMAKE_CXX_EXTENSIONS=OFF \
