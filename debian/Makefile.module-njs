@@ -3,16 +3,21 @@ MODULES+=	njs
 MODULE_SUMMARY_njs=	njs dynamic modules
 
 include $(CONTRIB)/src/njs/version
+include $(CONTRIB)/src/quickjs/version
 
 MODULE_VERSION_njs=	$(NJS_VERSION)
 MODULE_RELEASE_njs=	1
 
-MODULE_SOURCES_njs=	njs-$(NJS_VERSION).tar.gz
+MODULE_SOURCES_njs=	\
+					njs-$(NJS_VERSION).tar.gz \
+					quickjs-$(QUICKJS_VERSION).tar.xz
 
 MODULE_CONFARGS_njs=	--add-dynamic-module=$(MODSRC_PREFIX)njs-$(NJS_VERSION)/nginx
 
 .deps-module-njs:
-	cd $(CONTRIB) && make .sum-njs
+	cd $(CONTRIB) && make \
+						.sum-njs \
+						.sum-quickjs
 	touch $@
 
 MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
@@ -20,9 +25,13 @@ MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
 MODULE_BUILD_DEPENDS_njs=,libedit-dev,libxml2-dev,libxslt-dev
 
 define MODULE_PREBUILD_njs
-	cd debian/extra/njs-$(NJS_VERSION) \&\& \
-	./configure --cc-opt="$$(CFLAGS)" --ld-opt="$$(LDFLAGS)" \&\& \
-	make njs \&\& \
+	cd $$(CURDIR)/debian/extra/quickjs-$(QUICKJS_VERSION) \&\& \
+	$(MAKE) -j$$(NUMJOBS) install PREFIX=$$(BUILDDIR_nginx)/extra/prebuilt/ \&\& \
+	cd $$(CURDIR)/debian/extra/njs-$(NJS_VERSION) \&\& \
+	./configure \
+		--cc-opt="$$(CFLAGS) -I$$(BUILDDIR_nginx)/extra/prebuilt/include/quickjs/" \
+		--ld-opt="$$(LDFLAGS) -L$$(BUILDDIR_nginx)/extra/prebuilt/lib/quickjs/" \&\& \
+	make -j$$(NUMJOBS) njs \&\& \
 	mv build build-cli
 endef
 export MODULE_PREBUILD_njs

@@ -3,16 +3,21 @@ MODULES+=	njs
 MODULE_SUMMARY_njs=	njs dynamic modules
 
 include $(CONTRIB)/src/njs/version
+include $(CONTRIB)/src/quickjs/version
 
 MODULE_VERSION_njs=	$(NJS_VERSION)
 MODULE_RELEASE_njs=	1
 
-MODULE_SOURCES_njs=	njs-$(NJS_VERSION).tar.gz
+MODULE_SOURCES_njs= \
+					njs-$(NJS_VERSION).tar.gz \
+					quickjs-$(QUICKJS_VERSION).tar.xz
 
 MODULE_CONFARGS_njs=	--add-dynamic-module=$(MODSRC_PREFIX)njs-$(NJS_VERSION)/nginx
 
 .deps-module-njs:
-	cd $(CONTRIB) && make .sum-njs
+	cd $(CONTRIB) && make \
+						.sum-njs \
+						.sum-quickjs
 	touch $@
 
 MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
@@ -24,9 +29,13 @@ endef
 export MODULE_ADD_CONTROL_TAGS_njs
 
 define MODULE_PREBUILD_njs
+	cd ../quickjs-$(QUICKJS_VERSION) \&\& \
+	make $$_make_opts install PREFIX=$$builddir/prebuilt/ \&\& \
 	cd ../njs-$(NJS_VERSION) \&\& \
-	./configure --cc-opt="$$CFLAGS" --ld-opt="$$LDFLAGS" \&\& \
-	make njs \&\& \
+	./configure \
+		--cc-opt="$$CFLAGS -I$$builddir/prebuilt/include/quickjs/" \
+		--ld-opt="$$LDFLAGS -L$$builddir/prebuilt/lib/quickjs/" \&\& \
+	make $$_make_opts njs \&\& \
 	mv build build-cli
 endef
 export MODULE_PREBUILD_njs

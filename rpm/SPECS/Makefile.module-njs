@@ -3,18 +3,23 @@ MODULES+=	njs
 MODULE_SUMMARY_njs=	njs dynamic modules
 
 include $(CONTRIB)/src/njs/version
+include $(CONTRIB)/src/quickjs/version
 
 MODULE_VERSION_njs=	$(NJS_VERSION)
 MODULE_RELEASE_njs=	1
 
 MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
 
-MODULE_SOURCES_njs=	njs-$(NJS_VERSION).tar.gz
+MODULE_SOURCES_njs=	\
+					njs-$(NJS_VERSION).tar.gz \
+					quickjs-$(QUICKJS_VERSION).tar.xz
 
 MODULE_CONFARGS_njs=	--add-dynamic-module=njs-$(NJS_VERSION)/nginx
 
 .deps-module-njs:
-	cd $(CONTRIB) && make .sum-njs
+	cd $(CONTRIB) && make \
+						.sum-njs \
+						.sum-quickjs
 	touch $@
 
 define MODULE_DEFINITIONS_njs
@@ -26,9 +31,19 @@ endef
 export MODULE_DEFINITIONS_njs
 
 define MODULE_PREBUILD_njs
+
+_nproc=`getconf _NPROCESSORS_ONLN`
+if [ $$_nproc -gt 1 ]; then
+    _make_opts="-j$$_nproc"
+fi
+
+cd %{bdir}/quickjs-$(QUICKJS_VERSION) \&\& \
+make $$_make_opts install PREFIX=%{bdir}/prebuilt/ \&\& \
 cd %{bdir}/njs-$(NJS_VERSION) \&\& \
-./configure --cc-opt=\"%{WITH_CC_OPT}\" --ld-opt=\"%{WITH_LD_OPT}\" \&\& \
-make njs \&\& \
+./configure \
+	--cc-opt=\"%{WITH_CC_OPT}\ -I%{bdir}/prebuilt/include/quickjs/" \
+	--ld-opt=\"%{WITH_LD_OPT}\ -L%{bdir}/prebuilt/lib/quickjs/" \&\& \
+make $$_make_opts njs \&\& \
 mv build build-cli
 endef
 export MODULE_PREBUILD_njs
