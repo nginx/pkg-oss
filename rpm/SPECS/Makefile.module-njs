@@ -37,8 +37,10 @@ if [ $$_nproc -gt 1 ]; then
     _make_opts="-j$$_nproc"
 fi
 
+%if (0%{?rhel} >= 8) || (0%{?amzn} >= 2023) || (0%{?suse_version} >= 1500)
 cd %{bdir}/quickjs-$(QUICKJS_VERSION) \&\& \
-make $$_make_opts install PREFIX=%{bdir}/prebuilt/ \&\& \
+make $$_make_opts install PREFIX=%{bdir}/prebuilt/
+%endif
 cd %{bdir}/njs-$(NJS_VERSION) \&\& \
 ./configure \
 	--cc-opt=\"%{WITH_CC_OPT}\ -I%{bdir}/prebuilt/include/quickjs/" \
