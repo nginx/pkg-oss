@@ -5,6 +5,30 @@
 <change_log title="nginx_module_xslt">
 
 
+<changes apply="nginx-module-xslt" ver="1.26.0" rev="1"
+         date="2024-04-23" time="16:44:10 +0100"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.26.0-1
+</para>
+</change>
+
+</changes>
+
+
+<changes apply="nginx-module-xslt" ver="1.26.0" rev="1"
+         date="2024-04-23" time="16:42:29 +0100"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.26.0-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-xslt" ver="1.25.5" rev="1"
          date="2024-04-16" time="16:39:06 +0100"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">

@@ -6,7 +6,7 @@ include $(CONTRIB)/src/njs/version
 include $(CONTRIB)/src/quickjs/version
 
 MODULE_VERSION_njs=	$(NJS_VERSION)
-MODULE_RELEASE_njs=	2
+MODULE_RELEASE_njs=	1
 
 MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
 
