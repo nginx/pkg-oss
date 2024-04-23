@@ -1,0 +1,15 @@
+--- a/Makefile	2024-04-22 13:33:13.388210739 +0100
++++ b/Makefile	2024-04-22 13:34:09.883554084 +0100
+@@ -228,11 +228,11 @@
+ ifdef CONFIG_BIGNUM
+ QJS_OBJS+=$(OBJDIR)/qjscalc.o
+ endif
+ 
+ HOST_LIBS=-lm -ldl -lpthread
+-LIBS=-lm
++LIBS=-lm -latomic
+ ifndef CONFIG_WIN32
+ LIBS+=-ldl -lpthread
+ endif
+ LIBS+=$(EXTRA_LIBS)
+ 

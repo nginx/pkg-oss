@@ -6,13 +6,15 @@ include $(CONTRIB)/src/njs/version
 include $(CONTRIB)/src/quickjs/version
 
 MODULE_VERSION_njs=	$(NJS_VERSION)
-MODULE_RELEASE_njs=	1
+MODULE_RELEASE_njs=	2
 
 MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
 
 MODULE_SOURCES_njs=	\
 					njs-$(NJS_VERSION).tar.gz \
 					quickjs-$(QUICKJS_VERSION).tar.xz
+
+MODULE_PATCHES_njs= $(CONTRIB)/src/quickjs/quickjs.makefile.patch
 
 MODULE_CONFARGS_njs=	--add-dynamic-module=njs-$(NJS_VERSION)/nginx
 
@@ -27,6 +29,9 @@ BuildRequires: libedit-devel
 BuildRequires: libxml2-devel
 BuildRequires: libxslt-devel
 BuildRequires: which
+%if ((0%{?rhel} >= 8) || (0%{?amzn} >= 2023))
+BuildRequires: libatomic
+%endif
 endef
 export MODULE_DEFINITIONS_njs
 

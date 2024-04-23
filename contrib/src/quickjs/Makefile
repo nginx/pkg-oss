@@ -14,6 +14,7 @@ $(TARBALLS)/quickjs-$(QUICKJS_VERSION).tar.xz:
 
 quickjs: quickjs-$(QUICKJS_VERSION).tar.xz .sum-quickjs
 	$(UNPACK)
+	$(APPLY) $(SRC)/quickjs/quickjs.makefile.patch
 	$(MOVE)
 
 .quickjs: quickjs

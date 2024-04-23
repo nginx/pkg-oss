@@ -6,13 +6,15 @@ include $(CONTRIB)/src/njs/version
 include $(CONTRIB)/src/quickjs/version
 
 MODULE_VERSION_njs=	$(NJS_VERSION)
-MODULE_RELEASE_njs=	1
+MODULE_RELEASE_njs=	2
 
 MODULE_SOURCES_njs=	\
 					njs-$(NJS_VERSION).tar.gz \
 					quickjs-$(QUICKJS_VERSION).tar.xz
 
 MODULE_CONFARGS_njs=	--add-dynamic-module=$(MODSRC_PREFIX)njs-$(NJS_VERSION)/nginx
+
+MODULE_PATCHES_njs= $(CONTRIB)/src/quickjs/quickjs.makefile.patch
 
 .deps-module-njs:
 	cd $(CONTRIB) && make \
