@@ -30,7 +30,10 @@ define MODULE_PREBUILD_njs
 	cd $$(CURDIR)/debian/extra/quickjs-$(QUICKJS_VERSION) \&\& \
 	$(MAKE) -j$$(NUMJOBS) install PREFIX=$$(BUILDDIR_nginx)/extra/prebuilt/ \&\& \
 	cd $$(CURDIR)/debian/extra/njs-$(NJS_VERSION) \&\& \
+	sed -i.bak 's,-lquickjs.lto ,-lquickjs.lto -latomic ,g' auto/quickjs \&\& \
+	sed -i.bak 's,-lquickjs ,-lquickjs -latomic ,g' auto/quickjs \&\& \
 	./configure \
+		--with-quickjs \
 		--cc-opt="$$(CFLAGS) -I$$(BUILDDIR_nginx)/extra/prebuilt/include/quickjs/" \
 		--ld-opt="$$(LDFLAGS) -L$$(BUILDDIR_nginx)/extra/prebuilt/lib/quickjs/" \&\& \
 	make -j$$(NUMJOBS) njs \&\& \
