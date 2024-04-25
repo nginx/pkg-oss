@@ -1,8 +1,18 @@
 #!/usr/bin/make -f
 
 #export DH_VERBOSE=1
-export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+include /usr/share/dpkg/vendor.mk
+ifeq ($(shell $(call dpkg_vendor_derives_from,ubuntu)),yes)
+DISTROREL_MAJOR := $(shell lsb_release -rs | cut -d. -f 1)
+ifeq ($(shell test $(DISTROREL_MAJOR) -ge 24; echo $$?), 0)
+export DEB_CFLAGS_MAINT_APPEND=-fPIC
+else
 export DEB_CFLAGS_MAINT_APPEND=-Wp,-D_FORTIFY_SOURCE=2 -fPIC
+endif
+else
+export DEB_CFLAGS_MAINT_APPEND=-Wp,-D_FORTIFY_SOURCE=2 -fPIC
+endif
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 export DEB_LDFLAGS_MAINT_APPEND=-Wl,--as-needed
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
