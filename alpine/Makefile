@@ -279,9 +279,6 @@ test: base nginx-tests
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl:$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/module-modsecurity ]; then \
-		export LD_LIBRARY_PATH=$$pwd/abuild-module-modsecurity/src/modsecurity/local/lib ; \
-	fi ; \
 	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/abuild-module-opentracing/src/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ; \
@@ -305,9 +302,6 @@ test-debug: base nginx-tests
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl:$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/module-modsecurity ]; then \
-		export LD_LIBRARY_PATH=$$pwd/abuild-module-modsecurity/src/modsecurity-v$(MODSECURITY_VERSION)/local/lib ; \
-	fi ; \
 	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/abuild-module-opentracing/src/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ; \
@@ -330,9 +324,6 @@ test-module-%: base nginx-tests module-%
 	fi ; \
 	pwd=`pwd` ; \
 	globals= ; \
-	if [ "$$module" = "modsecurity" ]; then \
-		export LD_LIBRARY_PATH=$$pwd/abuild-module-modsecurity/src/modsecurity-v$(MODSECURITY_VERSION)/local/lib ; \
-	fi ; \
 	for so in `find module-$${module}/ -maxdepth 1 -type f -name "*module.so"`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
