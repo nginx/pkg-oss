@@ -228,12 +228,6 @@ check-compat-%:
 	        nginx-module-$${module}.skip ; \
 	    fi ; \
 	    ;; \
-	    modsecurity) \
-	    if [ "$(ARCH)" = "ppc64le" ]; then \
-	        echo "ModSecurity can not be built on $(ARCH)" > \
-	        nginx-module-$${module}.skip ; \
-	    fi ; \
-	    ;; \
 		otel) \
 		if [ "$(CODENAME)" = "bionic" ]; then \
 			echo "otel can not be built on Ubuntu 18.04 due to too old re2" > \
@@ -374,9 +368,6 @@ test: base nginx-tests
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx/objs/src/http/modules/perl:$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/module-modsecurity ]; then \
-		export LD_LIBRARY_PATH=$$pwd/debuild-module-modsecurity/$(SRCDIR)/debian/build-nginx/extra/modsecurity/local/lib ; \
-	fi ; \
 	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/debuild-module-opentracing/$(SRCDIR)/debian/build-nginx/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ; \
@@ -400,9 +391,6 @@ test-debug: base nginx-tests
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx-debug/objs/src/http/modules/perl:$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/module-modsecurity ]; then \
-		export LD_LIBRARY_PATH=$$pwd/debuild-module-modsecurity/$(SRCDIR)/debian/build-nginx-debug/extra/modsecurity/local/lib ; \
-	fi ; \
 	if [ -d $$pwd/module-opentracing ]; then \
 		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/debuild-module-opentracing/$(SRCDIR)/debian/build-nginx-debug/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ; \
@@ -425,9 +413,6 @@ test-module-%: base nginx-tests module-%
 	fi ; \
 	pwd=`pwd` ; \
 	globals= ; \
-	if [ "$$module" = "modsecurity" ]; then \
-		export LD_LIBRARY_PATH=$$pwd/debuild-module-modsecurity/$(SRCDIR)/debian/build-nginx/extra/modsecurity-v$(MODSECURITY_VERSION)/local/lib ; \
-	fi ; \
 	for so in `find module-$${module}/ -maxdepth 1 -type f -name "*module.so"`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \

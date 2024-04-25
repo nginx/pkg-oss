@@ -15,7 +15,6 @@ PACKAGES=	nginx							\
 		nginx-module-headers-more				\
 		nginx-module-image-filter				\
 		nginx-module-lua					\
-		nginx-module-modsecurity				\
 		nginx-module-ndk					\
 		nginx-module-njs					\
 		nginx-module-opentracing				\

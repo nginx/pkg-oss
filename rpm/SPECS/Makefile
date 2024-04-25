@@ -339,12 +339,6 @@ check-compat-%:
 			exit ; \
 		fi ; \
 		;; \
-		modsecurity) \
-		if [ "`rpm --eval '%{_arch}'`" = "ppc64le" ]; then \
-			echo "ModSecurity can not be built on ppc64le" > \
-			nginx-module-$${module}.skip ; \
-		fi ; \
-		;; \
 		otel) \
 		if [ "`rpm --eval '0%{?suse_version}'`" -gt 0 ]; then \
 			echo "otel can not be built on SLES due to absence of re2" > \
@@ -405,9 +399,6 @@ test: base nginx-tests
 	for so in `find module-*/ -maxdepth 1 -type f -name "*module.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
-	if [ -d $$pwd/module-modsecurity ]; then \
-		export LD_LIBRARY_PATH=$$pwd/module-modsecurity/../modsecurity/local/lib:$$LD_LIBRARY_PATH ; \
-	fi ;  \
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
@@ -431,9 +422,6 @@ test-debug: base nginx-tests
 	for so in `find module-*/ -maxdepth 1 -type f -name "*module-debug.so" | sort -t / -k 2`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
-	if [ -d $$pwd/module-modsecurity ]; then \
-		export LD_LIBRARY_PATH=$$pwd/module-modsecurity/../modsecurity-$(MODSECURITY_GITHASH)/local/lib:$$LD_LIBRARY_PATH ; \
-	fi ;  \
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
