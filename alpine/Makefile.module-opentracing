@@ -108,7 +108,7 @@ define MODULE_PREINSTALL_opentracing
 	ln -fs libopentracing.so.1 "$$pkgdir"/usr/lib/libopentracing.so
 	install -m755 ../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib/libopentracing_mocktracer.so.$(OPENTRACING_CPP_VERSION) "$$pkgdir"/usr/lib/
 	ln -fs libopentracing_mocktracer.so.$(OPENTRACING_CPP_VERSION) "$$pkgdir"/usr/lib/libopentracing_mocktracer.so.1
-	ln -fs libopentracing_mocktracer.so.1 "$$pkgdir"/usr/lib/libmodsecurity_mocktracer.so
+	ln -fs libopentracing_mocktracer.so.1 "$$pkgdir"/usr/lib/libopentracing_mocktracer.so
 	mkdir -p "$$pkgdir"/usr/include
 	cp -pr ../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/include/opentracing "$$pkgdir"/usr/include/
 	mkdir -p "$$pkgdir"/usr/libexec/opentracing
