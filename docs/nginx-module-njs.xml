@@ -5,6 +5,18 @@
 <change_log title="nginx_module_njs">
 
 
+<changes apply="nginx-module-njs" ver="0.8.4" rev="2" basever="1.26.0"
+         date="2024-04-30" time="17:00:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Fixed njs cli linking with quickjs on arm32v5.
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-njs" ver="0.8.4" rev="1" basever="1.26.0"
          date="2024-04-23" time="16:44:10 +0100"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
