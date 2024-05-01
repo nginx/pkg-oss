@@ -42,15 +42,17 @@ if [ $$_nproc -gt 1 ]; then
     _make_opts="-j$$_nproc"
 fi
 
+%define __with_quickjs %{nil}
 %if (0%{?rhel} >= 8) || (0%{?amzn} >= 2023) || (0%{?suse_version} >= 1500)
 cd %{bdir}/quickjs-$(QUICKJS_VERSION) \&\& \
 make $$_make_opts install PREFIX=%{bdir}/prebuilt/
+%define __with_quickjs --with-quickjs
 %endif
 cd %{bdir}/njs-$(NJS_VERSION) \&\& \
 sed -i.bak 's,-lquickjs.lto ,-lquickjs.lto -latomic ,g' auto/quickjs \&\& \
 sed -i.bak 's,-lquickjs ,-lquickjs -latomic ,g' auto/quickjs \&\& \
 ./configure \
-	--with-quickjs \
+	%{__with_quickjs} \
 	--cc-opt=\"%{WITH_CC_OPT}\ -I%{bdir}/prebuilt/include/quickjs/" \
 	--ld-opt=\"%{WITH_LD_OPT}\ -L%{bdir}/prebuilt/lib/quickjs/" \&\& \
 make $$_make_opts njs \&\& \
