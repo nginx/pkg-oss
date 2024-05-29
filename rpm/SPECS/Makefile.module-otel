@@ -10,7 +10,7 @@ include $(CONTRIB)/src/opentelemetry-proto/version
 include $(CONTRIB)/src/protobuf/version
 
 MODULE_VERSION_otel=	$(NGINX_OTEL_VERSION)
-MODULE_RELEASE_otel=	1
+MODULE_RELEASE_otel=	2
 
 MODULE_VERSION_PREFIX_otel=$(MODULE_TARGET_PREFIX)
 
