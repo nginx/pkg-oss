@@ -18,14 +18,14 @@ CURRENT_RELEASE_NJS=$(word 2,$(subst -, ,$(CURRENT_VERSION_STRING_NJS)))
 VERSION?=	$(shell curl -fs https://hg.nginx.org/nginx/raw-file/$(BRANCH)/src/core/nginx.h | fgrep 'define NGINX_VERSION' | cut -d '"' -f 2)
 RELEASE?=	1
 
-VERSION_NJS?= $(shell curl -fs https://hg.nginx.org/njs/raw-file/default/src/njs.h | fgrep -m 1 'define NJS_VERSION' | cut -d '"' -f 2)
+VERSION_NJS?= $(shell curl -Lfs https://github.com/nginx/njs/raw/master/src/njs.h | fgrep -m 1 'define NJS_VERSION' | cut -d '"' -f 2)
 RELEASE_NJS?= 1
 
 PACKAGER?=	Nginx Packaging <nginx-packaging@f5.com>
 
 TARBALL?=	https://nginx.org/download/nginx-$(VERSION).tar.gz
 
-TARBALL_NJS?=	https://hg.nginx.org/njs/archive/$(VERSION_NJS).tar.gz
+TARBALL_NJS?=	https://github.com/nginx/njs/archive/refs/tags/${VERSION_NJS}.tar.gz
 
 BASE_MAKEFILES=	alpine/Makefile \
 		debian/Makefile \
