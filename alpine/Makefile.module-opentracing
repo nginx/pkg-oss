@@ -9,7 +9,7 @@ include $(CONTRIB)/src/json/version
 include $(CONTRIB)/src/jaeger-client-cpp/version
 
 MODULE_VERSION_opentracing=	$(NGINX_OPENTRACING_VERSION)
-MODULE_RELEASE_opentracing=	2
+MODULE_RELEASE_opentracing=	1
 
 MODULE_VERSION_PREFIX_opentracing=$(MODULE_TARGET_PREFIX)
 
