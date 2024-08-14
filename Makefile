@@ -97,6 +97,7 @@ release: version-check nginx-$(VERSION).tar.gz
 			module_underscore=`echo $${module} | tr '-' '_'` ; \
 			CHANGESADD="\n\n\n<changes apply=\"nginx-module-$${module}\" ver=\"$(VERSION)\" rev=\"$(RELEASE)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nbase version updated to $(VERSION)-$(RELEASE)\n</para>\n</change>\n\n</changes>" ; \
 			sed -i.bak -e "s,title=\"nginx_module_$${module_underscore}\">,title=\"nginx_module_$${module_underscore}\">$${CHANGESADD}," docs/nginx-module-$${module}.xml ; \
+			sed -i.bak -e "s,^MODULE_RELEASE_$${module_underscore}=.*,MODULE_RELEASE_$${module_underscore}=\t1," {alpine,debian,rpm/SPECS}/Makefile.module-$${module} ; \
 		done ; \
 		for module in $(EXTERNAL_MODULES); do \
 			echo "--> changelog for nginx-module-$${module}" ; \
@@ -123,6 +124,7 @@ release-njs: version-check-njs njs-$(VERSION_NJS).tar.gz
 		echo "--> changelog for nginx-module-njs" ; \
 		CHANGESADD="\n\n\n<changes apply=\"nginx-module-njs\" ver=\"$(VERSION_NJS)\" rev=\"$(RELEASE_NJS)\" basever=\"$(CURRENT_VERSION)\"\n         date=\"$${reldate}\" time=\"$${reltime}\"\n         packager=\"$${packager}\">\n<change>\n<para>\nnjs updated to $(VERSION_NJS)\n</para>\n</change>\n\n</changes>" ; \
 		sed -i.bak -e "s,title=\"nginx_module_njs\">,title=\"nginx_module_njs\">$${CHANGESADD}," docs/nginx-module-njs.xml ; \
+		sed -i.bak -e "s,^MODULE_RELEASE_njs=.*,MODULE_RELEASE_njs=\t1," {alpine,debian,rpm/SPECS}/Makefile.module-njs ; \
 		echo ; \
 		echo "Done. Please carefully check the diff. Use \"make revert\" to revert any changes." ; \
 		echo ; \
