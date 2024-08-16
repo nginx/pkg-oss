@@ -45,7 +45,7 @@ fi
 %define __with_quickjs %{nil}
 %if (0%{?rhel} >= 8) || (0%{?amzn} >= 2023) || (0%{?suse_version} >= 1500)
 cd %{bdir}/quickjs-$(QUICKJS_VERSION) \&\& \
-make $$_make_opts install PREFIX=%{bdir}/prebuilt/
+make $$_make_opts libquickjs.a
 %define __with_quickjs --with-quickjs
 %endif
 cd %{bdir}/njs-$(NJS_VERSION) \&\& \
@@ -53,8 +53,8 @@ sed -i.bak 's,-lquickjs.lto ,-lquickjs.lto -latomic ,g' auto/quickjs \&\& \
 sed -i.bak 's,-lquickjs ,-lquickjs -latomic ,g' auto/quickjs \&\& \
 ./configure \
 	%{__with_quickjs} \
-	--cc-opt=\"%{WITH_CC_OPT}\ -I%{bdir}/prebuilt/include/quickjs/" \
-	--ld-opt=\"%{WITH_LD_OPT}\ -L%{bdir}/prebuilt/lib/quickjs/" \&\& \
+	--cc-opt=\"%{WITH_CC_OPT}\ -I%{bdir}/quickjs-$(QUICKJS_VERSION)/" \
+	--ld-opt=\"%{WITH_LD_OPT}\ -L%{bdir}/quickjs-$(QUICKJS_VERSION)/" \&\& \
 make $$_make_opts njs \&\& \
 mv build build-cli
 endef

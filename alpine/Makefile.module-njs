@@ -32,14 +32,14 @@ export MODULE_ADD_CONTROL_TAGS_njs
 
 define MODULE_PREBUILD_njs
 	cd ../quickjs-$(QUICKJS_VERSION) \&\& \
-	make $$_make_opts install PREFIX=$$builddir/prebuilt/ \&\& \
+	make $$_make_opts libquickjs.a \&\& \
 	cd ../njs-$(NJS_VERSION) \&\& \
 	sed -i.bak 's,-lquickjs.lto ,-lquickjs.lto -latomic ,g' auto/quickjs \&\& \
 	sed -i.bak 's,-lquickjs ,-lquickjs -latomic ,g' auto/quickjs \&\& \
 	./configure \
 		--with-quickjs \
-		--cc-opt="$$CFLAGS -I$$builddir/prebuilt/include/quickjs/" \
-		--ld-opt="$$LDFLAGS -L$$builddir/prebuilt/lib/quickjs/" \&\& \
+		--cc-opt="$$CFLAGS -I$$builddir/../quickjs-$(QUICKJS_VERSION)/" \
+		--ld-opt="$$LDFLAGS -L$$builddir/../quickjs-$(QUICKJS_VERSION)/" \&\& \
 	make $$_make_opts njs \&\& \
 	mv build build-cli
 endef
