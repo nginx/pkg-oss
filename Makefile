@@ -1,4 +1,4 @@
-BRANCH=		$(shell hg branch)
+BRANCH?=		$(shell git rev-parse --abbrev-ref HEAD)
 
 ifeq (,$(findstring stable,$(BRANCH)))
 FLAVOR=		mainline
@@ -15,7 +15,7 @@ CURRENT_VERSION_STRING_NJS=$(shell curl -fs https://version.nginx.com/njs/$(FLAV
 CURRENT_VERSION_NJS=$(word 2,$(subst +, ,$(word 1,$(subst -, ,$(CURRENT_VERSION_STRING_NJS)))))
 CURRENT_RELEASE_NJS=$(word 2,$(subst -, ,$(CURRENT_VERSION_STRING_NJS)))
 
-VERSION?=	$(shell curl -fs https://hg.nginx.org/nginx/raw-file/$(BRANCH)/src/core/nginx.h | fgrep 'define NGINX_VERSION' | cut -d '"' -f 2)
+VERSION?=	$(shell curl -Lfs https://github.com/nginx/nginx/raw/$(BRANCH)/src/core/nginx.h | fgrep 'define NGINX_VERSION' | cut -d '"' -f 2)
 RELEASE?=	1
 
 VERSION_NJS?= $(shell curl -Lfs https://github.com/nginx/njs/raw/master/src/njs.h | fgrep -m 1 'define NJS_VERSION' | cut -d '"' -f 2)
@@ -129,12 +129,12 @@ release-njs: version-check-njs njs-$(VERSION_NJS).tar.gz
 	}
 
 revert:
-	@hg revert -v contrib/src/nginx/ docs/ $(BASE_MAKEFILES) contrib/src/njs/
+	@git checkout -- contrib/src/nginx/ docs/ $(BASE_MAKEFILES) contrib/src/njs/
 
 commit:
-	@hg commit -vm 'Updated nginx to $(VERSION)'
+	@git commit -am 'Updated nginx to $(VERSION)'
 
 tag:
-	@hg tag -v $(VERSION)-$(RELEASE)
+	@git tag -a $(VERSION)-$(RELEASE)
 
 .PHONY: version-check version-check-njs release release-njs revert commit tag
