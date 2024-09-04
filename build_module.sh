@@ -9,6 +9,7 @@
 # Obtains pkg-oss tool, creates packaging files and copies in module source.
 #
 # CHANGELOG
+# v0.19 [03-Sep-2024] Moved to GitHub
 # v0.18 [29-Apr-2021] Added -V option to specify module version
 # v0.17 [11-Nov-2020] Fixed bashisms and made /bin/sh default interpreter
 # v0.16 [09-Nov-2020] Added Alpine Linux packaging
@@ -206,10 +207,7 @@ if [ $CHECK_DEPENDS = 1 ]; then
 	fi
 
 	echo "$ME: INFO: checking for dependent packages"
-	CORE_PACKAGES="gcc make unzip wget mercurial"
-	if [ "${1##*.}" = "git" ]; then
-		CORE_PACKAGES="$CORE_PACKAGES git"
-	fi
+	CORE_PACKAGES="gcc make unzip wget git"
 	$SUDO $PKG_MGR_UPDATE
 	$SUDO $PKG_MGR_INSTALL $CORE_PACKAGES $NGINX_PACKAGES $DEVEL_PACKAGES
 fi
@@ -359,22 +357,16 @@ fi
 echo "$ME: INFO: Downloading NGINX packaging tool"
 cd $BUILD_DIR
 
-PKG_OSS_URL="https://hg.nginx.org/pkg-oss"
+PKG_OSS_URL="https://github.com/nginx/pkg-oss"
 
-if [ "$PKG_FMT" = "rpm" ]; then
-	if [ `rpm --eval "0%{?rhel}"` -lt 8 ] || [ `rpm --eval "0%{?amzn}"` -le 2 ]; then
-		PKG_OSS_URL="http://hg.nginx.org/pkg-oss"
-	fi
-fi
-
-hg clone $PKG_OSS_URL
+git clone $PKG_OSS_URL
 
 if [ "$BUILD_PLATFORM" = "OSS" ]; then
 	if [ "$OSS_VER" != "" ]; then
-		( cd pkg-oss && hg update `hg tags | grep "^$OSS_VER" | head -1 | awk '{print $1}'` )
+		( cd pkg-oss && git checkout `git tag -l | grep "^$OSS_VER" | head -1 | awk '{print $1}'` )
 	fi
 else
-	( cd pkg-oss && hg update target-plus-r$PLUS_REL )
+	( cd pkg-oss && git checkout target-plus-r$PLUS_REL )
 fi
 cd pkg-oss/$PACKAGING_DIR
 if [ $? -ne 0 ]; then
