@@ -1,7 +1,7 @@
 # xslscript
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/version
-XSLSCRIPT_URL := https://hg.nginx.org/xslscript/archive/$(XSLSCRIPT_VERSION).tar.gz
+XSLSCRIPT_URL := $(GITHUB)/nginx/xslscript/archive/$(XSLSCRIPT_VERSION).tar.gz
 
 PKGS += xslscript
 
