@@ -1,11 +1,11 @@
 # nginx-tests
 
-NGINX_TESTS_URL := http://hg.nginx.org/nginx-tests
+NGINX_TESTS_URL := https://github.com/nginx/nginx-tests
 
 PKGS += nginx-tests
 
 $(TARBALLS)/nginx-tests:
-	hg clone $(NGINX_TESTS_URL) $@
+	git clone $(NGINX_TESTS_URL) $@
 
 .sum-nginx-tests: nginx-tests ;
 
