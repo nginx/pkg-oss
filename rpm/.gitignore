@@ -1,0 +1,10 @@
+BUILD
+RPMS
+SOURCES
+SPECS/base
+SPECS/.deps-*
+SPECS/module-*
+SPECS/*.rpm-changelog
+SPECS/*.skip
+SPECS/*.spec
+SRPMS
