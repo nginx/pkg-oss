@@ -35,6 +35,12 @@ BuildRequires: libatomic
 endef
 export MODULE_DEFINITIONS_njs
 
+MODULE_CC_OPT_njs= -I%{bdir}/quickjs-$(QUICKJS_VERSION)/
+MODULE_LD_OPT_njs= -L%{bdir}/quickjs-$(QUICKJS_VERSION)/
+
+MODULE_CC_OPT_DEBUG_njs= -I%{bdir}/quickjs-$(QUICKJS_VERSION)/
+MODULE_LD_OPT_DEBUG_njs= -L%{bdir}/quickjs-$(QUICKJS_VERSION)/
+
 define MODULE_PREBUILD_njs
 
 _nproc=`getconf _NPROCESSORS_ONLN`
@@ -45,7 +51,7 @@ fi
 %define __with_quickjs %{nil}
 %if (0%{?rhel} >= 8) || (0%{?amzn} >= 2023) || (0%{?suse_version} >= 1500)
 cd %{bdir}/quickjs-$(QUICKJS_VERSION) \&\& \
-make $$_make_opts libquickjs.a
+CFLAGS="%{WITH_CC_OPT} -fPIC" make $$_make_opts libquickjs.a
 %define __with_quickjs --with-quickjs
 %endif
 cd %{bdir}/njs-$(NJS_VERSION) \&\& \
