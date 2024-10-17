@@ -5,6 +5,21 @@
 <change_log title="nginx_module_opentracing">
 
 
+<changes apply="nginx-module-opentracing" ver="0.36.0" rev="1" basever="1.27.2"
+         date="2024-10-17" time="16:59:46 +0100"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated nginx-opentracing to 0.36.0.
+</para>
+</change>
+<change>
+<para>
+Updated thrift to 0.21.0.
+</para>
+</change>
+</changes>
+
 <changes apply="nginx-module-opentracing" ver="0.33.0" rev="1" basever="1.27.2"
          date="2024-10-02" time="16:59:46 +0100"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
