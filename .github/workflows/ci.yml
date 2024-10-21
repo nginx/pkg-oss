@@ -10,15 +10,6 @@ defaults:
     shell: 'bash -Eeuo pipefail -x {0}'
 
 jobs:
-  verify-sources:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-
-      - name: fetch everything
-        run: |
-          cd contrib && make fetch
-
   generate-matrix:
     runs-on: ubuntu-22.04
     outputs:
@@ -31,25 +22,10 @@ jobs:
       - name: set-matrix
         id: set-matrix
         run: |
-          case "$GITHUB_EVENT_NAME" in
-            pull_request|push)
-              # use a small subset of modules to test against
-              COMMON_MODULES="base image-filter njs otel perl xslt"
-              ADD_MODULES="geoip"
-            ;;
-            workflow_dispatch)
-              # use all modules to test against
-              COMMON_MODULES="base auth-spnego brotli encrypted-session fips-check geoip2 headers-more image-filter lua ndk njs opentracing otel passenger perl rtmp set-misc subs-filter xslt"
-              ADD_MODULES="geoip"
-            ;;
-          esac
+          TARGETS="all modules"
 
           for os in alpine ubuntu redhat; do
-            M=$COMMON_MODULES
-            if [ "$os" != "redhat" ]; then
-              M="$M $ADD_MODULES"
-            fi
-            jq -nRr '"matrix-" + $os +"=" + ( { include: [ $ARGS.positional[] | {module: . } ] } | tojson)' --arg os $os --args $M  >> $GITHUB_OUTPUT
+            jq -nRr '"matrix-" + $os +"=" + ( { include: [ $ARGS.positional[] | {target: . } ] } | tojson)' --arg os $os --args $TARGETS >> $GITHUB_OUTPUT
           done
 
   alpine:
@@ -76,36 +52,55 @@ jobs:
             make
             xz
 
-      - name: Figure out we're base or module
-        shell: alpine.sh {0}
-        run: |
-          module=""
-          case ${{ matrix.module }} in
-            base)
-            ;;
-            *)
-              module="module-"
-            ;;
-          esac
-          echo MODULE=$module >> $GITHUB_ENV
-
-      - name: Create build depends for ${{ matrix.module }}
+      - name: Figure out what targets we're building
         shell: alpine.sh {0}
         working-directory: alpine
         run: |
-          make abuild-${MODULE}${{ matrix.module }}
+          targets=""
+          case ${{ matrix.target }} in
+            all)
+              targets="base"
+              for target in $(make list-base-modules | cut -d ' ' -f 1); do
+                targets="$targets module-$target";
+              done
+            ;;
+            modules)
+              for target in $(comm -13 <(make list-base-modules | cut -d ' ' -f 1) <(make list-all-modules | cut -d ' ' -f 1)); do
+                targets="$targets module-$target";
+              done
+            ;;
+          esac
+          echo TARGETS=$targets >> $GITHUB_ENV
 
-      - name: Install build depends for ${{ matrix.module }}
+      - name: Create build depends for targets
+        shell: alpine.sh {0}
+        working-directory: alpine
+        run: |
+          for target in $TARGETS; do
+            make abuild-$target;
+          done
+
+      - name: Install build depends for targets
         shell: alpine.sh --root {0}
         working-directory: alpine
         run: |
-          apk add $(. ./abuild-${MODULE}${{ matrix.module }}/APKBUILD; echo $makedepends;)
+          for target in ${TARGETS}; do
+            apk add $(. ./abuild-${target}/APKBUILD; echo $makedepends;)
+          done
 
-      - name: Build ${{ matrix.module }}
+      - name: Build ${{ matrix.target }}
         shell: alpine.sh {0}
         working-directory: alpine
         run: |
-          make ${MODULE}${{ matrix.module }}
+          for target in $TARGETS; do
+            make $target;
+          done
+
+      - name: List what has been built
+        shell: alpine.sh {0}
+        if: ${{ !cancelled() }}
+        run: |
+          find ~/packages/alpine -type f
 
   ubuntu:
     runs-on: ubuntu-latest
@@ -129,26 +124,40 @@ jobs:
             lsb-release \
             xsltproc
 
-      - name: Figure out we're base or module
+      - name: Figure out what targets we're building
+        working-directory: debian
         run: |
-          module=""
-          case ${{ matrix.module }} in
-            base)
+          targets=""
+          case ${{ matrix.target }} in
+            all)
+              targets="base"
+              for target in $(make list-base-modules | cut -d ' ' -f 1); do
+                targets="$targets module-$target";
+              done
             ;;
-            *)
-              module="module-"
+            modules)
+              for target in $(comm -13 <(make list-base-modules | cut -d ' ' -f 1) <(make list-all-modules | cut -d ' ' -f 1)); do
+                targets="$targets module-$target";
+              done
             ;;
           esac
-          echo MODULE=$module >> $GITHUB_ENV
+          echo TARGETS=$targets >> $GITHUB_ENV
 
-      - name: Create and install build depends for ${{ matrix.module }} and build it
+      - name: Create and install build depends for ${{ matrix.target }} and build it
         working-directory: debian
         run: |
           NGINX_VERSION=$(make --eval 'nv:; @echo $(BASE_VERSION)' nv)
-          make rules-${MODULE}${{ matrix.module }}
-          sudo mk-build-deps --install --tool="apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes" \
-            debuild-${MODULE}${{matrix.module}}/nginx-${NGINX_VERSION}/debian/control;
-          make ${MODULE}${{ matrix.module }}
+          for target in $TARGETS; do
+            make rules-$target
+            sudo mk-build-deps --install --tool="apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes" \
+              debuild-${target}/nginx-${NGINX_VERSION}/debian/control;
+            make $target
+          done
+
+      - name: List what has been built
+        if: ${{ !cancelled() }}
+        run: |
+          find .. -mindepth 1 -maxdepth 1 -name "*.deb"
 
   redhat:
     needs: generate-matrix
@@ -177,25 +186,45 @@ jobs:
             'dnf-command(config-manager)'
           dnf config-manager --set-enabled crb
 
-      - name: Figure out we're base or module
-        run: |
-          module=""
-          target=""
-          case ${{ matrix.module }} in
-            base)
-              target="base"
-            ;;
-            *)
-              module="-module-${{ matrix.module}}"
-              target="${module##-}"
-            ;;
-          esac
-          echo MODULE=$module >> $GITHUB_ENV
-          echo TARGET=$target >> $GITHUB_ENV
-
-      - name: Create and install build depends for ${{ matrix.module }} and build it
+      - name: Figure out what targets we're building
         working-directory: rpm/SPECS
         run: |
-          make nginx${MODULE}.spec
-          dnf -y install $(rpmspec -P ./nginx${MODULE}.spec | grep BuildRequires | cut -d: -f2- | xargs)
-          make ${TARGET}
+          targets=""
+          case ${{ matrix.target }} in
+            all)
+              targets="base"
+              for target in $(make list-base-modules | cut -d ' ' -f 1); do
+                targets="$targets module-$target";
+              done
+            ;;
+            modules)
+              for target in $(comm -13 <(make list-base-modules | cut -d ' ' -f 1) <(make list-all-modules | cut -d ' ' -f 1)); do
+                targets="$targets module-$target";
+              done
+            ;;
+          esac
+          echo TARGETS=$targets >> $GITHUB_ENV
+
+      - name: Create and install build depends for ${{ matrix.target }} and build it
+        working-directory: rpm/SPECS
+        run: |
+          for target in $TARGETS; do
+          # geoip is not available
+            test $target == "module-geoip" && continue
+            case ${target} in
+              base)
+                spec="nginx.spec"
+                ;;
+              *)
+                spec="nginx-${target}.spec"
+                ;;
+            esac
+            make $spec
+            dnf -y install $(rpmspec -P ./${spec} | grep BuildRequires | cut -d: -f2- | xargs)
+            make ${target}
+          done
+
+      - name: List what has been built
+        if: ${{ !cancelled() }}
+        run: |
+          find rpm/RPMS -type f
