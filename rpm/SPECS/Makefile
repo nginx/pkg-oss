@@ -338,6 +338,11 @@ check-compat-%:
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \
+		if [ `rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 ]; then \
+			echo "Lua can't be build on SLES < 15 due to too old openssl" > \
+			nginx-module-$${module}.skip ; \
+			exit ; \
+		fi ; \
 		;; \
 		otel) \
 		if [ "`rpm --eval '0%{?suse_version}'`" -gt 0 ]; then \
