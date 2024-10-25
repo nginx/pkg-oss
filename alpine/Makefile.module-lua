@@ -46,7 +46,8 @@ MODULE_DEPENDS_lua=$(NDK_DEPENDENCY_TAG)
 
 define MODULE_PREBUILD_lua
 	cd ../luajit2-$(LUAJIT2_VERSION) \&\& \
-	DESTDIR=`pwd` CFLAGS="-fPIC" make $$_make_opts install
+	CFLAGS="-fPIC" make $$_make_opts \&\& \
+	DESTDIR=`pwd` make $$_make_opts install
 endef
 export MODULE_PREBUILD_lua
 

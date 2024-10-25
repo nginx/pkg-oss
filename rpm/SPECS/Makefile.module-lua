@@ -49,7 +49,8 @@ export MODULE_DEFINITIONS_lua
 
 define MODULE_PREBUILD_lua
 cd %{bdir}/luajit2-$(LUAJIT2_VERSION)
-DESTDIR="%{bdir}/luajit2-$(LUAJIT2_VERSION)" CFLAGS="-fPIC" make %{?_smp_mflags} install
+CFLAGS="-fPIC" make %{?_smp_mflags}
+DESTDIR="%{bdir}/luajit2-$(LUAJIT2_VERSION)" make install
 mv %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/bin/luajit %{bdir}/luajit2-$(LUAJIT2_VERSION)/usr/bin/nginx-luajit
 endef
 export MODULE_PREBUILD_lua
