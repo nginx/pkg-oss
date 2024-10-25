@@ -53,7 +53,8 @@ export MODULE_DEFINITIONS_lua
 
 define MODULE_PREBUILD_lua
 	cd $$(BUILDDIR_nginx)/extra/luajit2-$(LUAJIT2_VERSION) \&\& \
-	DESTDIR="$$(BUILDDIR_nginx)/extra/luajit2-$(LUAJIT2_VERSION)" CFLAGS="-fPIC" $$(MAKE) -j$$(NUMJOBS) install
+	$$(MAKE) -j$$(NUMJOBS) \&\& \
+	DESTDIR="$$(BUILDDIR_nginx)/extra/luajit2-$(LUAJIT2_VERSION)" $$(MAKE) install
 	mv $$(BUILDDIR_nginx)/extra/luajit2-$(LUAJIT2_VERSION)/usr/bin/luajit $$(BUILDDIR_nginx)/extra/luajit2-$(LUAJIT2_VERSION)/usr/bin/nginx-luajit
 	mv $$(BUILDDIR_nginx)/extra/luajit2-$(LUAJIT2_VERSION)/usr/share/man/man1/luajit.1 $$(BUILDDIR_nginx)/extra/luajit2-$(LUAJIT2_VERSION)/usr/share/man/man1/nginx-luajit.1
 endef
