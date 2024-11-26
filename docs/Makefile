@@ -17,7 +17,6 @@ PACKAGES=	nginx							\
 		nginx-module-lua					\
 		nginx-module-ndk					\
 		nginx-module-njs					\
-		nginx-module-opentracing				\
 		nginx-module-passenger					\
 		nginx-module-perl					\
 		nginx-module-rtmp					\

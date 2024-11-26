@@ -32,7 +32,7 @@ BASE_MAKEFILES=	alpine/Makefile \
 		rpm/SPECS/Makefile
 
 MODULES=	geoip image-filter perl xslt
-EXTERNAL_MODULES=	auth-spnego brotli encrypted-session fips-check geoip2 headers-more lua ndk njs opentracing otel passenger rtmp set-misc subs-filter
+EXTERNAL_MODULES=	auth-spnego brotli encrypted-session fips-check geoip2 headers-more lua ndk njs otel passenger rtmp set-misc subs-filter
 
 ifeq ($(shell sha512sum --version >/dev/null 2>&1 || echo FAIL),)
 SHA512SUM = sha512sum
