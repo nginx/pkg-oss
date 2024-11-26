@@ -361,26 +361,6 @@ check-compat-%:
 			exit ; \
 		fi ; \
 		;; \
-		opentracing) \
-		if [ "`rpm --eval '0%{?suse_version}'`" -gt 0 -a "`rpm --eval '0%{?suse_version}'`" -lt 1500 ]; then \
-			echo "OpenTracing can not be built on SLES < 15 due to absence of yaml-cpp" > \
-			nginx-module-$${module}.skip ; \
-			exit ; \
-		fi ; \
-		if [ "`rpm --eval '%{_arch}'`" = "ppc64le" ]; then \
-			echo "OpenTracing can not be built on ppc64le" > \
-			nginx-module-$${module}.skip ; \
-			exit ; \
-		fi ; \
-		if [ `rpm --eval '0%{?rhel}'` -gt 0 ]; then \
-			cmake3 -version >/dev/null 2>&1 ; \
-			if [ $$? -ne 0 ]; then \
-			echo "OpenTracing requires cmake3 on RHEL/CentOS" > \
-			nginx-module-$${module}.skip ; \
-			fi ; \
-			exit ; \
-		fi ; \
-		;; \
 	esac
 
 nginx-tests:
@@ -407,9 +387,6 @@ test: base nginx-tests
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/module-opentracing ]; then \
-		export LD_LIBRARY_PATH=$$pwd/module-opentracing/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib:$$LD_LIBRARY_PATH ; \
-	fi ;  \
 	if [ -d $$pwd/module-lua ]; then \
 		globals_http="lua_package_path '$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
 		globals_stream="$$globals_http" ; \
@@ -430,9 +407,6 @@ test-debug: base nginx-tests
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/module-opentracing ]; then \
-		export LD_LIBRARY_PATH=$$pwd/module-opentracing/../opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
-	fi ;  \
 	if [ -d $$pwd/module-lua ]; then \
 		globals_http="lua_package_path '$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
 		globals_stream="$$globals_http" ; \

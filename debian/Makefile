@@ -368,9 +368,6 @@ test: base nginx-tests
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx/objs/src/http/modules/perl:$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/module-opentracing ]; then \
-		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/debuild-module-opentracing/$(SRCDIR)/debian/build-nginx/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
-	fi ; \
 	if [ -d $$pwd/module-lua ]; then \
 		globals_http="lua_package_path '$$pwd/debuild-module-lua/$(SRCDIR)/debian/extra/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/debuild-module-lua/$(SRCDIR)/debian/extra/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
 		globals_stream="$$globals_http" ; \
@@ -390,9 +387,6 @@ test-debug: base nginx-tests
 	done ; \
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx-debug/objs/src/http/modules/perl:$$pwd/debuild-module-perl/$(SRCDIR)/debian/build-nginx/objs/src/http/modules/perl/blib/arch;" ; \
-	fi ; \
-	if [ -d $$pwd/module-opentracing ]; then \
-		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/debuild-module-opentracing/$(SRCDIR)/debian/build-nginx-debug/extra/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ; \
 	if [ -d $$pwd/module-lua ]; then \
 		globals_http="lua_package_path '$$pwd/debuild-module-lua/$(SRCDIR)/debian/extra/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/debuild-module-lua/$(SRCDIR)/debian/extra/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \

@@ -279,9 +279,6 @@ test: base nginx-tests
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl:$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl/blib/arch;" ; \
 	fi ; \
-	if [ -d $$pwd/module-opentracing ]; then \
-		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/abuild-module-opentracing/src/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
-	fi ; \
 	if [ -d $$pwd/module-lua ]; then \
 		globals_http="lua_package_path '$$pwd/abuild-module-lua/src/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/abuild-module-lua/src/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
 		globals_stream="$$globals_http" ; \
@@ -301,9 +298,6 @@ test-debug: base nginx-tests
 	done ; \
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl:$$pwd/abuild-module-perl/src/$(MODULE_SRCDIR)/objs/src/http/modules/perl/blib/arch;" ; \
-	fi ; \
-	if [ -d $$pwd/module-opentracing ]; then \
-		export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$pwd/abuild-module-opentracing/src/opentracing-cpp-$(OPENTRACING_CPP_VERSION)/usr/local/lib ; \
 	fi ; \
 	if [ -d $$pwd/module-lua -a ! -e nginx-module-lua.skip ]; then \
 		globals_http="lua_package_path '$$pwd/abuild-module-lua/src/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/abuild-module-lua/src/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
