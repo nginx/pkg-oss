@@ -134,6 +134,7 @@ define MODULE_ENV_otel
 export PATH=%{bdir}/prebuilt/bin/:$$PATH
 export NGX_OTEL_PROTO_DIR=%{bdir}/opentelemetry-proto-$(OPENTELEMETRY_PROTO_VERSION)
 export CMAKE_PREFIX_PATH=%{bdir}/prebuilt/
+export NGX_OTEL_CMAKE_OPTS="-DNGX_OTEL_GRPC=package -DNGX_OTEL_SDK=package -DNGX_OTEL_PROTO_DIR=$$NGX_OTEL_PROTO_DIR"
 endef
 export MODULE_ENV_otel
 
