@@ -45,7 +45,7 @@ define MODULE_PREBUILD_otel
 	export CMAKE_PREFIX_PATH=$$builddir/prebuilt/ \&\& \
 	cd $$(BUILDDIR_nginx)/extra/protobuf-$(PROTOBUF_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	cmake \
-		-DCMAKE_CXX_STANDARD=11 \
+		-DCMAKE_CXX_STANDARD=17 \
 		-DCMAKE_CXX_EXTENSIONS=OFF \
 		-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 		-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -59,7 +59,7 @@ define MODULE_PREBUILD_otel
 	make -j$$(NUMJOBS) install \&\& \
 	cd $$(BUILDDIR_nginx)/extra/abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	cmake \
-		-DCMAKE_CXX_STANDARD=11 \
+		-DCMAKE_CXX_STANDARD=17 \
 		-DCMAKE_CXX_EXTENSIONS=OFF \
 		-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 		-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -75,7 +75,7 @@ define MODULE_PREBUILD_otel
 	cd $$(BUILDDIR_nginx)/extra/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	CXXFLAGS='-Wno-error=format-security -DGRPC_NO_XDS -DGRPC_NO_RLS' \
 		cmake \
-		-DCMAKE_CXX_STANDARD=11 \
+		-DCMAKE_CXX_STANDARD=17 \
 		-DCMAKE_CXX_EXTENSIONS=OFF \
 		-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 		-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -103,7 +103,7 @@ define MODULE_PREBUILD_otel
 	make -j$$(NUMJOBS) install \&\& \
 	cd $$(BUILDDIR_nginx)/extra/opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION) \&\& mkdir build \&\& cd build \&\& \
  	cmake \
-		-DCMAKE_CXX_STANDARD=11 \
+		-DCMAKE_CXX_STANDARD=17 \
 		-DCMAKE_CXX_EXTENSIONS=OFF \
 		-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 		-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
