@@ -53,7 +53,7 @@ fi
 cd %{bdir} \&\& mkdir prebuilt \&\& \
 cd %{bdir}/protobuf-$(PROTOBUF_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	cmake \
-	-DCMAKE_CXX_STANDARD=11 \
+	-DCMAKE_CXX_STANDARD=17 \
 	-DCMAKE_CXX_EXTENSIONS=OFF \
 	-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 	-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -67,7 +67,7 @@ cd %{bdir}/protobuf-$(PROTOBUF_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	make $$_make_opts install \&\& \
 cd %{bdir}/abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	cmake \
-	-DCMAKE_CXX_STANDARD=11 \
+	-DCMAKE_CXX_STANDARD=17 \
 	-DCMAKE_CXX_EXTENSIONS=OFF \
 	-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 	-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -83,7 +83,7 @@ cd %{bdir}/abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\& \
 cd %{bdir}/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	CXXFLAGS='-DGRPC_NO_XDS -DGRPC_NO_RLS' \
 	cmake \
-	-DCMAKE_CXX_STANDARD=11 \
+	-DCMAKE_CXX_STANDARD=17 \
 	-DCMAKE_CXX_EXTENSIONS=OFF \
 	-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 	-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -111,7 +111,7 @@ cd %{bdir}/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	make $$_make_opts install \&\& \
 cd %{bdir}/opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	cmake \
-	-DCMAKE_CXX_STANDARD=11 \
+	-DCMAKE_CXX_STANDARD=17 \
 	-DCMAKE_CXX_EXTENSIONS=OFF \
 	-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 	-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
