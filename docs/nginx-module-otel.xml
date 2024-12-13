@@ -4,6 +4,17 @@
 <change_log title="nginx_module_otel">
 
 
+<changes apply="nginx-module-otel" ver="0.1.1" rev="1" basever="1.26.2"
+         date="2024-12-13" time="15:00:00 -0800"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+otel module updated to 0.1.1 (6c1659a20ba)
+</para>
+</change>
+
+</changes>
+
 <changes apply="nginx-module-otel" ver="0.1.0" rev="1" basever="1.26.2"
          date="2024-08-14" time="06:20:40 +0100"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">

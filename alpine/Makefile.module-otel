@@ -121,6 +121,7 @@ cd $$builddir/../opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION) \&\& mkdir build
     ../ \&\& \
     make $$_make_opts install || \
 exit 1
+export NGX_OTEL_CMAKE_OPTS="-DNGX_OTEL_GRPC=package -DNGX_OTEL_SDK=package -DNGX_OTEL_PROTO_DIR=$$NGX_OTEL_PROTO_DIR"
 endef
 export MODULE_PREBUILD_otel
 
