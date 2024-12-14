@@ -11,7 +11,7 @@ defaults:
 
 jobs:
   generate-matrix:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       matrix-alpine: ${{ steps.set-matrix.outputs.matrix-alpine }}
       matrix-ubuntu: ${{ steps.set-matrix.outputs.matrix-ubuntu }}
@@ -19,18 +19,28 @@ jobs:
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
+      - name: Figure out what targets we're building for
+        working-directory: debian
+        run: |
+          targets=""
+          for target in $(make list-all-modules | cut -d ' ' -f 1); do
+            targets="$targets module-$target";
+          done
+          echo targets="base $targets" >> $GITHUB_ENV
+
       - name: set-matrix
         id: set-matrix
         run: |
-          TARGETS="all modules"
-
-          for os in alpine ubuntu redhat; do
-            jq -nRr '"matrix-" + $os +"=" + ( { include: [ $ARGS.positional[] | {target: . } ] } | tojson)' --arg os $os --args $TARGETS >> $GITHUB_OUTPUT
+          for os in alpine ubuntu; do
+            jq -nRr '"matrix-" + $os +"=" + ( { include: [ $ARGS.positional[] | {target: . } ] } | tojson)' --arg os $os --args $targets >> $GITHUB_OUTPUT
+          done
+          for os in redhat; do
+            jq -nRr '"matrix-" + $os +"=" + ( { include: [ $ARGS.positional[] | {target: . } ] } | tojson)' --arg os $os --args ${targets/ module-geoip/} >> $GITHUB_OUTPUT
           done
 
   alpine:
     needs: generate-matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-alpine)}}
@@ -52,58 +62,32 @@ jobs:
             make
             xz
 
-      - name: Figure out what targets we're building
+      - name: Create build depends
         shell: alpine.sh {0}
         working-directory: alpine
         run: |
-          targets=""
-          case ${{ matrix.target }} in
-            all)
-              targets="base"
-              for target in $(make list-base-modules | cut -d ' ' -f 1); do
-                targets="$targets module-$target";
-              done
-            ;;
-            modules)
-              for target in $(comm -13 <(make list-base-modules | cut -d ' ' -f 1) <(make list-all-modules | cut -d ' ' -f 1)); do
-                targets="$targets module-$target";
-              done
-            ;;
-          esac
-          echo TARGETS=$targets >> $GITHUB_ENV
+          make abuild-${{ matrix.target }}
 
-      - name: Create build depends for targets
-        shell: alpine.sh {0}
-        working-directory: alpine
-        run: |
-          for target in $TARGETS; do
-            make abuild-$target;
-          done
-
-      - name: Install build depends for targets
+      - name: Install build depends
         shell: alpine.sh --root {0}
         working-directory: alpine
         run: |
-          for target in ${TARGETS}; do
-            apk add $(. ./abuild-${target}/APKBUILD; echo $makedepends;)
-          done
+          apk add $(. ./abuild-${{ matrix.target }}/APKBUILD; echo $makedepends;)
 
       - name: Build ${{ matrix.target }}
         shell: alpine.sh {0}
         working-directory: alpine
         run: |
-          for target in $TARGETS; do
-            make $target;
-          done
+          make ${{ matrix.target }}
 
       - name: List what has been built
         shell: alpine.sh {0}
         if: ${{ !cancelled() }}
         run: |
-          find ~/packages/alpine -type f
+          find ~/packages/alpine -type f | xargs ls -ld
 
   ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: generate-matrix
     strategy:
       fail-fast: false
@@ -124,48 +108,27 @@ jobs:
             lsb-release \
             xsltproc
 
-      - name: Figure out what targets we're building
-        working-directory: debian
-        run: |
-          targets=""
-          case ${{ matrix.target }} in
-            all)
-              targets="base"
-              for target in $(make list-base-modules | cut -d ' ' -f 1); do
-                targets="$targets module-$target";
-              done
-            ;;
-            modules)
-              for target in $(comm -13 <(make list-base-modules | cut -d ' ' -f 1) <(make list-all-modules | cut -d ' ' -f 1)); do
-                targets="$targets module-$target";
-              done
-            ;;
-          esac
-          echo TARGETS=$targets >> $GITHUB_ENV
-
       - name: Create and install build depends for ${{ matrix.target }} and build it
         working-directory: debian
         run: |
           NGINX_VERSION=$(make --eval 'nv:; @echo $(BASE_VERSION)' nv)
-          for target in $TARGETS; do
-            make rules-$target
-            sudo mk-build-deps --install --tool="apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes" \
-              debuild-${target}/nginx-${NGINX_VERSION}/debian/control;
-            make $target
-          done
+          make rules-${{ matrix.target }}
+          sudo mk-build-deps --install --tool="apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes" \
+            debuild-${{ matrix.target }}/nginx-${NGINX_VERSION}/debian/control
+          make ${{ matrix.target }}
 
       - name: List what has been built
         if: ${{ !cancelled() }}
         run: |
-          find .. -mindepth 1 -maxdepth 1 -name "*.deb"
+          find .. -mindepth 1 -maxdepth 1 -name "*.deb" | xargs ls -ld
 
   redhat:
     needs: generate-matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container: almalinux:9
     strategy:
       fail-fast: false
-      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-redhat)}}
+      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-redhat )}}
 
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -186,45 +149,22 @@ jobs:
             'dnf-command(config-manager)'
           dnf config-manager --set-enabled crb
 
-      - name: Figure out what targets we're building
-        working-directory: rpm/SPECS
-        run: |
-          targets=""
-          case ${{ matrix.target }} in
-            all)
-              targets="base"
-              for target in $(make list-base-modules | cut -d ' ' -f 1); do
-                targets="$targets module-$target";
-              done
-            ;;
-            modules)
-              for target in $(comm -13 <(make list-base-modules | cut -d ' ' -f 1) <(make list-all-modules | cut -d ' ' -f 1)); do
-                targets="$targets module-$target";
-              done
-            ;;
-          esac
-          echo TARGETS=$targets >> $GITHUB_ENV
-
       - name: Create and install build depends for ${{ matrix.target }} and build it
         working-directory: rpm/SPECS
         run: |
-          for target in $TARGETS; do
-          # geoip is not available
-            test $target == "module-geoip" && continue
-            case ${target} in
-              base)
-                spec="nginx.spec"
-                ;;
-              *)
-                spec="nginx-${target}.spec"
-                ;;
-            esac
-            make $spec
-            dnf -y install $(rpmspec -P ./${spec} | grep BuildRequires | cut -d: -f2- | xargs)
-            make ${target}
-          done
+          case ${{ matrix.target }} in
+            base)
+              spec="nginx.spec"
+              ;;
+            *)
+              spec="nginx-${{ matrix.target }}.spec"
+              ;;
+          esac
+          make $spec
+          dnf -y builddep ./${spec}
+          make ${{ matrix.target }}
 
       - name: List what has been built
         if: ${{ !cancelled() }}
         run: |
-          find rpm/RPMS -type f
+          find rpm/RPMS -type f | xargs ls -ld
