@@ -1,0 +1,55 @@
+--- grpc-1.68.2/CMakeLists.txt	2024-12-03 10:03:35
++++ grpc-1.68.2.p/CMakeLists.txt	2024-12-13 15:04:20
+@@ -77,9 +77,6 @@
+ set(gRPC_CARES_PROVIDER "module" CACHE STRING "Provider of c-ares library")
+ set_property(CACHE gRPC_CARES_PROVIDER PROPERTY STRINGS "module" "package")
+ 
+-set(gRPC_RE2_PROVIDER "module" CACHE STRING "Provider of re2 library")
+-set_property(CACHE gRPC_RE2_PROVIDER PROPERTY STRINGS "module" "package")
+-
+ set(gRPC_SSL_PROVIDER "module" CACHE STRING "Provider of ssl library")
+ set_property(CACHE gRPC_SSL_PROVIDER PROPERTY STRINGS "module" "package")
+ 
+@@ -381,7 +378,6 @@
+ include(cmake/benchmark.cmake)
+ include(cmake/cares.cmake)
+ include(cmake/protobuf.cmake)
+-include(cmake/re2.cmake)
+ include(cmake/ssl.cmake)
+ include(cmake/upb.cmake)
+ include(cmake/xxhash.cmake)
+@@ -40733,7 +40729,6 @@
+ )
+ install(FILES
+     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Findc-ares.cmake
+-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Findre2.cmake
+     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Findsystemd.cmake
+   DESTINATION ${gRPC_INSTALL_CMAKEDIR}/modules
+ )
+@@ -40777,7 +40772,7 @@
+   "high performance general RPC framework"
+   "${gRPC_CORE_VERSION}"
+   "absl_algorithm_container absl_any_invocable absl_base absl_bind_front absl_bits absl_check absl_cleanup absl_config absl_cord absl_core_headers absl_flags absl_flags_marshalling absl_flat_hash_map absl_flat_hash_set absl_function_ref absl_hash absl_inlined_vector absl_log absl_log_globals absl_log_severity absl_memory absl_no_destructor absl_optional absl_random_bit_gen_ref absl_random_distributions absl_random_random absl_span absl_status absl_statusor absl_str_format absl_strings absl_synchronization absl_time absl_type_traits absl_utility absl_variant gpr"
+-  "libcares openssl re2 zlib"
++  "libcares openssl zlib"
+   "-lgrpc"
+   "-laddress_sorting -lupb_textformat_lib -lupb_json_lib -lupb_wire_lib -lupb_message_lib -lutf8_range_lib -lupb_mini_descriptor_lib -lupb_mem_lib -lupb_base_lib"
+   "grpc.pc")
+@@ -40799,7 +40794,7 @@
+   "C++ wrapper for gRPC"
+   "${gRPC_CPP_VERSION}"
+   "absl_absl_check absl_absl_log absl_algorithm_container absl_any_invocable absl_base absl_bind_front absl_bits absl_check absl_cleanup absl_config absl_cord absl_core_headers absl_flags absl_flags_marshalling absl_flat_hash_map absl_flat_hash_set absl_function_ref absl_hash absl_inlined_vector absl_log absl_log_globals absl_log_severity absl_memory absl_no_destructor absl_optional absl_random_bit_gen_ref absl_random_distributions absl_random_random absl_span absl_status absl_statusor absl_str_format absl_strings absl_synchronization absl_time absl_type_traits absl_utility absl_variant gpr grpc"
+-  "libcares openssl re2 zlib"
++  "libcares openssl zlib"
+   "-lgrpc++"
+   "-laddress_sorting -lupb_textformat_lib -lupb_json_lib -lupb_wire_lib -lupb_message_lib -lutf8_range_lib -lupb_mini_descriptor_lib -lupb_mem_lib -lupb_base_lib"
+   "grpc++.pc")
+@@ -40821,7 +40816,7 @@
+   "OpenTelemetry Plugin for gRPC C++"
+   "${gRPC_CPP_VERSION}"
+   "absl_absl_check absl_absl_log absl_algorithm_container absl_any_invocable absl_base absl_bind_front absl_bits absl_check absl_cleanup absl_config absl_cord absl_core_headers absl_flags absl_flags_marshalling absl_flat_hash_map absl_flat_hash_set absl_function_ref absl_hash absl_inlined_vector absl_log absl_log_globals absl_log_severity absl_memory absl_no_destructor absl_optional absl_random_bit_gen_ref absl_random_distributions absl_random_random absl_span absl_status absl_statusor absl_str_format absl_strings absl_synchronization absl_time absl_type_traits absl_utility absl_variant gpr grpc grpc++ opentelemetry_api"
+-  "libcares openssl re2 zlib"
++  "libcares openssl zlib"
+   "-lgrpcpp_otel_plugin"
+   "-laddress_sorting -lupb_textformat_lib -lupb_json_lib -lupb_wire_lib -lupb_message_lib -lutf8_range_lib -lupb_mini_descriptor_lib -lupb_mem_lib -lupb_base_lib"
+   "grpcpp_otel_plugin.pc")
