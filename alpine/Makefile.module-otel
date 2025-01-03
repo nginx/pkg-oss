@@ -45,20 +45,6 @@ define MODULE_PREBUILD_otel
 export PATH=$$builddir/prebuilt/bin/:$$PATH \&\& \
 export NGX_OTEL_PROTO_DIR=$$builddir/../opentelemetry-proto-$(OPENTELEMETRY_PROTO_VERSION) \&\&
 export CMAKE_PREFIX_PATH=$$builddir/prebuilt/ \&\& \
-cd $$builddir/../protobuf-$(PROTOBUF_VERSION) \&\& mkdir build \&\& cd build \&\& \
-    cmake \
-    -DCMAKE_CXX_STANDARD=17 \
-    -DCMAKE_CXX_EXTENSIONS=OFF \
-    -DCMAKE_CXX_VISIBILITY_PRESET=hidden \
-    -DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
-    -DCMAKE_PREFIX_PATH=$$builddir/prebuilt/ \
-    -DCMAKE_INSTALL_PREFIX:STRING=$$builddir/prebuilt/ \
-    -DCMAKE_INSTALL_LIBDIR:STRING=lib \
-    -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-    -Dprotobuf_BUILD_TESTS=OFF \
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    ../cmake/ \&\& \
-    make $$_make_opts install \&\& \
 cd $$builddir/../abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\& \
     cmake \
     -DCMAKE_CXX_STANDARD=17 \
@@ -73,6 +59,20 @@ cd $$builddir/../abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\
     -DWITH_BENCHMARK=OFF \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     ../ \&\& \
+    make $$_make_opts install \&\& \
+cd $$builddir/../protobuf-$(PROTOBUF_VERSION) \&\& mkdir build \&\& cd build \&\& \
+    cmake \
+    -DCMAKE_CXX_STANDARD=17 \
+    -DCMAKE_CXX_EXTENSIONS=OFF \
+    -DCMAKE_CXX_VISIBILITY_PRESET=hidden \
+    -DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
+    -DCMAKE_PREFIX_PATH=$$builddir/prebuilt/ \
+    -DCMAKE_INSTALL_PREFIX:STRING=$$builddir/prebuilt/ \
+    -DCMAKE_INSTALL_LIBDIR:STRING=lib \
+    -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+    -Dprotobuf_BUILD_TESTS=OFF \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    ../cmake/ \&\& \
     make $$_make_opts install \&\& \
 cd $$builddir/../grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
     CXXFLAGS='-DGRPC_NO_XDS -DGRPC_NO_RLS' \
