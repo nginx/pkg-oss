@@ -1,0 +1,38 @@
+diff -urN grpc/CMakeLists.txt grpc.p/CMakeLists.txt
+--- grpc/CMakeLists.txt	2023-02-15 00:24:10.000000000 +0000
++++ grpc.p/CMakeLists.txt	2024-12-05 02:01:29.003610760 +0000
+@@ -76,9 +76,6 @@
+ set(gRPC_CARES_PROVIDER "module" CACHE STRING "Provider of c-ares library")
+ set_property(CACHE gRPC_CARES_PROVIDER PROPERTY STRINGS "module" "package")
+ 
+-set(gRPC_RE2_PROVIDER "module" CACHE STRING "Provider of re2 library")
+-set_property(CACHE gRPC_RE2_PROVIDER PROPERTY STRINGS "module" "package")
+-
+ set(gRPC_SSL_PROVIDER "module" CACHE STRING "Provider of ssl library")
+ set_property(CACHE gRPC_SSL_PROVIDER PROPERTY STRINGS "module" "package")
+ 
+@@ -315,7 +312,6 @@
+ include(cmake/benchmark.cmake)
+ include(cmake/cares.cmake)
+ include(cmake/protobuf.cmake)
+-include(cmake/re2.cmake)
+ include(cmake/ssl.cmake)
+ include(cmake/upb.cmake)
+ include(cmake/xxhash.cmake)
+@@ -17431,7 +17427,6 @@
+ )
+ install(FILES
+     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Findc-ares.cmake
+-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Findre2.cmake
+   DESTINATION ${gRPC_INSTALL_CMAKEDIR}/modules
+ )
+ 
+@@ -17472,7 +17467,7 @@
+   "high performance general RPC framework"
+   "${gRPC_CORE_VERSION}"
+   "gpr openssl absl_base absl_bind_front absl_cord absl_core_headers absl_flat_hash_map absl_hash absl_inlined_vector absl_memory absl_optional absl_random_random absl_status absl_statusor absl_str_format absl_strings absl_synchronization absl_time absl_utility absl_variant"
+-  "-lgrpc -laddress_sorting -lre2 -lupb -lcares -lz"
++  "-lgrpc -laddress_sorting -lupb -lcares -lz"
+   ""
+   "grpc.pc")
+ 

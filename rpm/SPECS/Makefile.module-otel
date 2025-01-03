@@ -22,7 +22,8 @@ MODULE_SOURCES_otel=	nginx-otel-$(NGINX_OTEL_VERSION).tar.xz \
 				protobuf-$(PROTOBUF_VERSION).tar.gz
 
 MODULE_PATCHES_otel=   $(CONTRIB)/src/abseil-cpp/b957f0ccd00481cd4fd663d8320aa02ae0564f18.patch \
-					   $(CONTRIB)/src/abseil-cpp/4500c2fada4e952037c59bd65e8be1ba0b29f21e.patch
+					   $(CONTRIB)/src/abseil-cpp/4500c2fada4e952037c59bd65e8be1ba0b29f21e.patch \
+					   $(CONTRIB)/src/grpc/grpc-cmake-no-re2.patch
 
 MODULE_CONFARGS_otel=	--add-dynamic-module=nginx-otel-$(NGINX_OTEL_VERSION)/
 
@@ -50,23 +51,9 @@ if [ $$_nproc -gt 1 ]; then
 fi
 
 cd %{bdir} \&\& mkdir prebuilt \&\& \
-cd %{bdir}/protobuf-$(PROTOBUF_VERSION) \&\& mkdir build \&\& cd build \&\& \
-	cmake \
-	-DCMAKE_CXX_STANDARD=11 \
-	-DCMAKE_CXX_EXTENSIONS=OFF \
-	-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
-	-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
-	-DCMAKE_PREFIX_PATH=%{bdir}/prebuilt/ \
-	-DCMAKE_INSTALL_PREFIX:STRING=%{bdir}/prebuilt/ \
-	-DCMAKE_INSTALL_LIBDIR:STRING=lib \
-	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-	-Dprotobuf_BUILD_TESTS=OFF \
-	-DCMAKE_BUILD_TYPE=RelWithDebInfo \
-	../cmake/ \&\& \
-	make $$_make_opts install \&\& \
 cd %{bdir}/abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	cmake \
-	-DCMAKE_CXX_STANDARD=11 \
+	-DCMAKE_CXX_STANDARD=17 \
 	-DCMAKE_CXX_EXTENSIONS=OFF \
 	-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 	-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -79,10 +66,24 @@ cd %{bdir}/abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	../ \&\& \
 	make $$_make_opts install \&\& \
+cd %{bdir}/protobuf-$(PROTOBUF_VERSION) \&\& mkdir build \&\& cd build \&\& \
+	cmake \
+	-DCMAKE_CXX_STANDARD=17 \
+	-DCMAKE_CXX_EXTENSIONS=OFF \
+	-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
+	-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
+	-DCMAKE_PREFIX_PATH=%{bdir}/prebuilt/ \
+	-DCMAKE_INSTALL_PREFIX:STRING=%{bdir}/prebuilt/ \
+	-DCMAKE_INSTALL_LIBDIR:STRING=lib \
+	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+	-Dprotobuf_BUILD_TESTS=OFF \
+	-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	../cmake/ \&\& \
+	make $$_make_opts install \&\& \
 cd %{bdir}/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	CXXFLAGS='-DGRPC_NO_XDS -DGRPC_NO_RLS' \
 	cmake \
-	-DCMAKE_CXX_STANDARD=11 \
+	-DCMAKE_CXX_STANDARD=17 \
 	-DCMAKE_CXX_EXTENSIONS=OFF \
 	-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 	-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -98,7 +99,6 @@ cd %{bdir}/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	-DgRPC_BUILD_GRPC_CSHARP_PLUGIN=OFF \
 	-DgRPC_BUILD_CSHARP_EXT=OFF \
 	-DgRPC_BUILD_CODEGEN=ON \
-	-DgRPC_RE2_PROVIDER=package \
 	-DgRPC_SSL_PROVIDER=package \
 	-DgRPC_ZLIB_PROVIDER=package \
 	-DgRPC_CARES_PROVIDER=package \
@@ -111,7 +111,7 @@ cd %{bdir}/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	make $$_make_opts install \&\& \
 cd %{bdir}/opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	cmake \
-	-DCMAKE_CXX_STANDARD=11 \
+	-DCMAKE_CXX_STANDARD=17 \
 	-DCMAKE_CXX_EXTENSIONS=OFF \
 	-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
 	-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
@@ -134,6 +134,7 @@ define MODULE_ENV_otel
 export PATH=%{bdir}/prebuilt/bin/:$$PATH
 export NGX_OTEL_PROTO_DIR=%{bdir}/opentelemetry-proto-$(OPENTELEMETRY_PROTO_VERSION)
 export CMAKE_PREFIX_PATH=%{bdir}/prebuilt/
+export NGX_OTEL_CMAKE_OPTS="-DNGX_OTEL_GRPC=package -DNGX_OTEL_SDK=package -DNGX_OTEL_PROTO_DIR=$$NGX_OTEL_PROTO_DIR"
 endef
 export MODULE_ENV_otel
 
