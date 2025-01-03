@@ -1,5 +1,8 @@
-# Defaults for nginx initscript
+# Defaults for nginx
 # sourced by /etc/init.d/nginx
+# included by nginx systemd service
 
 # Additional options that are passed to nginx
 DAEMON_ARGS=""
+
+# CONFFILE="/etc/nginx/nginx.conf"

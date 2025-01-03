@@ -1,8 +1,11 @@
-# Defaults for nginx initscript
+# Defaults for nginx-debug
 # sourced by /etc/init.d/nginx-debug
+# included by nginx-debug systemd service
 NAME="nginx-debug"
 DESC="nginx-debug"
 DAEMON="/usr/sbin/nginx-debug"
 
 # Additional options that are passed to nginx
 DAEMON_OPTS=""
+
+# CONFFILE="/etc/nginx/nginx.conf"

@@ -8,7 +8,7 @@ fi
 
 prog=nginx
 nginx=/usr/sbin/nginx
-conffile=/etc/nginx/nginx.conf
+conffile=${conffile:-/etc/nginx/nginx.conf}
 pidfile=`/usr/bin/systemctl show -p PIDFile nginx.service | sed 's/^PIDFile=//' | tr ' ' '\n'`
 SLEEPSEC=${SLEEPSEC:-1}
 UPGRADEWAITLOOPS=${UPGRADEWAITLOOPS:-5}
