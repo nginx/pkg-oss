@@ -24,7 +24,7 @@ if [ -z "$2" ]; then
 fi
 
 if [ -x "/etc/init.d/nginx" ]; then
-    if [ -f "/var/run/nginx.pid" ] && kill -0 `cat /var/run/nginx.pid` >/dev/null; then
+    if [ -f "/run/nginx.pid" ] && kill -0 `cat /run/nginx.pid` >/dev/null; then
         /etc/init.d/nginx upgrade || echo \
             "Binary upgrade failed, please check nginx's error.log"
     else
