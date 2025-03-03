@@ -191,7 +191,6 @@ rules-base: $(BASE_SRC) nginx.deb-changelog
 			$(DOCS)/EULA-DEVELOPER \
 			$(DOCS)/EULA-SUBSCRIPTION \
 			$(DOCS)/CHANGES \
-			$(DOCS)/nginx-modules-reference.pdf \
 			debuild-base/$(SRCDIR)/debian/ ; \
 		cp $(CONTRIB)/tarballs/dashboard.html debuild-base/$(SRCDIR)/debian/ ; \
 		( cd debuild-base/$(SRCDIR) && \
