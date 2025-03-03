@@ -169,7 +169,7 @@ abuild-base: $(BASE_SRC)
 	done ;\
 	cp $(DOCS)/nginx.copyright abuild-base/COPYRIGHT ; \
 	if [ "$(BASE_TARGET)" != "oss" ]; then \
-		cp -v $(DOCS)/EULA-* $(CONTRIB)/tarballs/dashboard.html $(DOCS)/nginx-modules-reference.pdf abuild-base/ ; \
+		cp -v $(DOCS)/EULA-* $(CONTRIB)/tarballs/dashboard.html abuild-base/ ; \
 	fi; \
 	sed alpine$(BASE_SUFFIX)/nginx$(BASE_SUFFIX).initd.in -e 's#%%DAEMON%%#nginx#g' > abuild-base/nginx$(BASE_SUFFIX).initd ; \
 	sed alpine$(BASE_SUFFIX)/nginx$(BASE_SUFFIX).initd.in -e 's#%%DAEMON%%#nginx-debug#g' > abuild-base/nginx$(BASE_SUFFIX)-debug.initd ; \

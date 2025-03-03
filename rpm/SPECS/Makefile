@@ -156,7 +156,6 @@ nginx.rpm-changelog:
 
 nginx.spec: nginx.rpm-changelog
 ifeq ($(BASE_TARGET), plus)
-	cp -v $(DOCS)/nginx-modules-reference.pdf $(SRCPATH)
 	cp -v $(CONTRIB)/tarballs/dashboard.html $(SRCPATH)
 	cp -v $(DOCS)/EULA* $(SRCPATH)
 	cp -v $(DOCS)/CHANGES $(SRCPATH)
