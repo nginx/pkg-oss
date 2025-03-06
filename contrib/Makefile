@@ -11,7 +11,7 @@ PKGS_ALL := $(patsubst $(SRC)/%/Makefile,%,$(wildcard $(SRC)/*/Makefile))
 
 # Common download locations
 NGINX := https://nginx.org/download
-CONTRIB_NGINX := https://packages.nginx.org/contrib
+CONTRIB_NGINX ?= https://packages.nginx.org/contrib
 GITHUB := https://github.com
 
 #
