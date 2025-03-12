@@ -12,7 +12,7 @@ MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
 
 MODULE_SOURCES_njs=	\
 					njs-$(NJS_VERSION).tar.gz \
-					quickjs-$(QUICKJS_VERSION).tar.xz
+					quickjs-$(QUICKJS_VERSION)-$(QUICKJS_GITHASH).tar.gz
 
 MODULE_PATCHES_njs= $(CONTRIB)/src/quickjs/quickjs.makefile.patch
 
@@ -35,11 +35,11 @@ BuildRequires: libatomic
 endef
 export MODULE_DEFINITIONS_njs
 
-MODULE_CC_OPT_njs= -I%{bdir}/quickjs-$(QUICKJS_VERSION)/
-MODULE_LD_OPT_njs= -L%{bdir}/quickjs-$(QUICKJS_VERSION)/
+MODULE_CC_OPT_njs= -I%{bdir}/quickjs-$(QUICKJS_GITHASH)/
+MODULE_LD_OPT_njs= -L%{bdir}/quickjs-$(QUICKJS_GITHASH)/
 
-MODULE_CC_OPT_DEBUG_njs= -I%{bdir}/quickjs-$(QUICKJS_VERSION)/
-MODULE_LD_OPT_DEBUG_njs= -L%{bdir}/quickjs-$(QUICKJS_VERSION)/
+MODULE_CC_OPT_DEBUG_njs= -I%{bdir}/quickjs-$(QUICKJS_GITHASH)/
+MODULE_LD_OPT_DEBUG_njs= -L%{bdir}/quickjs-$(QUICKJS_GITHASH)/
 
 define MODULE_PREBUILD_njs
 
@@ -50,7 +50,7 @@ fi
 
 %define __with_quickjs %{nil}
 %if (0%{?rhel} >= 8) || (0%{?amzn} >= 2023) || (0%{?suse_version} >= 1500)
-cd %{bdir}/quickjs-$(QUICKJS_VERSION) \&\& \
+cd %{bdir}/quickjs-$(QUICKJS_GITHASH) \&\& \
 CFLAGS="%{WITH_CC_OPT} -fPIC" make $$_make_opts libquickjs.a
 %define __with_quickjs --with-quickjs
 %endif
@@ -59,8 +59,8 @@ sed -i.bak 's,-lquickjs.lto ,-lquickjs.lto -latomic ,g' auto/quickjs \&\& \
 sed -i.bak 's,-lquickjs ,-lquickjs -latomic ,g' auto/quickjs \&\& \
 ./configure \
 	%{__with_quickjs} \
-	--cc-opt=\"%{WITH_CC_OPT}\ -I%{bdir}/quickjs-$(QUICKJS_VERSION)/" \
-	--ld-opt=\"%{WITH_LD_OPT}\ -L%{bdir}/quickjs-$(QUICKJS_VERSION)/" \&\& \
+	--cc-opt=\"%{WITH_CC_OPT}\ -I%{bdir}/quickjs-$(QUICKJS_GITHASH)/" \
+	--ld-opt=\"%{WITH_LD_OPT}\ -L%{bdir}/quickjs-$(QUICKJS_GITHASH)/" \&\& \
 make $$_make_opts njs \&\& \
 mv build build-cli
 endef
