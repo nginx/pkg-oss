@@ -14,7 +14,7 @@ MODULE_RELEASE_otel=	1
 
 MODULE_VERSION_PREFIX_otel=$(MODULE_TARGET_PREFIX)
 
-MODULE_SOURCES_otel=	nginx-otel-$(NGINX_OTEL_VERSION).tar.xz \
+MODULE_SOURCES_otel=	nginx-otel-$(NGINX_OTEL_VERSION)-$(NGINX_OTEL_GITHASH).tar.gz \
 				abseil-cpp-$(ABSEIL_VERSION).tar.gz \
 				grpc-$(GRPC_VERSION).tar.gz \
 				opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION).tar.gz \
@@ -25,7 +25,7 @@ MODULE_PATCHES_otel=   $(CONTRIB)/src/abseil-cpp/b957f0ccd00481cd4fd663d8320aa02
 					   $(CONTRIB)/src/abseil-cpp/4500c2fada4e952037c59bd65e8be1ba0b29f21e.patch \
 					   $(CONTRIB)/src/grpc/grpc-cmake-no-re2.patch
 
-MODULE_CONFARGS_otel=	--add-dynamic-module=nginx-otel-$(NGINX_OTEL_VERSION)/
+MODULE_CONFARGS_otel=	--add-dynamic-module=nginx-otel-$(NGINX_OTEL_GITHASH)/
 
 .deps-module-otel:
 	cd $(CONTRIB) && make \
