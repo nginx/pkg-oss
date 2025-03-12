@@ -9,7 +9,7 @@ MODULE_RELEASE_auth_spnego=	1
 
 MODULE_VERSION_PREFIX_auth_spnego=$(MODULE_TARGET_PREFIX)
 
-MODULE_SOURCES_auth_spnego=	spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHASH).tar.xz
+MODULE_SOURCES_auth_spnego=	spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHASH).tar.gz
 
 MODULE_PATCHES_auth_spnego=
 
