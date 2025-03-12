@@ -1,0 +1,45 @@
+name: Contrib Check
+
+on:
+  pull_request:
+    paths:
+      - contrib/**
+  push:
+    paths:
+      - contrib/**
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: 'bash -Eeuo pipefail {0}'
+
+jobs:
+  contrib-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup Ubuntu
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-suggests --no-install-recommends \
+            curl \
+            git \
+            lsb-release
+
+      - name: Try and fetch contrib
+        working-directory: contrib
+        run: |
+          make fetch |& tee contrib.log
+
+      - name: Check if we need to upload files
+        working-directory: contrib
+        shell: 'bash {0}'
+        run: |
+          grep -E "^Please upload" -A 1 --no-group-separator contrib.log | grep -v "^Please"
+          if [ $? -eq 0 ]; then
+            printf "\n"
+            printf "Need to upload some packages to the contrib location!"
+            exit 1
+          fi
+
