@@ -12,14 +12,14 @@ MODULE_RELEASE_otel=	1
 
 MODULE_VERSION_PREFIX_otel=$(MODULE_TARGET_PREFIX)
 
-MODULE_SOURCES_otel=	nginx-otel-$(NGINX_OTEL_VERSION).tar.xz \
+MODULE_SOURCES_otel=	nginx-otel-$(NGINX_OTEL_VERSION)-$(NGINX_OTEL_GITHASH).tar.gz \
 			opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION).tar.gz \
 			opentelemetry-proto-$(OPENTELEMETRY_PROTO_VERSION).tar.gz \
 			protobuf-$(PROTOBUF_VERSION).tar.gz
 
 MODULE_PATCHES_otel=
 
-MODULE_CONFARGS_otel=   --add-dynamic-module=$(MODSRC_PREFIX)/nginx-otel-$(NGINX_OTEL_VERSION)/
+MODULE_CONFARGS_otel=   --add-dynamic-module=$(MODSRC_PREFIX)/nginx-otel-$(NGINX_OTEL_GITHASH)/
 
 .deps-module-otel:
 	cd $(CONTRIB) && make \
