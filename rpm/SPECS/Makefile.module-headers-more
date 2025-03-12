@@ -9,7 +9,7 @@ MODULE_RELEASE_headers_more=	1
 
 MODULE_VERSION_PREFIX_headers_more=$(MODULE_TARGET_PREFIX)
 
-MODULE_SOURCES_headers_more=	headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODULE_GITHASH).tar.xz
+MODULE_SOURCES_headers_more=	headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODULE_GITHASH).tar.gz
 
 MODULE_CONFARGS_headers_more=	--add-dynamic-module=headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODULE_GITHASH)
 
