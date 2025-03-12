@@ -1,18 +1,16 @@
 # nginx-otel
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/version
-NGINX_OTEL_GITURL := $(GITHUB)/nginxinc/nginx-otel
+NGINX_OTEL_URL := $(GITHUB)/nginxinc/nginx-otel/archive/$(NGINX_OTEL_GITHASH).tar.gz
 
 PKGS += nginx-otel
 
-$(TARBALLS)/nginx-otel-$(NGINX_OTEL_VERSION).tar.xz:
-	$(call download_git,$(NGINX_OTEL_GITURL),,$(NGINX_OTEL_GITHASH))
+$(TARBALLS)/nginx-otel-$(NGINX_OTEL_VERSION)-$(NGINX_OTEL_GITHASH).tar.gz:
+	$(call download_pkg,$(NGINX_OTEL_URL),nginx-otel)
 
-.sum-nginx-otel: nginx-otel-$(NGINX_OTEL_VERSION).tar.xz
-	$(call check_githash,$(NGINX_OTEL_GITHASH))
-	touch $@
+.sum-nginx-otel: nginx-otel-$(NGINX_OTEL_VERSION)-$(NGINX_OTEL_GITHASH).tar.gz
 
-nginx-otel: nginx-otel-$(NGINX_OTEL_VERSION).tar.xz .sum-nginx-otel
+nginx-otel: nginx-otel-$(NGINX_OTEL_VERSION)-$(NGINX_OTEL_GITHASH).tar.gz .sum-nginx-otel
 	$(UNPACK)
 	$(MOVE)
 
