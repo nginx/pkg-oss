@@ -9,7 +9,7 @@ MODULE_RELEASE_subs_filter=	1
 
 MODULE_VERSION_PREFIX_subs_filter=$(MODULE_TARGET_PREFIX)
 
-MODULE_SOURCES_subs_filter=	ngx_http_substitutions_filter_module-$(SUBSTITUTIONS_FILTER_NGINX_MODULE_GITHASH).tar.xz
+MODULE_SOURCES_subs_filter=	ngx_http_substitutions_filter_module-$(SUBSTITUTIONS_FILTER_NGINX_MODULE_GITHASH).tar.gz
 
 MODULE_CONFARGS_subs_filter=	--add-dynamic-module=ngx_http_substitutions_filter_module-$(SUBSTITUTIONS_FILTER_NGINX_MODULE_GITHASH)
 
