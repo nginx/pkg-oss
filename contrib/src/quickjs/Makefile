@@ -1,18 +1,16 @@
 # quickjs
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/version
-QUICKJS_GITURL := $(GITHUB)/bellard/quickjs
+QUICKJS_URL := $(GITHUB)/bellard/quickjs/archive/$(QUICKJS_GITHASH).tar.gz
 
 PKGS += quickjs
 
-$(TARBALLS)/quickjs-$(QUICKJS_VERSION).tar.xz:
-	$(call download_git,$(QUICKJS_GITURL),,$(QUICKJS_GITHASH))
+$(TARBALLS)/quickjs-$(QUICKJS_VERSION)-$(QUICKJS_GITHASH).tar.gz:
+	$(call download_pkg,$(QUICKJS_URL),quickjs)
 
-.sum-quickjs: quickjs-$(QUICKJS_VERSION).tar.xz
-	$(call check_githash,$(QUICKJS_GITHASH))
-	touch $@
+.sum-quickjs: quickjs-$(QUICKJS_VERSION)-$(QUICKJS_GITHASH).tar.gz
 
-quickjs: quickjs-$(QUICKJS_VERSION).tar.xz .sum-quickjs
+quickjs: quickjs-$(QUICKJS_VERSION)-$(QUICKJS_GITHASH).tar.gz .sum-quickjs
 	$(UNPACK)
 	$(APPLY) $(SRC)/quickjs/quickjs.makefile.patch
 	$(MOVE)
