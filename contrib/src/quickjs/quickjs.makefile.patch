@@ -1,15 +1,13 @@
---- a/Makefile	2024-04-22 13:33:13.388210739 +0100
-+++ b/Makefile	2024-04-22 13:34:09.883554084 +0100
-@@ -228,11 +228,11 @@
- ifdef CONFIG_BIGNUM
- QJS_OBJS+=$(OBJDIR)/qjscalc.o
- endif
+diff --git a/Makefile b/Makefile
+index 3b1c745..2f85fe8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -244,7 +244,7 @@ QJS_LIB_OBJS=$(OBJDIR)/quickjs.o $(OBJDIR)/dtoa.o $(OBJDIR)/libregexp.o $(OBJDIR
+ QJS_OBJS=$(OBJDIR)/qjs.o $(OBJDIR)/repl.o $(QJS_LIB_OBJS)
  
  HOST_LIBS=-lm -ldl -lpthread
--LIBS=-lm
-+LIBS=-lm -latomic
+-LIBS=-lm -lpthread
++LIBS=-lm -lpthread -latomic
  ifndef CONFIG_WIN32
- LIBS+=-ldl -lpthread
+ LIBS+=-ldl
  endif
- LIBS+=$(EXTRA_LIBS)
- 
