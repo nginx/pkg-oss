@@ -147,7 +147,7 @@ $(SRCPATH)/$(BASE_SRC):
 
 base:	nginx.spec $(SRCPATH)/$(BASE_SRC)
 	@echo "===> Building base package" ; \
-	$(SHELL) -c "time -p rpmbuild -D \"_topdir `pwd`/../\" -ba nginx$(BASE_SUFFIX).spec" && \
+	$(SHELL) -c "time -p rpmbuild --noclean -D \"_topdir `pwd`/../\" -ba nginx$(BASE_SUFFIX).spec" && \
 	ln -s ../BUILD/nginx$(BASE_SUFFIX)-$(BASE_VERSION)/objs base
 
 nginx.rpm-changelog:
@@ -196,7 +196,7 @@ module-%: nginx-module-%.spec check-compat-% $(SRCPATH)/$(BASE_SRC) .deps-module
 	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
 	else \
 	    echo "===> Building nginx-$@ package" ; \
-	    $(SHELL) -c "time -p rpmbuild -D \"_topdir `pwd`/../\" -ba nginx-$@.spec" && \
+	    $(SHELL) -c "time -p rpmbuild --noclean -D \"_topdir `pwd`/../\" -ba nginx-$@.spec" && \
 	    ln -s ../BUILD/$(MODULE_PACKAGE_PREFIX)-$*-$(BASE_VERSION)/objs $@ ; \
 	fi
 
