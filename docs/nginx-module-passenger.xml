@@ -5,6 +5,18 @@
 <change_log title="nginx_module_passenger">
 
 
+<changes apply="nginx-module-passenger" ver="6.0.27" rev="1" basever="1.29.0"
+         date="2025-06-30" time="18:00:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Updated passenger to 6.0.27
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-passenger" ver="6.0.26" rev="1" basever="1.29.0"
          date="2025-06-24" time="10:34:21 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
