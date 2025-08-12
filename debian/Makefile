@@ -48,7 +48,7 @@ NPROC=		$(shell getconf _NPROCESSORS_ONLN)
 MODSRC_PREFIX=	extra/
 BUILD_DIR=	$$(BUILDDIR_nginx)
 
-BASE_MODULES=	geoip image-filter njs otel perl xslt
+BASE_MODULES=	acme geoip image-filter njs otel perl xslt
 
 MODULES=
 
@@ -212,7 +212,7 @@ module-%: rules-module-% check-compat-%
 	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
 	else \
 	    echo "===> Building nginx-$@ package" ; \
-	    $(SHELL) -c "cd debuild-$@/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" && \
+	    $(SHELL) -c "cd debuild-$@/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild --preserve-envvar PATH --preserve-envvar RUSTUP_HOME -us -uc" && \
 	    find debuild-$@/ -maxdepth 1 -type f -exec cp {} ../../ \; && \
 	    ln -s debuild-$@/$(SRCDIR)/debian/$(MODULE_PACKAGE_PREFIX)-$*/usr/lib/nginx/modules $@ ; \
 	fi;

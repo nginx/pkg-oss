@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<!DOCTYPE change_log SYSTEM "changes.dtd" >
+
+
+<change_log title="nginx_module_acme">
+
+<changes apply="nginx-module-acme" ver="0.2.0" rev="1" basever="1.28.0"
+         date="2025-10-28" time="10:30:00 -0700">
+<change>
+<para>
+Initial release of the nginx-module-acme package.
+</para>
+</change>
+</changes>
+
+</change_log>
