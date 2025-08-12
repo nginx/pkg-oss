@@ -45,7 +45,7 @@ MODULE_TARGET_PREFIX=$(TARGET_VERSION)+
 
 PACKAGE_VENDOR=	NGINX Packaging <nginx-packaging@f5.com>
 
-BASE_MODULES=	geoip image-filter njs otel perl xslt
+BASE_MODULES=	acme geoip image-filter njs otel perl xslt
 
 MODULES=
 

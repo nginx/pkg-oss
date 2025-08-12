@@ -45,7 +45,7 @@ ARCH=		$(shell uname -m)
 default:
 	@echo "valid targets: all base $(addprefix module-, $(MODULES)) check-modules test test-debug"
 
-BASE_MODULES=	geoip image-filter njs otel perl xslt
+BASE_MODULES=	acme geoip image-filter njs otel perl xslt
 
 MODULES=
 
