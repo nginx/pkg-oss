@@ -1,0 +1,55 @@
+MODULES+=	acme
+
+MODULE_SUMMARY_acme=	nginx-acme
+
+include $(CONTRIB)/src/nginx-acme/version
+
+MODULE_VERSION_acme=	$(NGINX_ACME_VERSION)
+MODULE_RELEASE_acme=	1
+
+MODULE_VERSION_PREFIX_acme=$(MODULE_TARGET_PREFIX)
+
+MODULE_SOURCES_acme=	nginx-acme-$(NGINX_ACME_VERSION).tar.gz \
+			nginx-acme-$(NGINX_ACME_VERSION)-vendor.tar.gz
+
+MODULE_CONFARGS_acme=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-acme-$(NGINX_ACME_VERSION)
+
+.deps-module-acme:
+	cd $(CONTRIB) && make .sum-nginx-acme .sum-vendor-nginx-acme
+	touch $@
+
+prerequisites-for-module-acme:
+
+# fixes module dependencies build using rustup-provided rustc/cargo
+define MODULE_PREBUILD_acme
+export RUSTFLAGS='-Ctarget-feature=-crt-static' \&\& \
+cd $$builddir \&\& \
+mkdir .cargo \&\& \
+echo '[source.crates-io]' > .cargo/config.toml \&\& \
+echo 'replace-with = "vendored-sources"' >> .cargo/config.toml \&\& \
+echo '[source.vendored-sources]' >> .cargo/config.toml \&\& \
+echo 'directory = "../nginx-acme-$(NGINX_ACME_VERSION)-vendor"' >> .cargo/config.toml
+endef
+export MODULE_PREBUILD_acme
+
+# since our build system uses rustup-provided rustc/cargo,
+# we only need clang-libclang from the system repos
+MODULE_BUILD_DEPENDS_acme= clang-libclang
+
+define MODULE_POST_acme
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_acme) for $(MODULE_SUMMARY_PREFIX) have been installed.
+To enable these modules, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_acme_module.so;
+
+Please refer to the module documentation for further details:
+https://github.com/nginx/nginx-acme/
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_acme
