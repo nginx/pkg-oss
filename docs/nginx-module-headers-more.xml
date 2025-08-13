@@ -5,6 +5,18 @@
 <change_log title="nginx_module_headers_more">
 
 
+<changes apply="nginx-module-headers-more" ver="0.39" rev="1" basever="1.29.1"
+         date="2025-08-13" time="07:46:47 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.1-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-headers-more" ver="0.39" rev="1" basever="1.29.0"
          date="2025-07-11" time="10:34:21 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
