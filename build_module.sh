@@ -277,7 +277,7 @@ else
 			;;
 		"zip")
 			echo "$ME: INFO Downloading module source"
-			wget -O $BUILD_DIR/module.zip $1
+			wget --retry-on-http-error=429,502,503,504 --retry-on-host-error --retry-connrefused --tries 3 -O $BUILD_DIR/module.zip $1
 			ARCHIVE_DIR=`zipinfo -1 $BUILD_DIR/module.zip | head -n 1 | cut -f1 -d/`
 			unzip $BUILD_DIR/module.zip -d $BUILD_DIR
 			mv $BUILD_DIR/$ARCHIVE_DIR $MODULE_DIR
@@ -285,7 +285,7 @@ else
 		*)
 			echo "$ME: INFO Downloading module source"
 			# Assume tarball of some kind
-			wget -O $BUILD_DIR/module.tgz $1
+			wget --retry-on-http-error=429,502,503,504 --retry-on-host-error --retry-connrefused --tries 3 -O $BUILD_DIR/module.tgz $1
 			ARCHIVE_DIR=`tar tfz $BUILD_DIR/module.tgz | head -n 1 | cut -f1 -d/`
 			cd $BUILD_DIR
 			tar xfz module.tgz
