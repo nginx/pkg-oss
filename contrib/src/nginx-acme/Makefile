@@ -31,7 +31,7 @@ cargo_vendor_archive = \
 	mkdir $${TMP_DIR} ; \
 	tar xf "$1" -C $${TMP_DIR} ; \
 	cd $${TMP_DIR}/* ; \
-	$(CARGO) vendor --locked ; \
+	$(CARGO) vendor --locked --respect-source-config; \
 	name=$$(basename `pwd`)-vendor ; \
 	eval $(TAR_COMMAND) ; \
 	cd ../.. ; \
