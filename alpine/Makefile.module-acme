@@ -20,6 +20,11 @@ MODULE_CONFARGS_acme=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-acme-$(NGINX_AC
 
 prerequisites-for-module-acme:
 
+define MODULE_ENV_acme
+NGX_ACME_STATE_PREFIX=/var/cache/nginx
+endef
+export MODULE_ENV_acme
+
 # fixes module dependencies build using rustup-provided rustc/cargo
 define MODULE_PREBUILD_acme
 export RUSTFLAGS='-Ctarget-feature=-crt-static' \&\& \
