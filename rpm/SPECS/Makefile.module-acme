@@ -33,6 +33,7 @@ define MODULE_ENV_acme
 export OPENSSL_LIB_DIR=/usr/lib64/
 export OPENSSL_INCLUDE_DIR=/usr/include/
 %endif
+export NGX_ACME_STATE_PREFIX=/var/cache/nginx
 endef
 export MODULE_ENV_acme
 
