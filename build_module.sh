@@ -254,6 +254,27 @@ while true; do
 done
 
 #
+# A generic helper function to retry any command that may fail for various reasons
+#
+try_n_times() {
+	N=$1
+	CMD=$2
+	CLEAN_CMD=$3
+	i=0
+	while ! $CMD; do
+		i=$(expr $i + 1)
+		if [ $i -le $N ]; then
+			echo "attempt $i failed! retry!"
+			test -n "$CLEAN_CMD" && $CLEAN_CMD
+		else
+			echo "$N attempts failed!"
+			return 1
+		fi
+	done
+	return 0
+}
+
+#
 # Create temporary build area, with working copy of module source
 #
 BUILD_DIR=/tmp/$ME.$$
@@ -277,7 +298,7 @@ else
 			;;
 		"zip")
 			echo "$ME: INFO Downloading module source"
-			wget --retry-on-http-error=429,502,503,504 --retry-on-host-error --retry-connrefused --tries 3 -O $BUILD_DIR/module.zip $1
+			try_n_times 3 "wget -O $BUILD_DIR/module.zip $1" "rm -f $BUILD_DIR/module.zip"
 			ARCHIVE_DIR=`zipinfo -1 $BUILD_DIR/module.zip | head -n 1 | cut -f1 -d/`
 			unzip $BUILD_DIR/module.zip -d $BUILD_DIR
 			mv $BUILD_DIR/$ARCHIVE_DIR $MODULE_DIR
@@ -285,7 +306,7 @@ else
 		*)
 			echo "$ME: INFO Downloading module source"
 			# Assume tarball of some kind
-			wget --retry-on-http-error=429,502,503,504 --retry-on-host-error --retry-connrefused --tries 3 -O $BUILD_DIR/module.tgz $1
+			try_n_times 3 "wget -O $BUILD_DIR/module.tgz $1" "rm -f $BUILD_DIR/module.tgz"
 			ARCHIVE_DIR=`tar tfz $BUILD_DIR/module.tgz | head -n 1 | cut -f1 -d/`
 			cd $BUILD_DIR
 			tar xfz module.tgz
