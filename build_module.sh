@@ -254,20 +254,23 @@ while true; do
 done
 
 #
-# A generic helper function to retry any command that may fail for various reasons
+# A generic helper function to retry any command with a backoff strategy
 #
 try_n_times() {
-	N=$1
+	MAX_ATTEMPTS=$1
 	CMD=$2
 	CLEAN_CMD=$3
 	i=0
+	WAIT_TIME=1
 	while ! $CMD; do
 		i=$(expr $i + 1)
-		if [ $i -le $N ]; then
-			echo "attempt $i failed! retry!"
+		if [ $i -le $MAX_ATTEMPTS ]; then
+			echo "Attempt $i failed! Waiting $WAIT_TIME seconds before retry..."
+			sleep $WAIT_TIME
 			test -n "$CLEAN_CMD" && $CLEAN_CMD
+			WAIT_TIME=$(expr $WAIT_TIME \* 2)
 		else
-			echo "$N attempts failed!"
+			echo "$MAX_ATTEMPTS attempts failed!"
 			return 1
 		fi
 	done
