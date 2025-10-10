@@ -5,7 +5,7 @@ MODULE_SUMMARY_acme=	nginx-acme
 include $(CONTRIB)/src/nginx-acme/version
 
 MODULE_VERSION_acme=	$(NGINX_ACME_VERSION)
-MODULE_RELEASE_acme=	1
+MODULE_RELEASE_acme=	2
 
 MODULE_VERSION_PREFIX_acme=$(MODULE_TARGET_PREFIX)
 
@@ -22,10 +22,10 @@ MODULE_CONFARGS_acme=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-acme-$(NGINX_AC
 # we need clang from the system repos
 MODULE_BUILD_DEPENDS_acme=,clang
 
-define MODULE_ENV_acme
-NGX_ACME_STATE_PREFIX=/var/cache/nginx
+define MODULE_DEFINITIONS_acme
+export NGX_ACME_STATE_PREFIX=/var/cache/nginx
 endef
-export MODULE_ENV_acme
+export MODULE_DEFINITIONS_acme
 
 define MODULE_PREBUILD_acme
 	set -ex \&\& \
