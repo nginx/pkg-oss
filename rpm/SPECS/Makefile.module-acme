@@ -5,7 +5,7 @@ MODULE_SUMMARY_acme=	nginx-acme
 include $(CONTRIB)/src/nginx-acme/version
 
 MODULE_VERSION_acme=	$(NGINX_ACME_VERSION)
-MODULE_RELEASE_acme=	1
+MODULE_RELEASE_acme=	2
 
 MODULE_VERSION_PREFIX_acme=$(MODULE_TARGET_PREFIX)
 
