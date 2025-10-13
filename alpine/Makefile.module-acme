@@ -25,7 +25,7 @@ define MODULE_PREBUILD_acme
 export NGX_ACME_STATE_PREFIX=/var/cache/nginx \&\& \
 export RUSTFLAGS='-Ctarget-feature=-crt-static' \&\& \
 cd $$builddir \&\& \
-mkdir .cargo \&\& \
+mkdir -p .cargo \&\& \
 echo '[source.crates-io]' > .cargo/config.toml \&\& \
 echo 'replace-with = "vendored-sources"' >> .cargo/config.toml \&\& \
 echo '[source.vendored-sources]' >> .cargo/config.toml \&\& \
