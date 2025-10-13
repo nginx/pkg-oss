@@ -39,7 +39,7 @@ export MODULE_ENV_acme
 
 define MODULE_PREBUILD_acme
 	cd %{bdir} \&\& \
-	mkdir .cargo \&\& \
+	mkdir -p .cargo \&\& \
 	echo '[source.crates-io]' > .cargo/config.toml \&\& \
 	echo 'replace-with = "vendored-sources"' >> .cargo/config.toml \&\& \
 	echo '[source.vendored-sources]' >> .cargo/config.toml \&\& \

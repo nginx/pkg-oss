@@ -30,7 +30,7 @@ export MODULE_DEFINITIONS_acme
 define MODULE_PREBUILD_acme
 	set -ex \&\& \
 	cd $$(CURDIR)/debian/ \&\& \
-	mkdir .cargo \&\& \
+	mkdir -p .cargo \&\& \
 	echo '[source.crates-io]' > .cargo/config.toml \&\& \
 	echo 'replace-with = "vendored-sources"' >> .cargo/config.toml \&\& \
 	echo '[source.vendored-sources]' >> .cargo/config.toml \&\& \
