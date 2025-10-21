@@ -128,6 +128,19 @@ list-all-modules: $(addprefix list-module-, $(MODULES))
 
 list-base-modules: $(addprefix list-module-, $(BASE_MODULES))
 
+
+toupper = $(shell echo $1 | tr '[:lower:]-' '[:upper:]_' )
+dep_v = $(shell echo $(call toupper,$1)_VERSION )
+dep_h = $(shell echo $(call toupper,$1)_GITHASH )
+dep_checksum = $(shell test -f "$(CONTRIB)/src/$1/SHA512SUMS" && \
+						awk '( index($$2,"$($(call dep_v,$1))") > 1 || index($$2,"$($(call dep_h,$1))") > 1 ) {print $$1}' "$(CONTRIB)/src/$1/SHA512SUMS" )
+attested_version = $(shell test -n '$($(call dep_h,$1))' && echo $($(call dep_v,$1))-$($(call dep_h,$1)) || echo $($(call dep_v,$1)))
+
+attest_string = $(shell printf "%s\t%s\t%s\n" "$1" "$(call attested_version,$1)" "$(call dep_checksum,$1)")
+
+attest-module-%:
+	$(foreach dep,$(CONTRIB_DEPS_$*),echo $(call attest_string,$(dep)); ) >> $@
+
 list: list-base list-all-modules
 
 all:	base base-modules
@@ -139,7 +152,7 @@ modules:	$(addprefix module-, $(MODULES))
 
 rules:	rules-base $(addprefix rules-module-, $(MODULES))
 
-base:	rules-base
+base:	rules-base attest-base
 	@echo "===> Building base package" ; \
 	$(SHELL) -c "cd debuild-base/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" && \
 	find debuild-base/ -maxdepth 1 -type f -exec cp {} ../../ \; && \
@@ -207,7 +220,13 @@ rules-base: $(BASE_SRC) nginx.deb-changelog
 	ln -s debuild-base/$(SRCDIR)/debian/rules rules-base ; \
 	}
 
-module-%: rules-module-% check-compat-%
+attest-base:
+	if [ "$(BASE_TARGET)" = "oss" ]; then \
+		checksum=$$(grep "$(BASE_VERSION)" "$(CONTRIB)/src/nginx/SHA512SUMS" | cut -d' ' -f1) ; \
+		printf "%s\t%s\t%s\n" "nginx" "$(BASE_VERSION)" "$$checksum" >> "$@"; \
+	fi
+
+module-%: rules-module-% check-compat-% attest-module-%
 	@if [ -e nginx-$@.skip ]; then \
 	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
 	else \
@@ -459,6 +478,7 @@ check-modules:
 clean:
 	@rm -rf base module-* rules-base rules-module-* debuild-base debuild-module-* nginx-tests $(BASE_SRC) .deps-module-*
 	@rm -f nginx.deb-changelog nginx-*.deb-changelog nginx-module-*.deb-changelog nginx-module-*.skip
+	@rm -f attest-module-*
 
 .PHONY:	default list list-base list-all-modules list-base-modules all modules rules test test-debug check-modules clean
 
