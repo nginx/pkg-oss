@@ -128,6 +128,36 @@ list-all-modules: $(addprefix list-module-, $(MODULES))
 
 list-base-modules: $(addprefix list-module-, $(BASE_MODULES))
 
+attest-module-%:
+	@module_name=$* ; \
+	module_makefile="Makefile.module-$$module_name" ; \
+	if [ -f "$$module_makefile" ]; then \
+		deps=$$(grep -E '^include \$$\(CONTRIB\)' "$$module_makefile" | cut -d'/' -f 3 | sort -u) ; \
+		if [ -n "$$deps" ]; then \
+			for dep in $$deps; do \
+				version_file="$(CONTRIB)/src/$$dep/version" ; \
+				sha512_file="$(CONTRIB)/src/$$dep/SHA512SUMS" ; \
+				if [ -f "$$version_file" ]; then \
+					version_info=$$(grep -E "_VERSION\s*:?=" "$$version_file" | head -1 | cut -d'=' -f2 | tr -d ' \t') ; \
+					githash_info=$$(grep -E "_GITHASH\s*:?=" "$$version_file" | head -1 | cut -d'=' -f2 | tr -d ' \t') ; \
+					if [ -f "$$sha512_file" ]; then \
+						checksum=""; \
+						if [ -n "$$version_info" ]; then \
+							checksum=$$(grep $$version_info "$$sha512_file" | cut -d' ' -f1) ; \
+						fi; \
+						if [ -z "$$checksum" -a -n "$$githash_info" ]; then \
+							checksum=$$(grep $$githash_info "$$sha512_file" | cut -d' ' -f1) ; \
+						fi ; \
+						if [ -n "$$checksum" ]; then \
+							if [ -n "$$githash_info" ]; then version_info="$${version_info}-$$githash_info"; fi; \
+							printf "%s\t%s\t%s\n" "$$dep" "$$version_info" "$$checksum" >> "$@" ; \
+						fi ; \
+					fi ; \
+				fi ; \
+			done ; \
+		fi ; \
+	fi
+
 list: list-base list-all-modules
 
 all:	base base-modules
@@ -139,7 +169,7 @@ modules:	$(addprefix module-, $(MODULES))
 
 rules:	rules-base $(addprefix rules-module-, $(MODULES))
 
-base:	rules-base
+base:	rules-base attest-base
 	@echo "===> Building base package" ; \
 	$(SHELL) -c "cd debuild-base/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" && \
 	find debuild-base/ -maxdepth 1 -type f -exec cp {} ../../ \; && \
@@ -207,7 +237,13 @@ rules-base: $(BASE_SRC) nginx.deb-changelog
 	ln -s debuild-base/$(SRCDIR)/debian/rules rules-base ; \
 	}
 
-module-%: rules-module-% check-compat-%
+attest-base:
+	if [ "$(BASE_TARGET)" = "oss" ]; then \
+		checksum=$$(grep "$(BASE_VERSION)" "$(CONTRIB)/src/nginx/SHA512SUMS" | cut -d' ' -f1) ; \
+		printf "%s\t%s\t%s\n" "nginx" "$(BASE_VERSION)" "$$checksum" >> "$@"; \
+	fi
+
+module-%: rules-module-% check-compat-% attest-module-%
 	@if [ -e nginx-$@.skip ]; then \
 	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
 	else \
@@ -459,6 +495,7 @@ check-modules:
 clean:
 	@rm -rf base module-* rules-base rules-module-* debuild-base debuild-module-* nginx-tests $(BASE_SRC) .deps-module-*
 	@rm -f nginx.deb-changelog nginx-*.deb-changelog nginx-module-*.deb-changelog nginx-module-*.skip
+	@rm -f attest-module-*
 
 .PHONY:	default list list-base list-all-modules list-base-modules all modules rules test test-debug check-modules clean
 
