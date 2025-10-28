@@ -5,15 +5,19 @@
 <change_log title="nginx_module_njs">
 
 
-<changes apply="nginx-module-njs" ver="0.9.3" rev="1" basever="1.29.3"
-         date="2025-10-28" time="08:48:06 -0700"
+<changes apply="nginx-module-njs" ver="0.9.4" rev="1" basever="1.29.3"
+         date="2025-10-28" time="08:49:27 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
 <change>
 <para>
 base version updated to 1.29.3-1
 </para>
 </change>
-
+<change>
+<para>
+njs updated to 0.9.4
+</para>
+</change>
 </changes>
 
 
