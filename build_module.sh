@@ -174,7 +174,7 @@ elif [ `whereis apt-get 2>/dev/null | grep -c "^apt-get: /"` -eq 1 ]; then
 	PKG_MGR_INSTALL="apt-get --no-install-suggests --no-install-recommends install $SAY_YES"
 	PKG_MGR_UPDATE="apt-get update"
 	PKG_FMT=deb
-	NGINX_PACKAGES="libpcre2-dev libpcre3-dev zlib1g-dev libssl-dev"
+	NGINX_PACKAGES="(libpcre2-dev|libpcre3-dev) zlib1g-dev libssl-dev"
 	DEVEL_PACKAGES="devscripts fakeroot debhelper dpkg-dev quilt lsb-release build-essential libxml2-utils xsltproc"
 	PACKAGING_ROOT=pkg-oss/debian/
 	PACKAGING_DIR=debian
