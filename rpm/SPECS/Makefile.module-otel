@@ -40,6 +40,9 @@ MODULE_CONFARGS_otel=	--add-dynamic-module=nginx-otel-$(NGINX_OTEL_GITHASH)/
 define MODULE_DEFINITIONS_otel
 BuildRequires: cmake
 BuildRequires: pkgconfig(re2) pkgconfig(libcares)
+%if 0%{?suse_version} >= 1500
+BuildRequires: grpc-devel protobuf-devel
+%endif
 endef
 export MODULE_DEFINITIONS_otel
 
@@ -50,7 +53,8 @@ if [ $$_nproc -gt 1 ]; then
 	_make_opts="-j$$_nproc"
 fi
 
-cd %{bdir} \&\& mkdir prebuilt \&\& \
+cd %{bdir} \&\& mkdir prebuilt
+%if ! 0%{defined suse_version}
 cd %{bdir}/abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	cmake \
 	-DCMAKE_CXX_STANDARD=17 \
@@ -108,7 +112,8 @@ cd %{bdir}/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	-DgRPC_USE_PROTO_LITE=ON \
 	-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	../ \&\& \
-	make $$_make_opts install \&\& \
+	make $$_make_opts install
+%endif
 cd %{bdir}/opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	cmake \
 	-DCMAKE_CXX_STANDARD=17 \
