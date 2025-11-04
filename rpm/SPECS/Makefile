@@ -344,8 +344,8 @@ check-compat-%:
 		fi ; \
 		;; \
 		otel) \
-		if [ "`rpm --eval '0%{?suse_version}'`" -gt 0 ]; then \
-			echo "otel can not be built on SLES due to absence of re2" > \
+		if [`rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 ]; then \
+			echo "otel can not be built on SLES < 15 due to absence of re2" > \
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \
