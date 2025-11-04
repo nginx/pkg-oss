@@ -5,6 +5,32 @@
 <change_log title="nginx_module_lua">
 
 
+<changes apply="nginx-module-lua" ver="0.10.29" rev="1" basever="1.29.3"
+         date="2025-11-04" time="13:30:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Lua module updated to 0.10.29
+</para>
+</change>
+<change>
+<para>
+LuaJIT 2.1 updated to 2.1-20250826
+</para>
+</change>
+<change>
+<para>
+lua-resty-core updated to 0.1.32
+</para>
+</change>
+<change>
+<para>
+stream-lua-nginx-module updated to 0.0.17
+</para>
+</change>
+</changes>
+
+
 <changes apply="nginx-module-lua" ver="0.10.28" rev="1" basever="1.29.3"
          date="2025-10-28" time="08:48:06 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
