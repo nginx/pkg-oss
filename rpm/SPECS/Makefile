@@ -147,8 +147,9 @@ $(SRCPATH)/$(BASE_SRC):
 
 base:	nginx.spec $(SRCPATH)/$(BASE_SRC)
 	@echo "===> Building base package" ; \
+	BUILDROOT=`rpmbuild -bc --short-circuit -D "_topdir \`pwd\`/../" -D "__spec_build_pre echo bdir=%{_builddir}; exit 0" nginx$(BASE_SUFFIX).spec | grep ^bdir= | cut -d'=' -f 2` ; \
 	$(SHELL) -c "time -p rpmbuild --noclean -D \"_topdir `pwd`/../\" -ba nginx$(BASE_SUFFIX).spec" && \
-	ln -s ../BUILD/nginx$(BASE_SUFFIX)-$(BASE_VERSION)/objs base
+	ln -s $$BUILDROOT/nginx$(BASE_SUFFIX)-$(BASE_VERSION)/objs base
 
 nginx.rpm-changelog:
 	@echo "===> Generating $@"
@@ -196,8 +197,9 @@ module-%: nginx-module-%.spec check-compat-% $(SRCPATH)/$(BASE_SRC) .deps-module
 	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
 	else \
 	    echo "===> Building nginx-$@ package" ; \
+	    BUILDROOT=`rpmbuild -bc --short-circuit -D "_topdir \`pwd\`/../" -D "__spec_build_pre echo bdir=%{_builddir}; exit 0" nginx-$@.spec | grep ^bdir= | cut -d'=' -f 2` ; \
 	    $(SHELL) -c "time -p rpmbuild --noclean -D \"_topdir `pwd`/../\" -ba nginx-$@.spec" && \
-	    ln -s ../BUILD/$(MODULE_PACKAGE_PREFIX)-$*-$(BASE_VERSION)/objs $@ ; \
+	    ln -s $$BUILDROOT/$(MODULE_PACKAGE_PREFIX)-$*-$(BASE_VERSION)/objs $@ ; \
 	fi
 
 nginx-module-%.rpm-changelog:
