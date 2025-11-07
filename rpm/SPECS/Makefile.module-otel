@@ -17,7 +17,7 @@ MODULE_RELEASE_otel=	1
 MODULE_VERSION_PREFIX_otel=$(MODULE_TARGET_PREFIX)
 
 MODULE_SOURCES_otel=	nginx-otel-$(NGINX_OTEL_VERSION)-$(NGINX_OTEL_GITHASH).tar.gz \
-				abseil-cpp-$(ABSEIL_VERSION).tar.gz \
+				abseil-cpp-$(ABSEIL_CPP_VERSION).tar.gz \
 				grpc-$(GRPC_VERSION).tar.gz \
 				opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION).tar.gz \
 				opentelemetry-proto-$(OPENTELEMETRY_PROTO_VERSION).tar.gz \
@@ -47,7 +47,7 @@ fi
 
 cd %{bdir} \&\& mkdir prebuilt
 %if ! 0%{defined suse_version}
-cd %{bdir}/abseil-cpp-$(ABSEIL_VERSION) \&\& mkdir build \&\& cd build \&\& \
+cd %{bdir}/abseil-cpp-$(ABSEIL_CPP_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	cmake \
 	-DCMAKE_CXX_STANDARD=17 \
 	-DCMAKE_CXX_EXTENSIONS=OFF \
