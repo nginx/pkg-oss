@@ -2,7 +2,9 @@ MODULES+=	passenger
 
 MODULE_SUMMARY_passenger=	3rd-party Passenger dynamic module
 
-include $(CONTRIB)/src/passenger/version
+MODULE_CONTRIB_DEPS_passenger=	passenger
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_passenger),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_passenger=	$(PASSENGER_VERSION)
 MODULE_RELEASE_passenger=	1
@@ -14,10 +16,6 @@ MODULE_PATCHES_passenger=	$(CONTRIB)/src/passenger/build-nginx.rb.patch \
 							$(CONTRIB)/src/passenger/src-nginx_module-ContentHandler.c.patch
 
 MODULE_CONFARGS_passenger=	--add-dynamic-module=passenger-$(PASSENGER_VERSION)/src/nginx_module
-
-.deps-module-passenger:
-	cd $(CONTRIB) && make .sum-passenger
-	touch $@
 
 define MODULE_DEFINITIONS_passenger
 BuildRequires: rubygem(rake)

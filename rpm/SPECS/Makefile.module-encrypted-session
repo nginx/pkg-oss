@@ -2,8 +2,10 @@ MODULES+=	encrypted-session
 
 MODULE_SUMMARY_encrypted_session=	3rd-party encrypted session dynamic module
 
-include $(CONTRIB)/src/ngx_devel_kit/version
-include $(CONTRIB)/src/encrypted-session-nginx-module/version
+MODULE_CONTRIB_DEPS_encrypted-session=	ngx_devel_kit \
+					encrypted-session-nginx-module
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_encrypted-session),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_encrypted_session=	$(ENCRYPTED_SESSION_NGINX_MODULE_VERSION)
 MODULE_RELEASE_encrypted_session=	1
@@ -15,12 +17,6 @@ MODULE_SOURCES_encrypted_session=	ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION).tar.gz 
 
 MODULE_CONFARGS_encrypted_session=	--add-dynamic-module=ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION) \
 					--add-dynamic-module=encrypted-session-nginx-module-$(ENCRYPTED_SESSION_NGINX_MODULE_VERSION)
-
-.deps-module-encrypted-session:
-	cd $(CONTRIB) && make \
-		.sum-ngx_devel_kit \
-		.sum-encrypted-session-nginx-module
-	touch $@
 
 define MODULE_DEFINITIONS_encrypted_session
 Requires: $(NDK_DEPENDENCY_TAG)

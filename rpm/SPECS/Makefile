@@ -190,6 +190,9 @@ endif
 	}
 
 .deps-module-%:
+	if [ -n "$(MODULE_CONTRIB_DEPS_$*)" ]; then \
+	   cd $(CONTRIB) && make $(foreach dep,$(MODULE_CONTRIB_DEPS_$*),.sum-$(dep)); \
+	fi; \
 	touch $@
 
 module-%: nginx-module-%.spec check-compat-% $(SRCPATH)/$(BASE_SRC) .deps-module-%

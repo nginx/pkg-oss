@@ -2,7 +2,9 @@ MODULES+=	acme
 
 MODULE_SUMMARY_acme=	nginx-acme
 
-include $(CONTRIB)/src/nginx-acme/version
+MODULE_CONTRIB_DEPS_acme=	nginx-acme
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_acme),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_acme=	$(NGINX_ACME_VERSION)
 MODULE_RELEASE_acme=	1
@@ -15,11 +17,6 @@ MODULE_SOURCES_acme=	nginx-acme-$(NGINX_ACME_VERSION).tar.gz \
 MODULE_PATCHES_acme=
 
 MODULE_CONFARGS_acme=	--add-dynamic-module=nginx-acme-$(NGINX_ACME_VERSION)/
-
-.deps-module-acme:
-	cd $(CONTRIB) && make \
-		.sum-nginx-acme .sum-vendor-nginx-acme
-	touch $@
 
 # since our build system uses rustup-provided rustc/cargo,
 # we need clang from the system repos
