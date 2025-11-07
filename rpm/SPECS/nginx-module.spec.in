@@ -85,7 +85,7 @@ Provides: %{name}-r%{base_version}
 %description
 nginx %%SHORT_SUMMARY%%.
 
-%if 0%{?suse_version}
+%if ( 0%{?suse_version} && 0%{?suse_version} < 1600 )
 %debug_package
 %endif
 
