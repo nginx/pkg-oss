@@ -253,6 +253,9 @@ abuild-module-%: $(BASE_SRC) .deps-module-%
 	}
 
 .deps-module-%:
+	if [ -n "$(MODULE_CONTRIB_DEPS_$*)" ]; then \
+	   cd $(CONTRIB) && make $(foreach dep,$(MODULE_CONTRIB_DEPS_$*),.sum-$(dep)); \
+	fi; \
 	touch $@
 
 nginx-tests:

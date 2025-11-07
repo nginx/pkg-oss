@@ -2,10 +2,14 @@ MODULES+=	otel
 
 MODULE_SUMMARY_otel=	OpenTelemetry dynamic module
 
-include $(CONTRIB)/src/nginx-otel/version
-include $(CONTRIB)/src/opentelemetry-cpp/version
-include $(CONTRIB)/src/opentelemetry-proto/version
-include $(CONTRIB)/src/protobuf/version
+MODULE_CONTRIB_DEPS_otel=	nginx-otel \
+							abseil-cpp \
+							grpc \
+							opentelemetry-cpp \
+							opentelemetry-proto \
+							protobuf
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_otel),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_otel=	$(NGINX_OTEL_VERSION)
 MODULE_RELEASE_otel=	1
@@ -20,14 +24,6 @@ MODULE_SOURCES_otel=	nginx-otel-$(NGINX_OTEL_VERSION)-$(NGINX_OTEL_GITHASH).tar.
 MODULE_PATCHES_otel=
 
 MODULE_CONFARGS_otel=   --add-dynamic-module=$(MODSRC_PREFIX)/nginx-otel-$(NGINX_OTEL_GITHASH)/
-
-.deps-module-otel:
-	cd $(CONTRIB) && make \
-		.sum-opentelemetry-cpp \
-		.sum-opentelemetry-proto \
-		.sum-protobuf \
-		.sum-nginx-otel
-	touch $@
 
 prerequisites-for-module-otel:
 
