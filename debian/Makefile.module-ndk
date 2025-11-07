@@ -2,7 +2,9 @@ MODULES+=	ndk
 
 MODULE_SUMMARY_ndk=	3rd-party NDK dynamic module
 
-include $(CONTRIB)/src/ngx_devel_kit/version
+MODULE_CONTRIB_DEPS_ndk=	ngx_devel_kit
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_ndk),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_ndk=	$(NGX_DEVEL_KIT_VERSION)
 MODULE_RELEASE_ndk=	1
@@ -12,10 +14,6 @@ MODULE_VERSION_PREFIX_ndk=$(MODULE_TARGET_PREFIX)
 MODULE_SOURCES_ndk=	ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION).tar.gz
 
 MODULE_CONFARGS_ndk=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION)
-
-.deps-module-ndk:
-	cd $(CONTRIB) && make .sum-ngx_devel_kit
-	touch $@
 
 MODULE_CC_OPT_ndk=-DNDK_SET_VAR -DNDK_UPSTREAM_LIST
 MODULE_CC_OPT_DEBUG_ndk=$(MODULE_CC_OPT_ndk)

@@ -9,15 +9,14 @@ CARGO := $(shell command -v cargo 2> /dev/null)
 
 ifdef CARGO
 PKGS += nginx-acme
-PKGS += vendor-nginx-acme
 endif
 
-DEPS_nginx-acme = vendor-nginx-acme $(DEPS_vendor-nginx-acme)
+DEPS_nginx-acme =
 
 $(TARBALLS)/nginx-acme-$(NGINX_ACME_VERSION).tar.gz:
 	$(call download_pkg,$(NGINX_ACME_URL),nginx-acme)
 
-.sum-nginx-acme: nginx-acme-$(NGINX_ACME_VERSION).tar.gz
+.sum-nginx-acme: nginx-acme-$(NGINX_ACME_VERSION).tar.gz nginx-acme-$(NGINX_ACME_VERSION)-vendor.tar.gz
 
 TAR_COMMAND = $(shell if tar --version 2>/dev/null | grep -q "GNU"; then \
     echo 'tar -zcf "../../$${name}.tar.gz" vendor --transform "s,vendor,$${name},"'; \
@@ -38,14 +37,8 @@ cargo_vendor_archive = \
 	rm -rf $${TMP_DIR} ; \
 	mv $${name}.tar.gz $(TARBALLS)/ ;
 
-$(TARBALLS)/nginx-acme-$(NGINX_ACME_VERSION)-vendor.tar.gz: nginx-acme-$(NGINX_ACME_VERSION).tar.gz .sum-nginx-acme
+nginx-acme-$(NGINX_ACME_VERSION)-vendor.tar.gz: nginx-acme-$(NGINX_ACME_VERSION).tar.gz
 	$(call cargo_vendor_archive,$<)
-
-.sum-vendor-nginx-acme: nginx-acme-$(NGINX_ACME_VERSION)-vendor.tar.gz
-	touch $@
-
-.vendor-nginx-acme: .sum-vendor-nginx-acme
-	touch $@
 
 nginx-acme: nginx-acme-$(NGINX_ACME_VERSION).tar.gz .sum-nginx-acme
 	$(UNPACK)
