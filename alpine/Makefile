@@ -109,6 +109,8 @@ BASE_CONFIGURE_ARGS+=\
 	--with-stream_proxy_protocol_vendor_module
 endif
 
+include $(CONTRIB)/attestation.mak
+
 export CR=\\n
 
 modname = $(shell echo $1 | tr '-' '_')
@@ -145,7 +147,7 @@ modules:	base $(addprefix module-, $(MODULES))
 
 abuild:	abuild-base $(addprefix abuild-module-, $(MODULES))
 
-base:	${HOME}/.abuild/abuild.conf | abuild-base
+base:	${HOME}/.abuild/abuild.conf | abuild-base attest-base
 	@echo "===> Building base package" ; \
 	/usr/bin/time -p $(SHELL) -c "cd abuild-base/ && abuild checksum && abuild unpack && abuild prepare && abuild -K build && abuild rootpkg" && \
 	ln -s abuild-base/pkg/nginx$(BASE_SUFFIX)/usr/sbin base && \
@@ -184,7 +186,7 @@ abuild-base: $(BASE_SRC)
 		> abuild-base/APKBUILD ; \
 	}
 
-module-%: ${HOME}/.abuild/abuild.conf | abuild-module-%
+module-%: ${HOME}/.abuild/abuild.conf | abuild-module-% attest-module-%
 	@echo "===> Building nginx$(MODULE_SUFFIX)-$@ package"
 	@/usr/bin/time -p $(SHELL) -c "cd abuild-$@/ && abuild checksum && abuild unpack && abuild prepare && abuild -K build && abuild rootpkg" && \
 	ln -s abuild-$@/pkg/nginx$(MODULE_SUFFIX)-module-$*/usr/lib/nginx/modules $@
@@ -372,7 +374,7 @@ check-modules:
 	}
 
 clean:
-	@rm -rf base abuild-base abuild-module-* module-* $(BASE_SRC) nginx-tests .deps-module-*
+	@rm -rf base abuild-base abuild-module-* module-* $(BASE_SRC) nginx-tests .deps-module-* attest-base attest-module-*
 
 .PHONY:	default all modules abuild test test-debug check-modules clean
 

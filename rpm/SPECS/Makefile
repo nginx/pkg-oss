@@ -113,6 +113,8 @@ BASE_CONFIGURE_ARGS+= \
 	--with-stream_proxy_protocol_vendor_module
 endif
 
+include $(CONTRIB)/attestation.mak
+
 export CR=\\n
 
 modname = $(shell echo $1 | tr '-' '_')
@@ -145,7 +147,7 @@ $(SRCPATH)/$(BASE_SRC):
 	cd $(CONTRIB) && make .sum-nginx$(BASE_SUFFIX)
 	cd $(SRCPATH) && ln -s $(CONTRIB)/tarballs/$(BASE_SRC) $(BASE_SRC)
 
-base:	nginx.spec $(SRCPATH)/$(BASE_SRC)
+base:	nginx.spec $(SRCPATH)/$(BASE_SRC) attest-base
 	@echo "===> Building base package" ; \
 	BUILDROOT=`rpmbuild -bc --short-circuit -D "_topdir \`pwd\`/../" -D "__spec_build_pre echo bdir=%{_builddir}; exit 0" nginx$(BASE_SUFFIX).spec | grep ^bdir= | cut -d'=' -f 2` ; \
 	$(SHELL) -c "time -p rpmbuild --noclean -D \"_topdir `pwd`/../\" -ba nginx$(BASE_SUFFIX).spec" && \
@@ -195,7 +197,7 @@ endif
 	fi; \
 	touch $@
 
-module-%: nginx-module-%.spec check-compat-% $(SRCPATH)/$(BASE_SRC) .deps-module-%
+module-%: nginx-module-%.spec check-compat-% $(SRCPATH)/$(BASE_SRC) .deps-module-% attest-module-%
 	@if [ -e nginx-$@.skip ]; then \
 	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
 	else \
@@ -447,6 +449,7 @@ clean:
 	@rm -f $(BASE_SRC) $(SRCPATH)/$(BASE_SRC)
 	@rm -f nginx.rpm-changelog nginx-*.rpm-changelog nginx-module-*.rpm-changelog
 	@rm -f .deps-module-*
+	@rm -f attest-base attest-module-*
 	@find $(SRCPATH)/ -type l -delete
 
 .PHONY:	default list list-base list-all-modules list-base-modules all modules specs test test-debug clean
