@@ -2,12 +2,14 @@ MODULES+=	otel
 
 MODULE_SUMMARY_otel=	OpenTelemetry dynamic module
 
-include $(CONTRIB)/src/nginx-otel/version
-include $(CONTRIB)/src/abseil-cpp/version
-include $(CONTRIB)/src/grpc/version
-include $(CONTRIB)/src/opentelemetry-cpp/version
-include $(CONTRIB)/src/opentelemetry-proto/version
-include $(CONTRIB)/src/protobuf/version
+MODULE_CONTRIB_DEPS_otel=	nginx-otel \
+				abseil-cpp \
+				grpc \
+				opentelemetry-cpp \
+				opentelemetry-proto \
+				protobuf
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_otel),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_otel=	$(NGINX_OTEL_VERSION)
 MODULE_RELEASE_otel=	1
@@ -26,16 +28,6 @@ MODULE_PATCHES_otel=	$(CONTRIB)/src/abseil-cpp/b957f0ccd00481cd4fd663d8320aa02ae
 						$(CONTRIB)/src/grpc/grpc-cmake-no-re2.patch
 
 MODULE_CONFARGS_otel=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-otel-$(NGINX_OTEL_GITHASH)/
-
-.deps-module-otel:
-	cd $(CONTRIB) && make \
-		.sum-abseil-cpp \
-		.sum-grpc \
-		.sum-opentelemetry-cpp \
-		.sum-opentelemetry-proto \
-		.sum-protobuf \
-		.sum-nginx-otel
-	touch $@
 
 MODULE_BUILD_DEPENDS_otel=,cmake,libre2-dev,libc-ares-dev,pkg-config
 
