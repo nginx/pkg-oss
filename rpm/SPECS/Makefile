@@ -249,7 +249,7 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		patches="$${patches}\n$${s}" ; \
 		s="`printf "cd %%{bdir}/$${bdn}"`" ; \
 		preppatches="$${preppatches}\n$${s}" ; \
-		s="`printf "%%patch%d -p1" $${i}`" ; \
+		s="`printf "%%patch -P%d -p1" $${i}`" ; \
 		preppatches="$${preppatches}\n$${s}" ; \
 		i=$$(($${i}+1)) ; \
 	done ; \
@@ -318,8 +318,8 @@ check-compat-%:
 		fi ; \
 		;; \
 		geoip) \
-		if [ `rpm --eval '0%{?rhel}'` -ge 8 ] || [ `rpm --eval '0%{?amzn}'` -gt 2 ]; then \
-			echo "GeoIP can not be build on RHEL/CentOS >= 8 or Amazon Linux >2" > \
+		if [ `rpm --eval '0%{?rhel}'` -ge 8 ] || [ `rpm --eval '0%{?amzn}'` -gt 2 ] || [ `rpm --eval '0%{?suse_version}'` -ge 1600 ]; then \
+			echo "GeoIP can not be build on RHEL/CentOS >= 8 or Amazon Linux >2 or SLES >= 16" > \
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \
