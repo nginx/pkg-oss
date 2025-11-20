@@ -315,7 +315,11 @@ fi
 /usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
 if [ $1 -ge 1 ]; then
     /sbin/service nginx status  >/dev/null 2>&1 || exit 0
+%if 0%{?suse_version} >= 1600
+    %{_libexecdir}/initscripts/legacy-actions/nginx/upgrade >/dev/null 2>&1 || echo \
+%else
     /sbin/service nginx upgrade >/dev/null 2>&1 || echo \
+%endif
         "Binary upgrade failed, please check nginx's error.log"
 fi
 
