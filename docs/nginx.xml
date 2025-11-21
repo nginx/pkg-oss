@@ -5,6 +5,17 @@
 <change_log title="nginx">
 
 
+<changes apply="nginx" ver="1.29.3" rev="2"
+         date="2025-11-21" time="12:20:00 -0800"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+SLES 16: fixed automatic binary upgrade
+</para>
+</change>
+
+</changes>
+
 <changes apply="nginx" ver="1.29.3" rev="1"
          date="2025-10-28" time="08:48:06 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
