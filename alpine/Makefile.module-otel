@@ -37,6 +37,7 @@ define MODULE_PREBUILD_otel
 export PATH=$$builddir/prebuilt/bin/:$$PATH \&\& \
 export NGX_OTEL_PROTO_DIR=$$builddir/../opentelemetry-proto-$(OPENTELEMETRY_PROTO_VERSION) \&\& \
 export CMAKE_PREFIX_PATH=$$builddir/prebuilt/ \&\& \
+export CMAKE_GENERATOR="Unix Makefiles" \&\& \
 DESIRED="3.19.0" \&\& \
 source /etc/os-release \&\&
 if [ "$$(printf "%s\\n%s\\n" "$$DESIRED" "$$VERSION_ID" | sort | tail -n 1)" == "$$VERSION_ID" ]; then
