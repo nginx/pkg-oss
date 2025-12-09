@@ -5,6 +5,18 @@
 <change_log title="nginx_module_lua">
 
 
+<changes apply="nginx-module-lua" ver="0.10.29" rev="1" basever="1.29.4"
+         date="2025-12-09" time="11:05:17 -0800"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.4-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-lua" ver="0.10.29" rev="1" basever="1.29.3"
          date="2025-11-04" time="13:30:00 -0700"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
