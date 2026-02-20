@@ -235,7 +235,7 @@ fi
 # Sanitize module nickname (this is a debbuild requirement, probably needs to check for more characters)
 #
 while true; do
-	MODULE_NAME_CLEAN=`echo $MODULE_NAME | tr '[A-Z]' '[a-z]' | tr '[/_\-\.\t ]' '\n' | grep -ve nginx | tr -d '\n'`
+	MODULE_NAME_CLEAN=`echo $MODULE_NAME | tr 'A-Z' 'a-z' | tr '/_.\t ' '[\n*]' | grep -ve nginx | tr -d '\n'`
 	if [ "$MODULE_NAME_CLEAN" != "$MODULE_NAME" ] || [ -z $MODULE_NAME ]; then
 		echo "$ME: WARNING: Removed illegal characters from module nickname - using \"$MODULE_NAME_CLEAN\""
 		if [ -z $SAY_YES ]; then
@@ -448,24 +448,25 @@ placeholder for nginx-module-$MODULE_NAME license / copyrights
 __EOF__
 
 echo "$ME: INFO: Creating module Makefile"
+MODNAME_MAKEFILE=`echo $MODULE_NAME | tr '-' '_'`
 cat << __EOF__ > Makefile.module-$MODULE_NAME
 MODULES=$MODULE_NAME
 
 MODULE_PACKAGE_VENDOR=	Build Script <build.script@example.com>
 MODULE_PACKAGE_URL=	https://www.nginx.com/blog/compiling-dynamic-modules-nginx-plus/
 
-MODULE_SUMMARY_$MODULE_NAME=		$MODULE_NAME dynamic module
-MODULE_VERSION_$MODULE_NAME=		$MODULE_VERSION
-MODULE_RELEASE_$MODULE_NAME=		$MODULE_RELEASE
-MODULE_VERSION_PREFIX_$MODULE_NAME=	\$(MODULE_TARGET_PREFIX)
-MODULE_CONFARGS_$MODULE_NAME=		--add-dynamic-module=\$(MODSRC_PREFIX)$MODULE_NAME-$VERSION
-MODULE_SOURCES_$MODULE_NAME=		$MODULE_NAME-$VERSION.tar.gz
+MODULE_SUMMARY_$MODNAME_MAKEFILE=		$MODULE_NAME dynamic module
+MODULE_VERSION_$MODNAME_MAKEFILE=		$MODULE_VERSION
+MODULE_RELEASE_$MODNAME_MAKEFILE=		$MODULE_RELEASE
+MODULE_VERSION_PREFIX_$MODNAME_MAKEFILE=	\$(MODULE_TARGET_PREFIX)
+MODULE_CONFARGS_$MODNAME_MAKEFILE=		--add-dynamic-module=\$(MODSRC_PREFIX)$MODULE_NAME-$VERSION
+MODULE_SOURCES_$MODNAME_MAKEFILE=		$MODULE_NAME-$VERSION.tar.gz
 
-define MODULE_POST_$MODULE_NAME
+define MODULE_POST_$MODNAME_MAKEFILE
 cat <<BANNER
 ----------------------------------------------------------------------
 
-The \$(MODULE_SUMMARY_$MODULE_NAME) for nginx has been installed.
+The \$(MODULE_SUMMARY_$MODNAME_MAKEFILE) for nginx has been installed.
 To enable this module, add the following to /etc/nginx/nginx.conf
 and reload nginx:
 
@@ -474,7 +475,7 @@ and reload nginx:
 ----------------------------------------------------------------------
 BANNER
 endef
-export MODULE_POST_$MODULE_NAME
+export MODULE_POST_$MODNAME_MAKEFILE
 __EOF__
 
 cp Makefile.module-$MODULE_NAME $BUILD_DIR/pkg-oss/rpm/SPECS/
