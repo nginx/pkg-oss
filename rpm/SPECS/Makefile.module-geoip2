@@ -2,20 +2,18 @@ MODULES+=	geoip2
 
 MODULE_SUMMARY_geoip2=	3rd-party GeoIP2 dynamic modules
 
-include $(CONTRIB)/src/ngx_http_geoip2_module/version
+MODULE_CONTRIB_DEPS_geoip2=	ngx_http_geoip2_module
 
-MODULE_VERSION_geoip2=	$(GEOIP2_NGINX_MODULE_VERSION)
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_geoip2),$(CONTRIB)/src/$(dep)/version)
+
+MODULE_VERSION_geoip2=	$(NGX_HTTP_GEOIP2_MODULE_VERSION)
 MODULE_RELEASE_geoip2=	1
 
 MODULE_VERSION_PREFIX_geoip2=$(MODULE_TARGET_PREFIX)
 
-MODULE_SOURCES_geoip2=	ngx_http_geoip2_module-$(GEOIP2_NGINX_MODULE_VERSION).tar.gz
+MODULE_SOURCES_geoip2=	ngx_http_geoip2_module-$(NGX_HTTP_GEOIP2_MODULE_VERSION).tar.gz
 
-MODULE_CONFARGS_geoip2=	--add-dynamic-module=ngx_http_geoip2_module-$(GEOIP2_NGINX_MODULE_VERSION)
-
-.deps-module-geoip2:
-	cd $(CONTRIB) && make .sum-ngx_http_geoip2_module
-	touch $@
+MODULE_CONFARGS_geoip2=	--add-dynamic-module=ngx_http_geoip2_module-$(NGX_HTTP_GEOIP2_MODULE_VERSION)
 
 define MODULE_DEFINITIONS_geoip2
 BuildRequires: libmaxminddb-devel

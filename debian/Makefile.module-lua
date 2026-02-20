@@ -2,12 +2,14 @@ MODULES+=	lua
 
 MODULE_SUMMARY_lua=	3rd-party Lua dynamic modules
 
-include $(CONTRIB)/src/luajit2/version
-include $(CONTRIB)/src/ngx_devel_kit/version
-include $(CONTRIB)/src/lua-nginx-module/version
-include $(CONTRIB)/src/stream-lua-nginx-module/version
-include $(CONTRIB)/src/lua-resty-core/version
-include $(CONTRIB)/src/lua-resty-lrucache/version
+MODULE_CONTRIB_DEPS_lua=	luajit2 \
+				ngx_devel_kit \
+				lua-nginx-module \
+				stream-lua-nginx-module \
+				lua-resty-core \
+				lua-resty-lrucache
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_lua),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_lua=	$(LUA_NGINX_MODULE_VERSION)
 MODULE_RELEASE_lua=	1
@@ -24,21 +26,12 @@ MODULE_SOURCES_lua=	ngx_devel_kit-$(MODULE_VERSION_ndk).tar.gz \
 MODULE_PATCHES_lua=	$(CONTRIB)/src/luajit2/Makefile.patch \
 			$(CONTRIB)/src/luajit2/src-luaconf.h.patch \
 			$(CONTRIB)/src/lua-nginx-module/config.patch \
-			$(CONTRIB)/src/stream-lua-nginx-module/config.patch
+			$(CONTRIB)/src/stream-lua-nginx-module/config.patch \
+			$(CONTRIB)/src/stream-lua-nginx-module/proxy-ssl-verifyby.patch
 
 MODULE_CONFARGS_lua=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION) \
 			--add-dynamic-module=$(MODSRC_PREFIX)lua-nginx-module-$(LUA_NGINX_MODULE_VERSION) \
 			--add-dynamic-module=$(MODSRC_PREFIX)stream-lua-nginx-module-$(STREAM_LUA_NGINX_MODULE_VERSION)
-
-.deps-module-lua:
-	cd $(CONTRIB) && make \
-		.sum-luajit2 \
-		.sum-ngx_devel_kit \
-		.sum-lua-nginx-module \
-		.sum-stream-lua-nginx-module \
-		.sum-lua-resty-core \
-		.sum-lua-resty-lrucache
-	touch $@
 
 MODULE_DEPENDS_lua=,$(NDK_DEPENDENCY_TAG)
 

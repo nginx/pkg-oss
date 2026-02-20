@@ -2,7 +2,9 @@ MODULES+=	auth-spnego
 
 MODULE_SUMMARY_auth_spnego=	3rd-party kerberos authentication dynamic module
 
-include $(CONTRIB)/src/spnego-http-auth-nginx-module/version
+MODULE_CONTRIB_DEPS_auth-spnego=	spnego-http-auth-nginx-module
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_auth-spnego),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_auth_spnego=	$(SPNEGO_HTTP_AUTH_NGINX_MODULE_VERSION)
 MODULE_RELEASE_auth_spnego=	1
@@ -14,10 +16,6 @@ MODULE_SOURCES_auth_spnego=	spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGI
 MODULE_PATCHES_auth_spnego=
 
 MODULE_CONFARGS_auth_spnego=	--add-dynamic-module=$(MODSRC_PREFIX)spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHASH)
-
-.deps-module-auth-spnego:
-	cd $(CONTRIB) && make .sum-spnego-http-auth-nginx-module
-	touch $@
 
 prerequisites-for-module-auth-spnego:
 

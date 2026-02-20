@@ -2,7 +2,9 @@ MODULES+=	headers-more
 
 MODULE_SUMMARY_headers_more=	3rd-party headers-more dynamic module
 
-include $(CONTRIB)/src/headers-more-nginx-module/version
+MODULE_CONTRIB_DEPS_headers-more=	headers-more-nginx-module
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_headers-more),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_headers_more=	$(HEADERS_MORE_NGINX_MODULE_VERSION)
 MODULE_RELEASE_headers_more=	1
@@ -12,10 +14,6 @@ MODULE_VERSION_PREFIX_headers_more=$(MODULE_TARGET_PREFIX)
 MODULE_SOURCES_headers_more=	headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODULE_GITHASH).tar.gz
 
 MODULE_CONFARGS_headers_more=	--add-dynamic-module=$(MODSRC_PREFIX)headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODULE_GITHASH)
-
-.deps-module-headers-more:
-	cd $(CONTRIB) && make .sum-headers-more-nginx-module
-	touch $@
 
 define MODULE_POST_headers_more
 cat <<BANNER

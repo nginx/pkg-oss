@@ -2,10 +2,14 @@ MODULES+=	otel
 
 MODULE_SUMMARY_otel=	OpenTelemetry dynamic module
 
-include $(CONTRIB)/src/nginx-otel/version
-include $(CONTRIB)/src/opentelemetry-cpp/version
-include $(CONTRIB)/src/opentelemetry-proto/version
-include $(CONTRIB)/src/protobuf/version
+MODULE_CONTRIB_DEPS_otel=	nginx-otel \
+							abseil-cpp \
+							grpc \
+							opentelemetry-cpp \
+							opentelemetry-proto \
+							protobuf
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_otel),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_otel=	$(NGINX_OTEL_VERSION)
 MODULE_RELEASE_otel=	1
@@ -21,14 +25,6 @@ MODULE_PATCHES_otel=
 
 MODULE_CONFARGS_otel=   --add-dynamic-module=$(MODSRC_PREFIX)/nginx-otel-$(NGINX_OTEL_GITHASH)/
 
-.deps-module-otel:
-	cd $(CONTRIB) && make \
-		.sum-opentelemetry-cpp \
-		.sum-opentelemetry-proto \
-		.sum-protobuf \
-		.sum-nginx-otel
-	touch $@
-
 prerequisites-for-module-otel:
 
 MODULE_BUILD_DEPENDS_otel=cmake protobuf-dev grpc-dev
@@ -37,6 +33,7 @@ define MODULE_PREBUILD_otel
 export PATH=$$builddir/prebuilt/bin/:$$PATH \&\& \
 export NGX_OTEL_PROTO_DIR=$$builddir/../opentelemetry-proto-$(OPENTELEMETRY_PROTO_VERSION) \&\& \
 export CMAKE_PREFIX_PATH=$$builddir/prebuilt/ \&\& \
+export CMAKE_GENERATOR="Unix Makefiles" \&\& \
 DESIRED="3.19.0" \&\& \
 source /etc/os-release \&\&
 if [ "$$(printf "%s\\n%s\\n" "$$DESIRED" "$$VERSION_ID" | sort | tail -n 1)" == "$$VERSION_ID" ]; then
@@ -68,7 +65,6 @@ cd $$builddir/../opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION) \&\& mkdir build
     -DCMAKE_INSTALL_LIBDIR:STRING=lib \
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
     -DBUILD_TESTING=OFF \
-    -DWITH_ABSEIL=ON \
     -DWITH_BENCHMARK=OFF \
     -DWITH_EXAMPLES=OFF \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \

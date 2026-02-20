@@ -1,0 +1,55 @@
+MODULES+=	acme
+
+MODULE_SUMMARY_acme=	nginx-acme
+
+MODULE_CONTRIB_DEPS_acme=	nginx-acme
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_acme),$(CONTRIB)/src/$(dep)/version)
+
+MODULE_VERSION_acme=	$(NGINX_ACME_VERSION)
+MODULE_RELEASE_acme=	1
+
+MODULE_VERSION_PREFIX_acme=$(MODULE_TARGET_PREFIX)
+
+MODULE_SOURCES_acme=	nginx-acme-$(NGINX_ACME_VERSION).tar.gz \
+			nginx-acme-$(NGINX_ACME_VERSION)-vendor.tar.gz
+
+MODULE_CONFARGS_acme=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-acme-$(NGINX_ACME_VERSION)
+
+# since our build system uses rustup-provided rustc/cargo,
+# we need clang from the system repos
+MODULE_BUILD_DEPENDS_acme=,clang
+
+define MODULE_DEFINITIONS_acme
+export NGX_ACME_STATE_PREFIX=/var/cache/nginx
+endef
+export MODULE_DEFINITIONS_acme
+
+define MODULE_PREBUILD_acme
+	set -ex \&\& \
+	cd $$(CURDIR)/debian/ \&\& \
+	mkdir -p .cargo \&\& \
+	echo '[source.crates-io]' > .cargo/config.toml \&\& \
+	echo 'replace-with = "vendored-sources"' >> .cargo/config.toml \&\& \
+	echo '[source.vendored-sources]' >> .cargo/config.toml \&\& \
+	echo 'directory = "extra/nginx-acme-$(NGINX_ACME_VERSION)-vendor"' >> .cargo/config.toml
+endef
+export MODULE_PREBUILD_acme
+
+define MODULE_POST_acme
+cat <<BANNER
+----------------------------------------------------------------------
+
+The $(MODULE_SUMMARY_acme) for $(MODULE_SUMMARY_PREFIX) have been installed.
+To enable these modules, add the following to /etc/nginx/nginx.conf
+and reload nginx:
+
+    load_module modules/ngx_http_acme_module.so;
+
+Please refer to the module documentation for further details:
+https://nginx.org/en/docs/http/ngx_http_acme_module.html
+
+----------------------------------------------------------------------
+BANNER
+endef
+export MODULE_POST_acme

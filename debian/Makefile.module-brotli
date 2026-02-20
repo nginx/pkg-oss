@@ -2,7 +2,9 @@ MODULES+=	brotli
 
 MODULE_SUMMARY_brotli=	3rd-party brotli compression dynamic modules
 
-include $(CONTRIB)/src/ngx_brotli/version
+MODULE_CONTRIB_DEPS_brotli=	ngx_brotli
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_brotli),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_brotli=	$(NGX_BROTLI_VERSION)
 MODULE_RELEASE_brotli=	1
@@ -12,10 +14,6 @@ MODULE_VERSION_PREFIX_brotli=$(MODULE_TARGET_PREFIX)
 MODULE_SOURCES_brotli=	ngx_brotli-$(NGX_BROTLI_VERSION).tar.gz
 
 MODULE_CONFARGS_brotli=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_brotli-$(NGX_BROTLI_VERSION)rc
-
-.deps-module-brotli:
-	cd $(CONTRIB) && make .sum-ngx_brotli
-	touch $@
 
 MODULE_BUILD_DEPENDS_brotli=,libbrotli-dev
 

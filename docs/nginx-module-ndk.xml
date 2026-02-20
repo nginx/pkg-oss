@@ -5,6 +5,78 @@
 <change_log title="nginx_module_ndk">
 
 
+<changes apply="nginx-module-ndk" ver="0.3.3" rev="1" basever="1.29.5"
+         date="2026-02-04" time="20:12:39 +0000"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.5-1
+</para>
+</change>
+
+</changes>
+
+
+<changes apply="nginx-module-ndk" ver="0.3.3" rev="1" basever="1.29.4"
+         date="2025-12-09" time="11:05:17 -0800"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.4-1
+</para>
+</change>
+
+</changes>
+
+
+<changes apply="nginx-module-ndk" ver="0.3.3" rev="1" basever="1.29.3"
+         date="2025-10-28" time="08:48:06 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.3-1
+</para>
+</change>
+
+</changes>
+
+
+<changes apply="nginx-module-ndk" ver="0.3.3" rev="1" basever="1.29.2"
+         date="2025-10-07" time="10:14:27 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.2-1
+</para>
+</change>
+
+</changes>
+
+
+<changes apply="nginx-module-ndk" ver="0.3.3" rev="1" basever="1.29.1"
+         date="2025-08-13" time="07:46:47 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.1-1
+</para>
+</change>
+
+</changes>
+
+
+<changes apply="nginx-module-ndk" ver="0.3.3" rev="1" basever="1.29.0"
+         date="2025-06-24" time="10:34:21 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.0-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-ndk" ver="0.3.3" rev="1" basever="1.27.5"
          date="2025-04-16" time="13:14:06 +0100"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">

@@ -42,6 +42,12 @@ Epoch: %{epoch}
 %define _debugsource_template %{nil}
 %endif
 
+%if 0%{?rhel} == 10
+%define epoch 1
+Epoch: %{epoch}
+%define _debugsource_template %{nil}
+%endif
+
 %if 0%{?fedora}
 %define _debugsource_template %{nil}
 %global _hardened_build 1
@@ -79,7 +85,7 @@ Provides: %{name}-r%{base_version}
 %description
 nginx %%SHORT_SUMMARY%%.
 
-%if 0%{?suse_version}
+%if ( 0%{?suse_version} && 0%{?suse_version} < 1600 )
 %debug_package
 %endif
 

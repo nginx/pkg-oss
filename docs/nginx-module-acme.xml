@@ -1,0 +1,110 @@
+<?xml version="1.0" ?>
+<!DOCTYPE change_log SYSTEM "changes.dtd" >
+
+
+<change_log title="nginx_module_acme">
+
+
+<changes apply="nginx-module-acme" ver="0.3.1" rev="1" basever="1.29.5"
+         date="2026-02-04" time="20:12:39 +0000"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.5-1
+</para>
+</change>
+
+</changes>
+
+
+<changes apply="nginx-module-acme" ver="0.3.1" rev="1" basever="1.29.4"
+         date="2025-12-09" time="11:05:17 -0800"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.4-1
+</para>
+</change>
+
+</changes>
+
+
+<changes apply="nginx-module-acme" ver="0.3.1" rev="1" basever="1.29.3"
+         date="2025-12-09" time="09:30:00 -0800"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+nginx-acme updated to 0.3.1
+</para>
+</change>
+</changes>
+
+
+<changes apply="nginx-module-acme" ver="0.3.0" rev="1" basever="1.29.3"
+         date="2025-11-18" time="11:10:00 -0800"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+nginx-acme updated to 0.3.0
+</para>
+</change>
+</changes>
+
+
+<changes apply="nginx-module-acme" ver="0.2.0" rev="1" basever="1.29.3"
+         date="2025-10-28" time="08:48:06 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.3-1
+</para>
+</change>
+
+</changes>
+
+<changes apply="nginx-module-acme" ver="0.2.0" rev="2" basever="1.29.2"
+         date="2025-10-10" time="14:00:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Properly set state_path to point to /var/cache/nginx.
+</para>
+</change>
+</changes>
+
+
+<changes apply="nginx-module-acme" ver="0.2.0" rev="1" basever="1.29.2"
+         date="2025-10-08" time="17:00:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+nginx-acme updated to 0.2.0
+</para>
+</change>
+</changes>
+
+
+<changes apply="nginx-module-acme" ver="0.1.1" rev="1" basever="1.29.2"
+         date="2025-10-07" time="10:14:27 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.29.2-1
+</para>
+</change>
+
+</changes>
+
+
+<changes apply="nginx-module-acme" ver="0.1.1" rev="1" basever="1.29.0"
+         date="2025-08-12" time="13:00:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+Initial release of the nginx-module-acme package.
+</para>
+</change>
+
+</changes>
+
+</change_log>

@@ -50,6 +50,15 @@ BuildRequires: openssl-devel
 %define _debugsource_template %{nil}
 %endif
 
+%if 0%{?rhel} == 10
+%define epoch 2
+Epoch: %{epoch}
+Requires(pre): shadow-utils
+Requires: procps-ng
+BuildRequires: openssl-devel
+%define _debugsource_template %{nil}
+%endif
+
 %if 0%{?suse_version} >= 1315
 %define _group Productivity/Networking/Web/Servers
 %define nginx_loggroup trusted
@@ -119,7 +128,7 @@ Recommends: logrotate
 nginx [engine x] is an HTTP and reverse proxy server, as well as
 a mail proxy server.
 
-%if 0%{?suse_version} >= 1315
+%if ( 0%{?suse_version} && 0%{?suse_version} < 1600 )
 %debug_package
 %endif
 
@@ -306,7 +315,11 @@ fi
 /usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
 if [ $1 -ge 1 ]; then
     /sbin/service nginx status  >/dev/null 2>&1 || exit 0
+%if 0%{?suse_version} >= 1600
+    %{_libexecdir}/initscripts/legacy-actions/nginx/upgrade >/dev/null 2>&1 || echo \
+%else
     /sbin/service nginx upgrade >/dev/null 2>&1 || echo \
+%endif
         "Binary upgrade failed, please check nginx's error.log"
 fi
 

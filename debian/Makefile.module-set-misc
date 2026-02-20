@@ -2,8 +2,10 @@ MODULES+=	set-misc
 
 MODULE_SUMMARY_set_misc=	3rd-party set-misc dynamic module
 
-include $(CONTRIB)/src/ngx_devel_kit/version
-include $(CONTRIB)/src/set-misc-nginx-module/version
+MODULE_CONTRIB_DEPS_set-misc=	ngx_devel_kit \
+				set-misc-nginx-module
+
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_set-misc),$(CONTRIB)/src/$(dep)/version)
 
 MODULE_VERSION_set_misc=	$(SET_MISC_NGINX_MODULE_VERSION)
 MODULE_RELEASE_set_misc=	1
@@ -15,12 +17,6 @@ MODULE_SOURCES_set_misc=	ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION).tar.gz \
 
 MODULE_CONFARGS_set_misc=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION) \
 				--add-dynamic-module=$(MODSRC_PREFIX)set-misc-nginx-module-$(SET_MISC_NGINX_MODULE_VERSION)
-
-.deps-module-set-misc:
-	cd $(CONTRIB) && make \
-		.sum-ngx_devel_kit \
-		.sum-set-misc-nginx-module
-	touch $@
 
 MODULE_DEPENDS_set_misc=,$(NDK_DEPENDENCY_TAG)
 

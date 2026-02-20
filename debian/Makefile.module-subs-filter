@@ -2,20 +2,18 @@ MODULES+=	subs-filter
 
 MODULE_SUMMARY_subs_filter=	3rd-party substitution dynamic module
 
-include $(CONTRIB)/src/ngx_http_substitutions_filter_module/version
+MODULE_CONTRIB_DEPS_subs-filter=	ngx_http_substitutions_filter_module
 
-MODULE_VERSION_subs_filter=	$(SUBSTITUTIONS_FILTER_NGINX_MODULE_VERSION)
+include $(foreach dep,$(MODULE_CONTRIB_DEPS_subs-filter),$(CONTRIB)/src/$(dep)/version)
+
+MODULE_VERSION_subs_filter=	$(NGX_HTTP_SUBSTITUTIONS_FILTER_MODULE_VERSION)
 MODULE_RELEASE_subs_filter=	1
 
 MODULE_VERSION_PREFIX_subs_filter=$(MODULE_TARGET_PREFIX)
 
-MODULE_SOURCES_subs_filter=	ngx_http_substitutions_filter_module-$(SUBSTITUTIONS_FILTER_NGINX_MODULE_GITHASH).tar.gz
+MODULE_SOURCES_subs_filter=	ngx_http_substitutions_filter_module-$(NGX_HTTP_SUBSTITUTIONS_FILTER_MODULE_GITHASH).tar.gz
 
-MODULE_CONFARGS_subs_filter=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_http_substitutions_filter_module-$(SUBSTITUTIONS_FILTER_NGINX_MODULE_GITHASH)
-
-.deps-module-subs-filter:
-	cd $(CONTRIB) && make .sum-ngx_http_substitutions_filter_module
-	touch $@
+MODULE_CONFARGS_subs_filter=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_http_substitutions_filter_module-$(NGX_HTTP_SUBSTITUTIONS_FILTER_MODULE_GITHASH)
 
 define MODULE_POST_subs_filter
 cat <<BANNER

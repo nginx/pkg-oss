@@ -48,7 +48,7 @@ NPROC=		$(shell getconf _NPROCESSORS_ONLN)
 MODSRC_PREFIX=	extra/
 BUILD_DIR=	$$(BUILDDIR_nginx)
 
-BASE_MODULES=	geoip image-filter njs otel perl xslt
+BASE_MODULES=	acme geoip image-filter njs otel perl xslt
 
 MODULES=
 
@@ -111,6 +111,8 @@ BASE_CONFIGURE_ARGS+= \
 	--with-stream_proxy_protocol_vendor_module
 endif
 
+include $(CONTRIB)/attestation.mak
+
 export CR=\\n
 
 modname = $(shell echo $1 | tr '-' '_')
@@ -139,7 +141,7 @@ modules:	$(addprefix module-, $(MODULES))
 
 rules:	rules-base $(addprefix rules-module-, $(MODULES))
 
-base:	rules-base
+base:	rules-base attest-base
 	@echo "===> Building base package" ; \
 	$(SHELL) -c "cd debuild-base/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" && \
 	find debuild-base/ -maxdepth 1 -type f -exec cp {} ../../ \; && \
@@ -207,12 +209,12 @@ rules-base: $(BASE_SRC) nginx.deb-changelog
 	ln -s debuild-base/$(SRCDIR)/debian/rules rules-base ; \
 	}
 
-module-%: rules-module-% check-compat-%
+module-%: rules-module-% check-compat-% attest-module-%
 	@if [ -e nginx-$@.skip ]; then \
 	    echo "---> Skipping nginx-$@ package (`cat nginx-$@.skip`)" ; \
 	else \
 	    echo "===> Building nginx-$@ package" ; \
-	    $(SHELL) -c "cd debuild-$@/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild -us -uc" && \
+	    $(SHELL) -c "cd debuild-$@/$(SRCDIR) ; export DEB_BUILD_OPTIONS=parallel=$(NPROC) ; time -p debuild --preserve-envvar PATH --preserve-envvar RUSTUP_HOME -us -uc" && \
 	    find debuild-$@/ -maxdepth 1 -type f -exec cp {} ../../ \; && \
 	    ln -s debuild-$@/$(SRCDIR)/debian/$(MODULE_PACKAGE_PREFIX)-$*/usr/lib/nginx/modules $@ ; \
 	fi;
@@ -341,6 +343,9 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 	}
 
 .deps-module-%:
+	if [ -n "$(MODULE_CONTRIB_DEPS_$*)" ]; then \
+	   cd $(CONTRIB) && make $(foreach dep,$(MODULE_CONTRIB_DEPS_$*),.sum-$(dep)); \
+	fi; \
 	touch $@
 
 nginx-tests:
@@ -459,6 +464,7 @@ check-modules:
 clean:
 	@rm -rf base module-* rules-base rules-module-* debuild-base debuild-module-* nginx-tests $(BASE_SRC) .deps-module-*
 	@rm -f nginx.deb-changelog nginx-*.deb-changelog nginx-module-*.deb-changelog nginx-module-*.skip
+	@rm -f attest-base attest-module-*
 
 .PHONY:	default list list-base list-all-modules list-base-modules all modules rules test test-debug check-modules clean
 
