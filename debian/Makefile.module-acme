@@ -21,6 +21,8 @@ MODULE_CONFARGS_acme=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-acme-$(NGINX_AC
 MODULE_BUILD_DEPENDS_acme=,clang
 
 define MODULE_DEFINITIONS_acme
+export CARGO_PROFILE_RELEASE_DEBUG=true
+export CARGO_PROFILE_RELEASE_STRIP=none
 export NGX_ACME_STATE_PREFIX=/var/cache/nginx
 endef
 export MODULE_DEFINITIONS_acme
