@@ -5,6 +5,18 @@
 <change_log title="nginx_module_ndk">
 
 
+<changes apply="nginx-module-ndk" ver="0.3.3" rev="1" basever="1.28.3"
+         date="2026-03-24" time="12:03:59 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.28.3-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-ndk" ver="0.3.3" rev="1" basever="1.28.2"
          date="2026-02-04" time="19:17:15 +0000"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
