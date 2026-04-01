@@ -4,6 +4,17 @@
 
 <change_log title="nginx_module_ndk">
 
+<changes apply="nginx-module-ndk" ver="0.3.4" rev="1" basever="1.29.7"
+         date="2026-03-31" time="17:00:00 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+ndk module updated to 0.3.4
+</para>
+</change>
+
+</changes>
+
 
 <changes apply="nginx-module-ndk" ver="0.3.3" rev="1" basever="1.29.7"
          date="2026-03-24" time="09:38:55 -0700"
