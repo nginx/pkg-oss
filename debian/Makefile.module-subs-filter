@@ -15,6 +15,9 @@ MODULE_SOURCES_subs_filter=	ngx_http_substitutions_filter_module-$(NGX_HTTP_SUBS
 
 MODULE_CONFARGS_subs_filter=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_http_substitutions_filter_module-$(NGX_HTTP_SUBSTITUTIONS_FILTER_MODULE_GITHASH)
 
+MODULE_CC_OPT_subs_filter="-Wno-error=discarded-qualifiers"
+MODULE_CC_OPT_DEBUG_subs_filter="-Wno-error=discarded-qualifiers"
+
 define MODULE_POST_subs_filter
 cat <<BANNER
 ----------------------------------------------------------------------

@@ -19,6 +19,9 @@ MODULE_CONFARGS_auth_spnego=	--add-dynamic-module=$(MODSRC_PREFIX)spnego-http-au
 
 MODULE_BUILD_DEPENDS_auth_spnego=,libkrb5-dev 
 
+MODULE_CC_OPT_auth_spnego="-Wno-error=discarded-qualifiers"
+MODULE_CC_OPT_DEBUG_auth_spnego="-Wno-error=discarded-qualifiers"
+
 define MODULE_POST_auth_spnego
 cat <<BANNER
 ----------------------------------------------------------------------

@@ -62,6 +62,7 @@ define MODULE_PREBUILD_otel
 		-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
 		-Dprotobuf_BUILD_TESTS=OFF \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 		../cmake/ \&\& \
 	make -j$$(NUMJOBS) install \&\& \
 	cd $$(BUILDDIR_nginx)/extra/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
