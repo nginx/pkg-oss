@@ -5,18 +5,6 @@
 <change_log title="nginx_module_perl">
 
 
-<changes apply="nginx-module-perl" ver="1.30.0" rev="1"
-         date="2026-04-14" time="14:29:37 +0100"
-         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
-<change>
-<para>
-base version updated to 1.30.0-1
-</para>
-</change>
-
-</changes>
-
-
 <changes apply="nginx-module-perl" ver="1.29.8" rev="1"
          date="2026-04-07" time="12:51:54 +0100"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
