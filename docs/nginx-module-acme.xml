@@ -5,17 +5,6 @@
 <change_log title="nginx_module_acme">
 
 
-<changes apply="nginx-module-acme" ver="0.4.0" rev="1" basever="1.30.0"
-         date="2026-04-21" time="09:10:00 -0700"
-         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
-<change>
-<para>
-nginx-acme updated to 0.4.0
-</para>
-</change>
-</changes>
-
-
 <changes apply="nginx-module-acme" ver="0.3.1" rev="1" basever="1.30.0"
          date="2026-04-14" time="14:29:37 +0100"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
