@@ -24,10 +24,20 @@ BASE_SRC=	nginx$(BASE_SUFFIX)-$(BASE_VERSION).tar.gz
 SRCDIR=		nginx$(BASE_SUFFIX)-$(BASE_VERSION)
 BUILD_ENV_PATH=	${HOME}/debuild
 
+
+NGINX_PLUS_MAJOR_MINOR = $(word 1,$(subst ., ,$(NGINX_PLUS_VERSION))).$(word 2,$(subst ., ,$(NGINX_PLUS_VERSION)))
+
+RELSTRING=
+ifeq ($(shell test $(PLUS_RELEASE) -gt 1; echo $$?),0)
+RELSTRING=-p$(shell expr $(PLUS_RELEASE) - 1 )
+endif
+
+BUILD_SUFFIX ?=
+
 ifeq ($(MODULE_TARGET), plus)
 MODULE_SUFFIX=	-plus
 MODULE_SUMMARY_PREFIX=NGINX Plus
-TARGET_VERSION=$(PLUS_VERSION)
+TARGET_VERSION=$(NGINX_PLUS_MAJOR_MINOR)
 BASE_ORIG_NAME=nginx-plus_$(PLUS_VERSION).orig.tar.gz
 MODULE_PACKAGE_URL=	https://www.nginx.com/
 else
@@ -98,17 +108,20 @@ BASE_CONFIGURE_ARGS=\
 
 ifeq ($(BASE_TARGET), plus)
 BASE_CONFIGURE_ARGS+= \
-	--build=nginx-plus-r$(PLUS_VERSION) \
-	--mgmt-id-path=/var/lib/nginx/nginx.id \
+	--build=nginx-plus-r$(PLUS_VERSION)$(RELSTRING)$(BUILD_SUFFIX) \
+	--state-path=/var/lib/nginx/state \
+	--with-control-api \
 	--with-http_auth_jwt_module \
 	--with-http_f4f_module \
 	--with-http_hls_module \
+	--with-http_oidc_module \
 	--with-http_proxy_protocol_vendor_module \
 	--with-http_session_log_module \
 	--with-mgmt \
 	--with-stream_mqtt_filter_module \
 	--with-stream_mqtt_preread_module \
-	--with-stream_proxy_protocol_vendor_module
+	--with-stream_proxy_protocol_vendor_module \
+	--system-ca-bundle=/etc/ssl/certs/ca-certificates.crt
 endif
 
 include $(CONTRIB)/attestation.mak
@@ -187,6 +200,7 @@ rules-base: $(BASE_SRC) nginx.deb-changelog
 		-e "s#%%PACKAGE_VENDOR%%#$(PACKAGE_VENDOR)#g" \
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
+		-e 's#%%NGINX_PLUS_MAJOR_MINOR%%#$(NGINX_PLUS_MAJOR_MINOR)#g' \
 		> debuild-base/$(SRCDIR)/debian/control ; \
 	if [ "$(BASE_TARGET)" = "plus" ]; then \
 		cp	$(DOCS)/EULA-TRIAL \
@@ -300,6 +314,7 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \
 		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
+		-e 's#%%NGINX_PLUS_MAJOR_MINOR%%#$(NGINX_PLUS_MAJOR_MINOR)#g' \
 		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $*))#g" \
 		-e "s#%%MODULE_VERSION%%#$(MODULE_VERSION_$(call modname, $*))#g" \
 		-e "s#%%MODULE_RELEASE%%#$(MODULE_RELEASE_$(call modname, $*))#g" \
@@ -312,6 +327,7 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \
 		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
+		-e 's#%%NGINX_PLUS_MAJOR_MINOR%%#$(NGINX_PLUS_MAJOR_MINOR)#g' \
 		-e "s#%%MODULE%%#$${module_asis}#g" \
 		-e "s#%%CODENAME%%#$(CODENAME)#g" \
 		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $*))#g" \
