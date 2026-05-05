@@ -12,7 +12,6 @@ $(TARBALLS)/spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHAS
 
 spnego-http-auth-nginx-module: spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHASH).tar.gz .sum-spnego-http-auth-nginx-module
 	$(UNPACK)
-	$(APPLY) $(SRC)/spnego-http-auth-nginx-module/extra-patch-ngx_http_auth_spnego_module.c
 	$(MOVE)
 
 .spnego-http-auth-nginx-module: spnego-http-auth-nginx-module
