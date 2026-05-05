@@ -26,9 +26,18 @@ BUILD_ENV_PATH=	${HOME}/rpmbuild
 MODSRC_PREFIX=
 BUILD_DIR=	%{bdir}
 
+NGINX_PLUS_MAJOR_MINOR = $(word 1,$(subst ., ,$(NGINX_PLUS_VERSION))).$(word 2,$(subst ., ,$(NGINX_PLUS_VERSION)))
+
+RELSTRING=
+ifeq ($(shell test $(PLUS_RELEASE) -gt 1; echo $$?),0)
+RELSTRING=-p$(shell expr $(PLUS_RELEASE) - 1 )
+endif
+
+BUILD_SUFFIX ?=
+
 ifeq ($(MODULE_TARGET), plus)
 MODULE_SUMMARY_PREFIX=	NGINX Plus
-TARGET_VERSION=$(PLUS_VERSION)
+TARGET_VERSION=$(NGINX_PLUS_MAJOR_MINOR)
 MODULE_SUFFIX=-plus
 MODULE_PACKAGE_URL=	https://www.nginx.com/
 MODULE_PACKAGE_LICENSE=	Proprietary (EULA included)
@@ -100,17 +109,25 @@ fi; \
 
 ifeq ($(BASE_TARGET), plus)
 BASE_CONFIGURE_ARGS+= \
-	--build=nginx-plus-r$(PLUS_VERSION) \
-	--mgmt-id-path=/var/lib/nginx/nginx.id \
+	--build=nginx-plus-r$(PLUS_VERSION)$(RELSTRING)$(BUILD_SUFFIX) \
+	--state-path=/var/lib/nginx/state \
+	--with-control-api \
 	--with-http_auth_jwt_module \
 	--with-http_f4f_module \
 	--with-http_hls_module \
+	--with-http_oidc_module \
 	--with-http_proxy_protocol_vendor_module \
 	--with-http_session_log_module \
 	--with-mgmt \
 	--with-stream_mqtt_filter_module \
 	--with-stream_mqtt_preread_module \
-	--with-stream_proxy_protocol_vendor_module
+	--with-stream_proxy_protocol_vendor_module \
+$$( if [ 0%{?suse_version} -gt 0 ]; then \
+	echo "--system-ca-bundle=/etc/ssl/ca-bundle.pem"; \
+else \
+	echo "--system-ca-bundle=/etc/ssl/certs/ca-bundle.crt"; \
+fi;\
+)
 endif
 
 include $(CONTRIB)/attestation.mak
@@ -180,6 +197,7 @@ endif
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
 		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
 		-e 's#%%PLUS_RELEASE%%#$(PLUS_RELEASE)#g' \
+		-e 's#%%NGINX_PLUS_MAJOR_MINOR%%#$(NGINX_PLUS_MAJOR_MINOR)#g' \
 		-e "s#%%BASE_PATCHES%%#$$patches#g" \
 		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
 		> nginx$(BASE_SUFFIX).spec ; \
@@ -188,6 +206,7 @@ endif
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
 		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
 		-e 's#%%PLUS_RELEASE%%#$(PLUS_RELEASE)#g' \
+		-e 's#%%NGINX_PLUS_MAJOR_MINOR%%#$(NGINX_PLUS_MAJOR_MINOR)#g' \
 	>> nginx$(BASE_SUFFIX).spec ; \
 	}
 
@@ -279,6 +298,7 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		-e "s#%%BASE_VERSION%%#$(BASE_VERSION)#g" \
 		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \
 		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
+		-e 's#%%NGINX_PLUS_MAJOR_MINOR%%#$(NGINX_PLUS_MAJOR_MINOR)#g' \
 		-e "s#%%VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $*))#g" \
 		-e "s#%%VERSION%%#$(MODULE_VERSION_$(call modname, $*))#g" \
 		-e "s#%%RELEASE%%#$(MODULE_RELEASE_$(call modname, $*))#g" \
@@ -306,6 +326,7 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		-e 's#%%BASE_VERSION%%#$(BASE_VERSION)#g' \
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
 		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
+		-e 's#%%NGINX_PLUS_MAJOR_MINOR%%#$(NGINX_PLUS_MAJOR_MINOR)#g' \
 		-e "s#%%MODULE_VERSION%%#$(MODULE_VERSION_$(call modname, $*))#g" \
 		-e "s#%%MODULE_RELEASE%%#$(MODULE_RELEASE_$(call modname, $*))#g" \
 		>> $@.tmp && \
