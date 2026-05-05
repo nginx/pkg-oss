@@ -4,6 +4,7 @@
 _base_version=%%BASE_VERSION%%
 _base_release=%%BASE_RELEASE%%
 _plus_version=%%PLUS_VERSION%%
+_plus_major_minor=%%NGINX_PLUS_MAJOR_MINOR%%
 
 pkgname=nginx-plus-module-%%MODULE%%
 pkgver=%%MODULE_VERSION_PREFIX%%%%MODULE_VERSION%%
@@ -12,9 +13,9 @@ pkgdesc="%%SUMMARY%%"
 url="https://www.nginx.com/"
 arch="all"
 license="Proprietary (EULA included)"
-depends="nginx-plus~$_plus_version nginx-plus-r$_plus_version %%MODULE_DEPENDS%%"
+depends="nginx-plus~$_plus_major_minor nginx-plus-r$_plus_major_minor %%MODULE_DEPENDS%%"
 makedepends="linux-headers openssl-dev pcre2-dev zlib-dev %%MODULE_BUILD_DEPENDS%%"
-provides="$pkgname-r$_plus_version %%MODULE_PROVIDES%%"
+provides="$pkgname-r$_plus_major_minor %%MODULE_PROVIDES%%"
 %%ADD_CONTROL_TAGS%%
 
 options="!check"
@@ -96,6 +97,7 @@ unpack() {
 				test -n "$sndir" && ln -s ${sndir} ${sn} ||: )
 		fi
 	done
+	cd "$srcdir"
 	bs=`echo nginx*-$_base_version`
 	ln -s $bs ${bs%-*}
 }
