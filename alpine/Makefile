@@ -27,6 +27,15 @@ SRCDIR=	nginx$(BASE_SUFFIX)-$(BASE_VERSION)
 MODULE_SRCDIR=	$(SRCDIR)
 MODSRC_PREFIX=	../
 
+NGINX_PLUS_MAJOR_MINOR = $(word 1,$(subst ., ,$(NGINX_PLUS_VERSION))).$(word 2,$(subst ., ,$(NGINX_PLUS_VERSION)))
+
+RELSTRING=
+ifeq ($(shell test $(PLUS_RELEASE) -gt 1; echo $$?),0)
+RELSTRING=-p$(shell expr $(PLUS_RELEASE) - 1 )
+endif
+
+BUILD_SUFFIX ?=
+
 ifeq ($(MODULE_TARGET), oss)
 APKBUILD_TEMPLATE=	alpine/APKBUILD-module.in
 MODULE_SUMMARY_PREFIX=nginx
@@ -35,7 +44,7 @@ else
 APKBUILD_TEMPLATE=	alpine-$(MODULE_TARGET)/APKBUILD-$(MODULE_TARGET)-module.in
 MODULE_SUFFIX=	-$(MODULE_TARGET)
 MODULE_SUMMARY_PREFIX=NGINX Plus
-TARGET_VERSION=$(PLUS_VERSION)
+TARGET_VERSION=$(NGINX_PLUS_MAJOR_MINOR)
 endif
 
 MODULE_TARGET_PREFIX=$(TARGET_VERSION).
@@ -96,17 +105,20 @@ BASE_CONFIGURE_ARGS=\
 
 ifneq ($(BASE_TARGET), oss)
 BASE_CONFIGURE_ARGS+=\
-	--build=nginx-$(BASE_TARGET)-r$(PLUS_VERSION) \
-	--mgmt-id-path=/var/lib/nginx/nginx.id \
+	--build=nginx-$(BASE_TARGET)-r$(PLUS_VERSION)$(RELSTRING)$(BUILD_SUFFIX) \
+	--state-path=/var/lib/nginx/state \
+	--with-control-api \
 	--with-http_auth_jwt_module \
 	--with-http_f4f_module \
 	--with-http_hls_module \
+	--with-http_oidc_module \
 	--with-http_proxy_protocol_vendor_module \
 	--with-http_session_log_module \
 	--with-mgmt \
 	--with-stream_mqtt_filter_module \
 	--with-stream_mqtt_preread_module \
-	--with-stream_proxy_protocol_vendor_module
+	--with-stream_proxy_protocol_vendor_module \
+	--system-ca-bundle=/etc/ssl/cert.pem
 endif
 
 include $(CONTRIB)/attestation.mak
@@ -181,6 +193,7 @@ abuild-base: $(BASE_SRC)
 		-e 's#%%BASE_RELEASE%%#$(BASE_RELEASE)#g' \
 		-e 's#%%PLUS_VERSION%%#$(PLUS_VERSION)#g' \
 		-e 's#%%PLUS_RELEASE%%#$(PLUS_RELEASE)#g' \
+		-e 's#%%NGINX_PLUS_MAJOR_MINOR%%#$(NGINX_PLUS_MAJOR_MINOR)#g' \
 		-e "s#%%BASE_PATCHES%%#$$patches#g" \
 		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
 		> abuild-base/APKBUILD ; \
@@ -231,6 +244,7 @@ abuild-module-%: $(BASE_SRC) .deps-module-%
 		-e "s#%%BASE_RELEASE%%#$(BASE_RELEASE)#g" \
 		-e 's#%%BASE_CONFIGURE_ARGS%%#$(BASE_CONFIGURE_ARGS)#g' \
 		-e "s#%%PLUS_VERSION%%#$(PLUS_VERSION)#g" \
+		-e 's#%%NGINX_PLUS_MAJOR_MINOR%%#$(NGINX_PLUS_MAJOR_MINOR)#g' \
 		-e "s#%%MODULE_VERSION%%#$(MODULE_VERSION_$(call modname, $*))#g" \
 		-e "s#%%MODULE_RELEASE%%#$(MODULE_RELEASE_$(call modname, $*))#g" \
 		-e "s#%%MODULE_VERSION_PREFIX%%#$(MODULE_VERSION_PREFIX_$(call modname, $*))#g" \
