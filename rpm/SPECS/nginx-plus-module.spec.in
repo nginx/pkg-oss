@@ -56,6 +56,7 @@ Epoch: %{epoch}
 %endif
 %define base_release %%BASE_RELEASE%%%{?dist}.ngx
 %define plus_version %%PLUS_VERSION%%
+%define nginx_plus_major_minor %%NGINX_PLUS_MAJOR_MINOR%%
 
 %define bdir %{_builddir}/%{name}-%{base_version}
 
@@ -82,8 +83,8 @@ License: %%MODULE_PACKAGE_LICENSE%%
 BuildRoot: %{_tmppath}/%{name}-%{base_version}-%{base_release}-root
 BuildRequires: zlib-devel
 BuildRequires: pcre2-devel
-Requires: nginx-plus-r%{plus_version}
-Provides: %{name}-r%{plus_version}
+Requires: nginx-plus-r%{nginx_plus_major_minor}
+Provides: %{name}-r%{nginx_plus_major_minor}
 
 %description
 NGINX Plus: %%SHORT_SUMMARY%%.
