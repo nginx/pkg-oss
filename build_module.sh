@@ -9,6 +9,7 @@
 # Obtains pkg-oss tool, creates packaging files and copies in module source.
 #
 # CHANGELOG
+# v0.20 [05-May-2026] Accept new versioning for NGINX Plus releases
 # v0.19 [03-Sep-2024] Moved to GitHub
 # v0.18 [29-Apr-2021] Added -V option to specify module version
 # v0.17 [11-Nov-2020] Fixed bashisms and made /bin/sh default interpreter
@@ -63,7 +64,7 @@ if [ $# -eq 0 ]; then
 	echo " -s | --skip-depends            # Skip dependecies check/install"
 	echo " -y | --non-interactive         # Automatically install dependencies and overwrite files"
 	echo " -f | --force-dynamic           # Attempt to convert static configuration to dynamic module"
-	echo " -r <NGINX Plus release number> # Build against the corresponding OSS version for this release"
+	echo " -r <NGINX Plus release number> # Build against the corresponding OSS version for this release (NN[pN] or NN.N[.N])"
 	echo " -v [NGINX OSS version number]  # Build against this OSS version [current mainline] (default)"
 	echo " -o <package output directory>  # Create package(s) in this directory (default: $OUTPUT_DIR)"
 	echo ""
@@ -109,14 +110,15 @@ while [ $# -gt 1 ]; do
 			;;
 		"-r")
 			BUILD_PLATFORM=Plus
-			if [ `echo -n $2 | tr -d '[0-9p]' | wc -c` -gt 0 ]; then
-				echo "$ME: ERROR: NGINX Plus release must be in the format NN[pN] - quitting"
+			if [ `echo -n $2 | tr -d '[0-9p.]' | wc -c` -gt 0 ]; then
+				echo "$ME: ERROR: NGINX Plus release must be in the format NN[pN] or NN.N[.N] - quitting"
 				exit 1
 			elif [ "`echo "10^$2" | tr '^' '\n' | sort -nr | head -1`" = "10" ]; then
 				echo "$ME: ERROR: NGINX Plus release must be at least 11 to support dynamic modules - quitting"
 				exit 1
 			fi
-			PLUS_REL=$2
+			# Normalize NN.N.N to NN.N for git branch naming
+			PLUS_REL=`echo $2 | sed 's/^\([0-9]*\.[0-9]*\)\.[0-9]*$/\1/'`
 			shift; shift
 			;;
 		"-v")
