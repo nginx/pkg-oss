@@ -392,10 +392,16 @@ fi
 
 if [ "$BUILD_PLATFORM" = "OSS" ]; then
 	if [ "$OSS_VER" != "" ]; then
-		( cd pkg-oss && git checkout `git tag -l | grep "^$OSS_VER" | head -1 | awk '{print $1}'` )
+		if ! ( cd pkg-oss && git checkout `git tag -l | grep "^$OSS_VER" | head -1 | awk '{print $1}'` ); then
+			echo "$ME: ERROR: Unable to checkout NGINX OSS version $OSS_VER - quitting"
+			exit 1
+		fi
 	fi
 else
-	( cd pkg-oss && git checkout target-plus-r$PLUS_REL )
+	if ! ( cd pkg-oss && git checkout target-plus-r$PLUS_REL ); then
+		echo "$ME: ERROR: Unable to checkout NGINX Plus release $PLUS_REL - quitting"
+		exit 1
+	fi
 fi
 cd pkg-oss/$PACKAGING_DIR
 if [ $? -ne 0 ]; then
