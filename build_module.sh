@@ -313,10 +313,10 @@ else
 			# Assume tarball of some kind
 			try_n_times 3 "wget -O $BUILD_DIR/module.tgz $1" "rm -f $BUILD_DIR/module.tgz"
 			ARCHIVE_DIR=`tar tfz "$BUILD_DIR/module.tgz" | head -n 1 | cut -f1 -d/`
-			cd "$BUILD_DIR"
+			cd "$BUILD_DIR" || { echo "$ME: ERROR: Could not enter build directory - quitting"; exit 1; }
 			tar xfz module.tgz
 			mv "$ARCHIVE_DIR" "$MODULE_DIR"
-			cd -
+			cd - > /dev/null || { echo "$ME: ERROR: Could not return from build directory - quitting"; exit 1; }
 			;;
 	esac
 fi
@@ -381,7 +381,7 @@ fi
 # Get NGINX OSS packaging tool
 #
 echo "$ME: INFO: Downloading NGINX packaging tool"
-cd "$BUILD_DIR"
+cd "$BUILD_DIR" || { echo "$ME: ERROR: Could not enter build directory - quitting"; exit 1; }
 
 PKG_OSS_URL="https://github.com/nginx/pkg-oss"
 
@@ -412,7 +412,7 @@ fi
 #
 # Archive the module source for use with packaging tool using the base OSS version
 #
-cd "$BUILD_DIR"
+cd "$BUILD_DIR" || { echo "$ME: ERROR: Could not enter build directory - quitting"; exit 1; }
 if [ -d pkg-oss/contrib ]; then
 	VERSION=`grep "^NGINX_VERSION :=" pkg-oss/contrib/src/nginx/version | cut -f2 -d= | tr -d "[:blank:]"`
 else
@@ -430,10 +430,10 @@ if [ -d pkg-oss/contrib ]; then
 else
 	cp "$MODULE_NAME-$VERSION.tar.gz" "$OLDPWD/$PACKAGE_SOURCES_DIR/"
 fi
-cd -
+cd - > /dev/null || { echo "$ME: ERROR: Could not return from build directory - quitting"; exit 1; }
 
 echo "$ME: INFO: Creating changelog"
-cd "$BUILD_DIR"
+cd "$BUILD_DIR" || { echo "$ME: ERROR: Could not enter build directory - quitting"; exit 1; }
 cat << __EOF__ >pkg-oss/docs/nginx-module-$MODULE_NAME.xml
 <?xml version="1.0" ?>
 <!DOCTYPE change_log SYSTEM "changes.dtd" >
@@ -502,11 +502,11 @@ cp "Makefile.module-$MODULE_NAME" "$BUILD_DIR/pkg-oss/alpine/"
 echo "$ME: INFO: Building"
 
 if [ "$PKG_FMT" = "rpm" ]; then
-	cd "$BUILD_DIR/pkg-oss/rpm/SPECS"
+	cd "$BUILD_DIR/pkg-oss/rpm/SPECS" || { echo "$ME: ERROR: Could not enter packaging directory - quitting"; exit 1; }
 elif [ "$PKG_FMT" = "deb" ]; then
-	cd "$BUILD_DIR/pkg-oss/debian"
+	cd "$BUILD_DIR/pkg-oss/debian" || { echo "$ME: ERROR: Could not enter packaging directory - quitting"; exit 1; }
 else
-	cd "$BUILD_DIR/pkg-oss/alpine"
+	cd "$BUILD_DIR/pkg-oss/alpine" || { echo "$ME: ERROR: Could not enter packaging directory - quitting"; exit 1; }
 fi
 
 if [ "$BUILD_PLATFORM" = "Plus" ]; then
