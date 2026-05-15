@@ -418,6 +418,10 @@ if [ -d pkg-oss/contrib ]; then
 else
 	VERSION=`grep "^BASE_VERSION=" pkg-oss/$PACKAGING_DIR/Makefile | cut -f2 -d= | tr -d "[:blank:]"`
 fi
+if [ -z "$VERSION" ]; then
+	echo "$ME: ERROR: Could not determine NGINX version from packaging tool - quitting"
+	exit 1
+fi
 echo "$ME: INFO: Archiving module source for $VERSION"
 mv $MODULE_NAME $MODULE_NAME-$VERSION
 tar cf - $MODULE_NAME-$VERSION | gzip -1 > $MODULE_NAME-$VERSION.tar.gz
