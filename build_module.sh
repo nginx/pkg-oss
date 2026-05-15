@@ -149,6 +149,20 @@ while [ $# -gt 1 ]; do
 done
 
 #
+# Validate remaining argument is the module source, not a dangling option
+#
+if [ $# -ne 1 ] || [ -z "$1" ]; then
+	echo "$ME: ERROR: Missing module source - quitting"
+	exit 1
+fi
+case "$1" in
+	-*)
+		echo "$ME: ERROR: Missing argument for option or missing module source - quitting"
+		exit 1
+		;;
+esac
+
+#
 # Create package output directory
 #
 if [ ! -d "$OUTPUT_DIR" ]; then
