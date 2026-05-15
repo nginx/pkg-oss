@@ -302,14 +302,14 @@ else
 			git clone --recursive $1 $MODULE_DIR
 			;;
 		"zip")
-			echo "$ME: INFO Downloading module source"
+			echo "$ME: INFO: Downloading module source"
 			try_n_times 3 "wget -O $BUILD_DIR/module.zip $1" "rm -f $BUILD_DIR/module.zip"
 			ARCHIVE_DIR=`zipinfo -1 $BUILD_DIR/module.zip | head -n 1 | cut -f1 -d/`
 			unzip $BUILD_DIR/module.zip -d $BUILD_DIR
 			mv $BUILD_DIR/$ARCHIVE_DIR $MODULE_DIR
 			;;
 		*)
-			echo "$ME: INFO Downloading module source"
+			echo "$ME: INFO: Downloading module source"
 			# Assume tarball of some kind
 			try_n_times 3 "wget -O $BUILD_DIR/module.tgz $1" "rm -f $BUILD_DIR/module.tgz"
 			ARCHIVE_DIR=`tar tfz $BUILD_DIR/module.tgz | head -n 1 | cut -f1 -d/`
