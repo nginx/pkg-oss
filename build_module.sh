@@ -182,7 +182,7 @@ elif [ `whereis apt-get 2>/dev/null | grep -c "^apt-get: /"` -eq 1 ]; then
 	PACKAGING_DIR=debian
 	PACKAGE_SOURCES_DIR=extra
 	PACKAGE_OUTPUT_DIR="debuild-module-*/"
-elif [ `apk --version | grep -c "^apk-tools"` -eq 1 ]; then
+elif [ `apk --version 2>/dev/null | grep -c "^apk-tools"` -eq 1 ]; then
 	PKG_MGR_INSTALL="apk add"
 	PKG_MGR_UPDATE="apk update"
 	PKG_FMT=apk
