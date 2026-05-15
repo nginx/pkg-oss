@@ -385,7 +385,10 @@ cd $BUILD_DIR
 
 PKG_OSS_URL="https://github.com/nginx/pkg-oss"
 
-git clone $PKG_OSS_URL
+if ! git clone $PKG_OSS_URL; then
+	echo "$ME: ERROR: Unable to clone NGINX packaging tool - quitting"
+	exit 1
+fi
 
 if [ "$BUILD_PLATFORM" = "OSS" ]; then
 	if [ "$OSS_VER" != "" ]; then
