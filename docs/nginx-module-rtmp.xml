@@ -5,6 +5,18 @@
 <change_log title="nginx_module_rtmp">
 
 
+<changes apply="nginx-module-rtmp" ver="1.2.2" rev="1" basever="1.30.2"
+         date="2026-05-22" time="13:56:56 +0100"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.30.2-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-rtmp" ver="1.2.2" rev="1" basever="1.30.1"
          date="2026-05-13" time="16:21:27 +0100"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">

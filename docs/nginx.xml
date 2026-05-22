@@ -5,6 +5,28 @@
 <change_log title="nginx">
 
 
+<changes apply="nginx" ver="1.30.2" rev="1"
+         date="2026-05-22" time="13:56:56 +0100"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+1.30.2-1
+</para>
+</change>
+
+<change type="security">
+<para>
+a heap memory buffer overflow might occur in a worker
+process when using a configuration with overlapping captures in
+ngx_http_rewrite_module, potentially resulting in arbitrary code
+execution (CVE-2026-9256).
+Thanks to Mufeed VH of Winfunc Research.
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx" ver="1.30.1" rev="1"
          date="2026-05-13" time="16:21:27 +0100"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
