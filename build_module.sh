@@ -270,20 +270,20 @@ while true; do
 done
 
 #
-# A generic helper function to retry any command with a backoff strategy
+# Download a URL to a file, retrying up to 3 times with exponential backoff
 #
-try_n_times() {
+wget_n_times() {
 	MAX_ATTEMPTS=$1
-	CMD=$2
-	CLEAN_CMD=$3
+	OUTPUT="$2"
+	URL="$3"
 	i=0
 	WAIT_TIME=1
-	while ! $CMD; do
+	while ! wget -O "$OUTPUT" "$URL"; do
 		i=$(expr $i + 1)
 		if [ $i -le $MAX_ATTEMPTS ]; then
 			echo "Attempt $i failed! Waiting $WAIT_TIME seconds before retry..."
 			sleep $WAIT_TIME
-			test -n "$CLEAN_CMD" && $CLEAN_CMD
+			rm -f "$OUTPUT"
 			WAIT_TIME=$(expr $WAIT_TIME \* 2)
 		else
 			echo "$MAX_ATTEMPTS attempts failed!"
@@ -317,7 +317,10 @@ else
 			;;
 		"zip")
 			echo "$ME: INFO: Downloading module source"
-			try_n_times 3 "wget -O $BUILD_DIR/module.zip $1" "rm -f $BUILD_DIR/module.zip"
+			if ! wget_n_times 3 "$BUILD_DIR/module.zip" "$1"; then
+				echo "$ME: ERROR: Failed to download module source from $1 - quitting"
+				exit 1
+			fi
 			ARCHIVE_DIR=`zipinfo -1 "$BUILD_DIR/module.zip" | head -n 1 | cut -f1 -d/`
 			case "$ARCHIVE_DIR" in
 				"" | . | ..)
@@ -331,7 +334,10 @@ else
 		*)
 			echo "$ME: INFO: Downloading module source"
 			# Assume tarball of some kind
-			try_n_times 3 "wget -O $BUILD_DIR/module.tgz $1" "rm -f $BUILD_DIR/module.tgz"
+			if ! wget_n_times 3 "$BUILD_DIR/module.tgz" "$1"; then
+				echo "$ME: ERROR: Failed to download module source from $1 - quitting"
+				exit 1
+			fi
 			ARCHIVE_DIR=`tar tfz "$BUILD_DIR/module.tgz" | head -n 1 | cut -f1 -d/`
 			case "$ARCHIVE_DIR" in
 				"" | . | ..)
