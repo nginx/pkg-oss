@@ -110,7 +110,7 @@ while [ $# -gt 1 ]; do
 			;;
 		"-r")
 			BUILD_PLATFORM=Plus
-			if [ `echo -n "$2" | tr -d '[0-9p.]' | wc -c` -gt 0 ]; then
+			if [ `printf '%s' "$2" | tr -d '[0-9p.]' | wc -c` -gt 0 ]; then
 				echo "$ME: ERROR: NGINX Plus release must be in the format NN[pN] or NN.N[.N] - quitting"
 				exit 1
 			elif [ "`echo "10^$2" | tr '^' '\n' | sort -nr | head -1`" = "10" ]; then
@@ -123,7 +123,7 @@ while [ $# -gt 1 ]; do
 			;;
 		"-v")
 			BUILD_PLATFORM=OSS
-			if [ `echo -n ".$2" | tr -d '[0-9\.]' | wc -c` -eq 0 ]; then
+			if [ `printf '%s' ".$2" | tr -d '[0-9\.]' | wc -c` -eq 0 ]; then
 				OSS_VER=$2
 				shift
 			fi
@@ -237,7 +237,7 @@ if [ "$MODULE_NAME" = "" ]; then
 	#
 	MODULE_NAME=`basename "$1" | tr '[:blank:][:punct:]' '\n' | tr '[A-Z]' '[a-z]' | grep -ve nginx -e ngx -e http -e stream -e module -e plus -e tar -e zip -e gz -e git | tr -d '\n'`
 	if [ -z "$SAY_YES" ]; then
-		echo -n "$ME: INPUT: Enter module nickname [$MODULE_NAME]: "
+		printf '%s' "$ME: INPUT: Enter module nickname [$MODULE_NAME]: "
 		read -r REPLY
 		if [ "$REPLY" != "" ]; then
 			MODULE_NAME=$REPLY
@@ -255,7 +255,7 @@ while true; do
 	if [ "$MODULE_NAME_CLEAN" != "$MODULE_NAME" ] || [ -z "$MODULE_NAME" ]; then
 		echo "$ME: WARNING: Removed illegal characters from module nickname - using \"$MODULE_NAME_CLEAN\""
 		if [ -z "$SAY_YES" ]; then
-			echo -n "$ME: INPUT: Confirm module nickname [$MODULE_NAME_CLEAN]: "
+			printf '%s' "$ME: INPUT: Confirm module nickname [$MODULE_NAME_CLEAN]: "
 			read -r MODULE_NAME
 			if [ "$MODULE_NAME" = "" ]; then
 				MODULE_NAME=$MODULE_NAME_CLEAN
