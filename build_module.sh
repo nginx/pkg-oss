@@ -557,7 +557,7 @@ else
 	if [ "$PKG_FMT" = "apk" ]; then
 		find ~/packages -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} "$OUTPUT_DIR/" \;
 	else
-		find "$BUILD_DIR/$PACKAGING_ROOT$PACKAGE_OUTPUT_DIR" -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} "$OUTPUT_DIR/" \;
+		find "$BUILD_DIR/$PACKAGING_ROOT" -type f -name "*.$PKG_FMT" -path "*/$PACKAGE_OUTPUT_DIR*" -exec $COPY_CMD -v {} "$OUTPUT_DIR/" \;
 	fi
 	echo "$ME: INFO: Removing $BUILD_DIR"
 	rm -fr "$BUILD_DIR"
