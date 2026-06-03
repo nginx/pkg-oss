@@ -296,10 +296,9 @@ wget_n_times() {
 #
 # Create temporary build area, with working copy of module source
 #
-BUILD_DIR=/tmp/$ME.$$
+BUILD_DIR=$(mktemp -d)
 MODULE_DIR=$BUILD_DIR/$MODULE_NAME
 echo "$ME: INFO: Creating $BUILD_DIR build area"
-mkdir "$BUILD_DIR"
 
 if [ -d "$1" ]; then
 	mkdir -v "$MODULE_DIR"
