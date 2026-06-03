@@ -280,7 +280,7 @@ wget_n_times() {
 	WAIT_TIME=1
 	while ! wget -O "$OUTPUT" "$URL"; do
 		i=$(expr $i + 1)
-		if [ $i -le $MAX_ATTEMPTS ]; then
+		if [ $i -lt $MAX_ATTEMPTS ]; then
 			echo "Attempt $i failed! Waiting $WAIT_TIME seconds before retry..."
 			sleep $WAIT_TIME
 			rm -f "$OUTPUT"
