@@ -312,7 +312,10 @@ else
 	case "${1##*.}" in
 		"git")
 			echo "$ME: INFO: Cloning module source"
-			git clone --recursive "$1" "$MODULE_DIR"
+			if ! git clone --recursive "$1" "$MODULE_DIR"; then
+				echo "$ME: ERROR: Failed to clone module source from $1 - quitting"
+				exit 1
+			fi
 			;;
 		"zip")
 			echo "$ME: INFO: Downloading module source"
