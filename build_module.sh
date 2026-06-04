@@ -303,7 +303,7 @@ echo "$ME: INFO: Creating $BUILD_DIR build area"
 if [ -d "$1" ]; then
 	mkdir -v "$MODULE_DIR"
 	echo "$ME: INFO: Building $MODULE_NAME from $MODULE_DIR"
-	cp -a "$1"/* "$MODULE_DIR"
+	cp -a "$1"/. "$MODULE_DIR"
 else
         #
         # Module sources string is not a local directory so assume it is a URL.
