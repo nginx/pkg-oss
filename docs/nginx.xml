@@ -5,6 +5,18 @@
 <change_log title="nginx">
 
 
+<changes apply="nginx" ver="1.31.2" rev="1"
+         date="2026-06-17" time="08:36:20 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+1.31.2-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx" ver="1.31.1" rev="1"
          date="2026-05-22" time="14:02:10 +0100"
          packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
