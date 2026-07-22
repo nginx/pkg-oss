@@ -16,6 +16,8 @@ MODULE_SOURCES_acme=	nginx-acme-$(NGINX_ACME_VERSION).tar.gz \
 
 MODULE_CONFARGS_acme=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-acme-$(NGINX_ACME_VERSION)
 
+MODULE_TESTS_acme=     nginx-acme-$(NGINX_ACME_VERSION)/t/
+
 # fixes module dependencies build using rustup-provided rustc/cargo
 define MODULE_PREBUILD_acme
 export NGX_ACME_STATE_PREFIX=/var/cache/nginx \&\& \

@@ -28,6 +28,8 @@ MODULE_LD_OPT_njs= -L$$\(CURDIR\)/debian/extra/quickjs-$(QUICKJS_GITHASH)/
 MODULE_CC_OPT_DEBUG_njs= -I$$\(CURDIR\)/debian/extra/quickjs-$(QUICKJS_GITHASH)/
 MODULE_LD_OPT_DEBUG_njs= -L$$\(CURDIR\)/debian/extra/quickjs-$(QUICKJS_GITHASH)/
 
+MODULE_TESTS_njs= njs-$(NJS_VERSION)/nginx/t/
+
 define MODULE_PREBUILD_njs
 	cd $$(CURDIR)/debian/extra/quickjs-$(QUICKJS_GITHASH) \&\& \
 	CFLAGS="$$(CFLAGS) -fPIC" $(MAKE) -j$$(NUMJOBS) libquickjs.a \&\& \

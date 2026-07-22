@@ -20,6 +20,8 @@ MODULE_PATCHES_njs= $(CONTRIB)/src/quickjs/quickjs.makefile.patch
 
 MODULE_CONFARGS_njs=	--add-dynamic-module=njs-$(NJS_VERSION)/nginx
 
+MODULE_TESTS_njs= njs-$(NJS_VERSION)/nginx/t/
+
 define MODULE_DEFINITIONS_njs
 BuildRequires: libedit-devel
 BuildRequires: libxml2-devel
