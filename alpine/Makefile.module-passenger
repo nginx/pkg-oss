@@ -18,8 +18,6 @@ MODULE_PATCHES_passenger=	$(CONTRIB)/src/passenger/build-nginx.rb.patch \
 
 MODULE_CONFARGS_passenger=	--add-dynamic-module=$(MODSRC_PREFIX)passenger-$(PASSENGER_VERSION)/src/nginx_module
 
-prerequisites-for-module-passenger:
-
 MODULE_BUILD_DEPENDS_passenger=ruby-dev ruby-rake
 
 define MODULE_POST_passenger
