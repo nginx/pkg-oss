@@ -17,8 +17,6 @@ MODULE_PATCHES_auth_spnego=
 
 MODULE_CONFARGS_auth_spnego=	--add-dynamic-module=$(MODSRC_PREFIX)spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHASH)
 
-prerequisites-for-module-auth-spnego:
-
 MODULE_BUILD_DEPENDS_auth_spnego=krb5-dev
 
 define MODULE_POST_auth_spnego

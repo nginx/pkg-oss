@@ -15,8 +15,6 @@ MODULE_SOURCES_headers_more=	headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODU
 
 MODULE_CONFARGS_headers_more=	--add-dynamic-module=$(MODSRC_PREFIX)headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODULE_GITHASH)
 
-prerequisites-for-module-headers-more:
-
 define MODULE_POST_headers_more
 cat <<BANNER
 ----------------------------------------------------------------------
