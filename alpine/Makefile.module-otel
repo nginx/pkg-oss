@@ -25,8 +25,6 @@ MODULE_PATCHES_otel=
 
 MODULE_CONFARGS_otel=   --add-dynamic-module=$(MODSRC_PREFIX)/nginx-otel-$(NGINX_OTEL_GITHASH)/
 
-prerequisites-for-module-otel:
-
 MODULE_BUILD_DEPENDS_otel=cmake protobuf-dev grpc-dev
 
 define MODULE_PREBUILD_otel

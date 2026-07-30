@@ -15,8 +15,6 @@ MODULE_SOURCES_geoip2=	ngx_http_geoip2_module-$(NGX_HTTP_GEOIP2_MODULE_VERSION).
 
 MODULE_CONFARGS_geoip2=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_http_geoip2_module-$(NGX_HTTP_GEOIP2_MODULE_VERSION)
 
-prerequisites-for-module-geoip2:
-
 MODULE_BUILD_DEPENDS_geoip2=libmaxminddb-dev
 
 define MODULE_POST_geoip2
