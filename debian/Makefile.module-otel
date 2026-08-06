@@ -66,7 +66,7 @@ define MODULE_PREBUILD_otel
 		../cmake/ \&\& \
 	make -j$$(NUMJOBS) install \&\& \
 	cd $$(BUILDDIR_nginx)/extra/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
-	CXXFLAGS='-Wno-error=format-security -DGRPC_NO_XDS -DGRPC_NO_RLS' \
+	CXXFLAGS="$$(CXXFLAGS) -Wno-error=format-security -DGRPC_NO_XDS -DGRPC_NO_RLS" \
 		cmake \
 		-DCMAKE_CXX_STANDARD=17 \
 		-DCMAKE_CXX_EXTENSIONS=OFF \
