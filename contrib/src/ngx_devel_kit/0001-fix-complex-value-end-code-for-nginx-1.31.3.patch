@@ -1,0 +1,111 @@
+From 585069fdf71966d6355033038e3d5868ed64f87a Mon Sep 17 00:00:00 2001
+From: Sergii Negodiuk <s.negodyuck@smartweb.com.ua>
+Date: Thu, 16 Jul 2026 01:17:57 +0300
+Subject: [PATCH 1/2] Fix complex value scripts after nginx script engine
+ change
+
+---
+ src/ndk_rewrite.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/src/ndk_rewrite.c b/src/ndk_rewrite.c
+index 77ce9f8..2a06715 100644
+--- a/src/ndk_rewrite.c
++++ b/src/ndk_rewrite.c
+@@ -5,6 +5,13 @@
+  * be provided later to un-define them as being static
+  */
+ 
++/* Added in nginx 1.31.3 and backported to 1.30.4; not in freenginx. */
++#if !defined(freenginx)                                               \
++    && (nginx_version >= 1030004)                                     \
++    && (nginx_version < 1031000 || nginx_version >= 1031003)
++#define NDK_HAVE_HTTP_SCRIPT_COMPLEX_VALUE_END_CODE
++#endif
++
+ 
+ uintptr_t ndk_http_script_exit_code = (uintptr_t) NULL;
+ 
+@@ -17,6 +24,9 @@ ndk_http_rewrite_value (ngx_conf_t *cf, ndk_http_rewrite_loc_conf_t *lcf,
+     ngx_http_script_compile_t              sc;
+     ngx_http_script_value_code_t          *val;
+     ngx_http_script_complex_value_code_t  *complex;
++#ifdef NDK_HAVE_HTTP_SCRIPT_COMPLEX_VALUE_END_CODE
++    ngx_http_script_complex_value_end_code_t  *complex_end;
++#endif
+ 
+     n = ngx_http_script_variables_count(value);
+ 
+@@ -63,6 +73,17 @@ ndk_http_rewrite_value (ngx_conf_t *cf, ndk_http_rewrite_loc_conf_t *lcf,
+         return NGX_CONF_ERROR;
+     }
+ 
++#ifdef NDK_HAVE_HTTP_SCRIPT_COMPLEX_VALUE_END_CODE
++    complex_end = ngx_http_script_add_code(lcf->codes,
++                              sizeof(ngx_http_script_complex_value_end_code_t),
++                              &complex);
++    if (complex_end == NULL) {
++        return NGX_CONF_ERROR;
++    }
++
++    complex_end->code = ngx_http_script_complex_value_end_code;
++#endif
++
+     return NGX_CONF_OK;
+ }
+ 
+@@ -99,5 +120,3 @@ ndk_http_rewrite_var (ngx_http_request_t *r, ngx_http_variable_value_t *v,
+ 
+     return  NGX_OK;
+ }
+-
+-
+
+From d1f4906c473c8509262e249295fc2bb9ef70644e Mon Sep 17 00:00:00 2001
+From: Sergii Negodiuk <s.negodyuck@smartweb.com.ua>
+Date: Thu, 16 Jul 2026 14:17:13 +0300
+Subject: [PATCH 2/2] Move nginx feature guard to rewrite header
+
+---
+ src/ndk_rewrite.c | 8 --------
+ src/ndk_rewrite.h | 8 ++++++++
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/src/ndk_rewrite.c b/src/ndk_rewrite.c
+index 2a06715..9f4f2a0 100644
+--- a/src/ndk_rewrite.c
++++ b/src/ndk_rewrite.c
+@@ -5,14 +5,6 @@
+  * be provided later to un-define them as being static
+  */
+ 
+-/* Added in nginx 1.31.3 and backported to 1.30.4; not in freenginx. */
+-#if !defined(freenginx)                                               \
+-    && (nginx_version >= 1030004)                                     \
+-    && (nginx_version < 1031000 || nginx_version >= 1031003)
+-#define NDK_HAVE_HTTP_SCRIPT_COMPLEX_VALUE_END_CODE
+-#endif
+-
+-
+ uintptr_t ndk_http_script_exit_code = (uintptr_t) NULL;
+ 
+ 
+diff --git a/src/ndk_rewrite.h b/src/ndk_rewrite.h
+index 2479aa2..b0ae283 100644
+--- a/src/ndk_rewrite.h
++++ b/src/ndk_rewrite.h
+@@ -3,6 +3,14 @@
+ /* TODO : should remove this when not needed */
+ 
+ 
++/* Added in nginx 1.31.3 and backported to 1.30.4; not in freenginx. */
++#if !defined(freenginx)                                               \
++    && (nginx_version >= 1030004)                                     \
++    && (nginx_version < 1031000 || nginx_version >= 1031003)
++#define NDK_HAVE_HTTP_SCRIPT_COMPLEX_VALUE_END_CODE
++#endif
++
++
+ 
+ /* used for plugging into the rewrite module (taken from the rewrite module) */
+ 
