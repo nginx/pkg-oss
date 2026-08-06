@@ -277,7 +277,7 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 	done ; \
 	cp -ar debian$(MODULE_SUFFIX)/. $${builddir}/$(SRCDIR)/debian ; \
 	for src in $(MODULE_SOURCES_$(call modname, $*)); do \
-		tar -C $${builddir}/$(SRCDIR)/debian/extra -xvf $(CONTRIB)/tarballs/$${src} ; \
+		tar -C $${builddir}/$(SRCDIR)/debian/extra -xf $(CONTRIB)/tarballs/$${src} ; \
 		sn=`echo $${src} | sed -e 's/-[0-9].*$$//'` ; \
 		if [ "$${sn}" = "$${src}" ] ; then \
 			sn=$${src%-*} ; \
