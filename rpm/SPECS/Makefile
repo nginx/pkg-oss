@@ -243,10 +243,10 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 		sources="$${sources}\n$${s}" ; \
 		case "$${src}" in \
 			*.tar.xz) \
-				taropts="xvJfo" ; \
+				taropts="xJfo" ; \
 				;; \
 			*) \
-				taropts="xvzfo" ; \
+				taropts="xzfo" ; \
 				;; \
 		esac ; \
 		s="`printf "tar $${taropts} %%{SOURCE%d\}" $${i}`" ; \
