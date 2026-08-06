@@ -47,7 +47,7 @@ fi
 
 export CFLAGS="%{optflags}"
 export CXXFLAGS="%{optflags}"
-export LDFLAGS="%{build_ldflags}"
+export LDFLAGS="%{?build_ldflags}"
 
 cd %{bdir} \&\& mkdir prebuilt
 %if ! 0%{defined suse_version}
