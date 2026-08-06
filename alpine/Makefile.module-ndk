@@ -17,6 +17,8 @@ MODULE_CONFARGS_ndk=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_devel_kit-$(NGX_DE
 
 prerequisites-for-module-ndk:
 
+MODULE_PATCHES_ndk=	$(CONTRIB)/src/ngx_devel_kit/0001-fix-complex-value-end-code-for-nginx-1.31.3.patch
+
 MODULE_CC_OPT_ndk=-DNDK_SET_VAR -DNDK_UPSTREAM_LIST
 MODULE_CC_OPT_DEBUG_ndk=$(MODULE_CC_OPT_ndk)
 
