@@ -26,7 +26,7 @@ jobs:
           for target in $(make list-all-modules | cut -d ' ' -f 1); do
             targets="$targets module-$target";
           done
-          echo targets="base $targets" >> $GITHUB_ENV
+          echo targets="$targets" >> $GITHUB_ENV
 
       - name: set-matrix
         id: set-matrix
@@ -38,8 +38,58 @@ jobs:
             jq -nRr '"matrix-" + $os +"=" + ( { include: [ $ARGS.positional[] | {target: . } ] } | tojson)' --arg os $os --args ${targets/ module-geoip/} >> $GITHUB_OUTPUT
           done
 
-  alpine:
+  alpine-base:
+    runs-on: ubuntu-24.04
     needs: generate-matrix
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup Alpine Linux
+        uses: jirutka/setup-alpine@ae3b3ddba35054804fc4a3507b519fa7e8152050 #v1
+        with:
+          branch: v3.20
+          packages: >
+            abuild
+            build-base
+            coreutils
+            curl
+            findutils
+            git
+            make
+            xz
+
+      - name: Create build depends for base
+        shell: alpine.sh {0}
+        working-directory: alpine
+        run: |
+          make abuild-base
+
+      - name: Install build depends for base
+        shell: alpine.sh --root {0}
+        working-directory: alpine
+        run: |
+          apk add $(. ./abuild-base/APKBUILD; echo $makedepends;)
+
+      - name: Build base
+        shell: alpine.sh {0}
+        working-directory: alpine
+        run: |
+          make base
+
+      - name: Upload nginx binary
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: nginx-binary-alpine
+          path: alpine/base/nginx
+
+      - name: List what has been built
+        shell: alpine.sh {0}
+        if: ${{ !cancelled() }}
+        run: |
+          find ~/packages/alpine -type f | xargs ls -ld
+
+  alpine:
+    needs: [generate-matrix, alpine-base]
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -60,6 +110,15 @@ jobs:
             findutils
             git
             make
+            perl
+            perl-io-socket-ssl
+            perl-io-socket-inet6
+            perl-utils
+            perl-cryptx
+            perl-dev
+            perl-fcgi
+            perl-parse-recdescent
+            perl-protocol-websocket
             rustup
             xz
 
@@ -85,19 +144,38 @@ jobs:
         run: |
           make ${{ matrix.target }}
 
+      - name: Download nginx binary
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: nginx-binary-alpine
+          path: alpine/base
+
+      - name: Setup test environment for ${{ matrix.target }}
+        run: |
+          SETUP="$GITHUB_WORKSPACE/.github/test-env/${{ matrix.target }}.sh"
+          if [ -f "$SETUP" ]; then bash "$SETUP"; fi
+
+      - name: Test ${{ matrix.target }}
+        env:
+          TEST_NGINX_BINARY: "${{ github.workspace }}/alpine/base/nginx"
+        shell: alpine.sh {0}
+        working-directory: alpine
+        run: |
+          MODULE=${{ matrix.target }}
+          MODULE=${MODULE#module-}
+          chmod +x "$TEST_NGINX_BINARY"
+          touch module-${MODULE}
+          make test-module-${MODULE}
+
       - name: List what has been built
         shell: alpine.sh {0}
         if: ${{ !cancelled() }}
         run: |
           find ~/packages/alpine -type f | xargs ls -ld
 
-  ubuntu:
+  ubuntu-base:
     runs-on: ubuntu-24.04
     needs: generate-matrix
-    strategy:
-      fail-fast: false
-      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-ubuntu)}}
-
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
@@ -118,6 +196,55 @@ jobs:
         with:
           toolchain: 1.86.0
 
+      - name: Build base
+        working-directory: debian
+        run: |
+          NGINX_VERSION=$(make --eval 'nv:; @echo $(BASE_VERSION)' nv)
+          make rules-base
+          sudo mk-build-deps --install --tool="apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes" \
+            debuild-base/nginx-${NGINX_VERSION}/debian/control
+          make base
+
+      - name: Upload nginx binary
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: nginx-binary-ubuntu
+          path: debian/base/nginx
+
+      - name: List what has been built
+        if: ${{ !cancelled() }}
+        run: |
+          find .. -mindepth 1 -maxdepth 1 -name "*.deb" | xargs ls -ld
+
+  ubuntu:
+    runs-on: ubuntu-24.04
+    needs: [generate-matrix, ubuntu-base]
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-ubuntu)}}
+
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup Ubuntu
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-suggests --no-install-recommends \
+            curl \
+            devscripts \
+            equivs \
+            git \
+            libio-socket-ssl-perl \
+            libio-socket-inet6-perl \
+            libxml2-utils \
+            lsb-release \
+            xsltproc
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
+        with:
+          toolchain: 1.86.0
+
       - name: Create and install build depends for ${{ matrix.target }} and build it
         working-directory: debian
         run: |
@@ -127,19 +254,37 @@ jobs:
             debuild-${{ matrix.target }}/nginx-${NGINX_VERSION}/debian/control
           make ${{ matrix.target }}
 
+      - name: Download nginx binary
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: nginx-binary-ubuntu
+          path: debian/base
+
+      - name: Setup test environment for ${{ matrix.target }}
+        run: |
+          SETUP="$GITHUB_WORKSPACE/.github/test-env/${{ matrix.target }}.sh"
+          if [ -f "$SETUP" ]; then bash "$SETUP"; fi
+
+      - name: Test ${{ matrix.target }}
+        env:
+          TEST_NGINX_BINARY: "${{ github.workspace }}/debian/base/nginx"
+        working-directory: debian
+        run: |
+          MODULE=${{ matrix.target }}
+          MODULE=${MODULE#module-}
+          chmod +x "$TEST_NGINX_BINARY"
+          touch module-${MODULE}
+          make test-module-${MODULE}
+
       - name: List what has been built
         if: ${{ !cancelled() }}
         run: |
           find .. -mindepth 1 -maxdepth 1 -name "*.deb" | xargs ls -ld
 
-  redhat:
-    needs: generate-matrix
+  redhat-base:
     runs-on: ubuntu-24.04
+    needs: generate-matrix
     container: almalinux:9
-    strategy:
-      fail-fast: false
-      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-redhat )}}
-
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
@@ -164,20 +309,92 @@ jobs:
         with:
           toolchain: 1.86.0
 
+      - name: Build base
+        working-directory: rpm/SPECS
+        run: |
+          make nginx.spec
+          dnf -y builddep ./nginx.spec
+          make base
+
+      - name: Upload nginx binary
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: nginx-binary-redhat
+          path: rpm/SPECS/base/nginx
+
+      - name: List what has been built
+        if: ${{ !cancelled() }}
+        run: |
+          find rpm/RPMS -type f | xargs ls -ld
+
+  redhat:
+    needs: [generate-matrix, redhat-base]
+    runs-on: ubuntu-24.04
+    container: almalinux:9
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-redhat )}}
+
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup AlmaLinux
+        run: |
+          dnf makecache
+          dnf install -y epel-release 'dnf-command(config-manager)'
+          dnf config-manager --set-enabled crb
+          dnf install -y \
+            g++ \
+            gcc \
+            git \
+            libxslt \
+            make \
+            perl \
+            perl-Digest-MD5 \
+            perl-ExtUtils-Embed \
+            perl-IO-Compress \
+            perl-IO-Socket-INET6 \
+            perl-IO-Socket-SSL \
+            perl-JSON \
+            perl-JSON-PP \
+            perl-Test-Simple \
+            rpm-build \
+            which \
+            xz
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
+        with:
+          toolchain: 1.86.0
+
       - name: Create and install build depends for ${{ matrix.target }} and build it
         working-directory: rpm/SPECS
         run: |
-          case ${{ matrix.target }} in
-            base)
-              spec="nginx.spec"
-              ;;
-            *)
-              spec="nginx-${{ matrix.target }}.spec"
-              ;;
-          esac
-          make $spec
-          dnf -y builddep ./${spec}
+          make nginx-${{ matrix.target }}.spec
+          dnf -y builddep ./nginx-${{ matrix.target }}.spec
           make ${{ matrix.target }}
+
+      - name: Download nginx binary
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: nginx-binary-redhat
+          path: rpm/SPECS/base
+
+      - name: Setup test environment for ${{ matrix.target }}
+        run: |
+          SETUP="$GITHUB_WORKSPACE/.github/test-env/${{ matrix.target }}.sh"
+          if [ -f "$SETUP" ]; then bash "$SETUP"; fi
+
+      - name: Test ${{ matrix.target }}
+        env:
+          TEST_NGINX_BINARY: "${{ github.workspace }}/rpm/SPECS/base/nginx"
+        working-directory: rpm/SPECS
+        run: |
+          MODULE=${{ matrix.target }}
+          MODULE=${MODULE#module-}
+          chmod +x "$TEST_NGINX_BINARY"
+          touch module-${MODULE}
+          make test-module-${MODULE}
 
       - name: List what has been built
         if: ${{ !cancelled() }}
