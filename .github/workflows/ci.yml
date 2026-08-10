@@ -330,7 +330,9 @@ jobs:
   redhat:
     needs: [generate-matrix, redhat-base]
     runs-on: ubuntu-24.04
-    container: almalinux:9
+    container:
+      image: almalinux:9
+      options: --init
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-redhat )}}
