@@ -27,11 +27,6 @@ BUILD_ENV_PATH=	${HOME}/debuild
 
 NGINX_PLUS_MAJOR_MINOR = $(word 1,$(subst ., ,$(NGINX_PLUS_VERSION))).$(word 2,$(subst ., ,$(NGINX_PLUS_VERSION)))
 
-RELSTRING=
-ifeq ($(shell test $(PLUS_RELEASE) -gt 1; echo $$?),0)
-RELSTRING=-p$(shell expr $(PLUS_RELEASE) - 1 )
-endif
-
 BUILD_SUFFIX ?=
 
 ifeq ($(MODULE_TARGET), plus)
@@ -108,7 +103,7 @@ BASE_CONFIGURE_ARGS=\
 
 ifeq ($(BASE_TARGET), plus)
 BASE_CONFIGURE_ARGS+= \
-	--build=nginx-plus-r$(PLUS_VERSION)$(RELSTRING)$(BUILD_SUFFIX) \
+	--build=nginx-plus-r$(PLUS_VERSION)$(BUILD_SUFFIX) \
 	--state-path=/var/lib/nginx/state \
 	--with-control-api \
 	--with-http_auth_jwt_module \
