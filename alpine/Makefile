@@ -29,11 +29,6 @@ MODSRC_PREFIX=	../
 
 NGINX_PLUS_MAJOR_MINOR = $(word 1,$(subst ., ,$(NGINX_PLUS_VERSION))).$(word 2,$(subst ., ,$(NGINX_PLUS_VERSION)))
 
-RELSTRING=
-ifeq ($(shell test $(PLUS_RELEASE) -gt 1; echo $$?),0)
-RELSTRING=-p$(shell expr $(PLUS_RELEASE) - 1 )
-endif
-
 BUILD_SUFFIX ?=
 
 ifeq ($(MODULE_TARGET), oss)
@@ -105,7 +100,7 @@ BASE_CONFIGURE_ARGS=\
 
 ifneq ($(BASE_TARGET), oss)
 BASE_CONFIGURE_ARGS+=\
-	--build=nginx-$(BASE_TARGET)-r$(PLUS_VERSION)$(RELSTRING)$(BUILD_SUFFIX) \
+	--build=nginx-$(BASE_TARGET)-r$(PLUS_VERSION)$(BUILD_SUFFIX) \
 	--state-path=/var/lib/nginx/state \
 	--with-control-api \
 	--with-http_auth_jwt_module \
