@@ -390,6 +390,7 @@ jobs:
       - name: Test ${{ matrix.target }}
         env:
           TEST_NGINX_BINARY: "${{ github.workspace }}/rpm/SPECS/base/nginx"
+          TEST_NGINX_GLOBALS: "user root;"
         working-directory: rpm/SPECS
         run: |
           MODULE=${{ matrix.target }}
