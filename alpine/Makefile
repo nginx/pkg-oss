@@ -347,7 +347,8 @@ test-module-%: base nginx-tests prerequisites-for-module-% module-%
 		cp -r $${pwd}/abuild-module-$${module}/src/$${testdir} nginx-tests/module-$${module} ; \
 		ln -fs ../lib nginx-tests/module-$${module}/lib ; \
 	fi ; \
-	cd nginx-tests/module-$${module} && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$globals" prove $$PROVE_ARGS . ; \
+	PROVE_ARGS="$$PROVE_ARGS -I$$pwd/nginx-tests/lib" ; \
+	cd nginx-tests/module-$${module} && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$TEST_NGINX_GLOBALS $$globals" prove $$PROVE_ARGS . ; \
 	}
 
 check-modules:
