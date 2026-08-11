@@ -412,16 +412,24 @@ test-debug: base nginx-tests
 
 test-modules: $(addprefix test-module-, $(MODULES))
 
-test-module-%: base nginx-tests module-%
+$(foreach mod,$(MODULES),$(eval prerequisites-for-module-$(mod): $(addprefix module-,$(MODULE_TESTS_DEPS_$(call modname,$(mod))))))
+prerequisites-for-module-%: ;
+
+test-module-%: base nginx-tests prerequisites-for-module-% module-%
 	@{ \
 	module=`echo $@ | cut -d '-' -f 3-` ; \
-	testdir="$(MODULE_TESTS_$(shell echo $@ | cut -d '-' -f 3-))" ; \
+	testdir="$(MODULE_TESTS_$(call modname, $*))" ; \
 	if [ -z "$$testdir" ]; then \
 		echo "---> Skipping, no tests defined for $$module module" ; \
 		exit 0 ; \
 	fi ; \
 	pwd=`pwd` ; \
 	globals= ; \
+	for dep in $(MODULE_TESTS_DEPS_$(call modname, $*)); do \
+		for so in `find module-$${dep}/ -maxdepth 1 -type f -name "*module.so"`; do \
+			globals="load_module $$pwd/$$so; $$globals" ; \
+		done ; \
+	done ; \
 	for so in `find module-$${module}/ -maxdepth 1 -type f -name "*module.so"`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
