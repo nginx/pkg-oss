@@ -5,6 +5,18 @@
 <change_log title="nginx_module_encrypted_session">
 
 
+<changes apply="nginx-module-encrypted-session" ver="0.10" rev="1" basever="1.31.4"
+         date="2026-08-11" time="13:19:30 -0700"
+         packager="Nginx Packaging &lt;nginx-packaging@f5.com&gt;">
+<change>
+<para>
+base version updated to 1.31.4-1
+</para>
+</change>
+
+</changes>
+
+
 <changes apply="nginx-module-encrypted-session" ver="0.10" rev="1" basever="1.31.3"
          date="2026-08-06" time="00:00:00 +0000"
          packager="NGINX Packaging &lt;nginx-packaging@f5.com&gt;">
