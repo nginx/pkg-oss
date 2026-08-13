@@ -20,6 +20,10 @@ MODULE_CONFARGS_encrypted_session=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_deve
 
 MODULE_DEPENDS_encrypted_session=$(NDK_DEPENDENCY_TAG)
 
+MODULE_TESTS_encrypted_session=		$(CONTRIB)/tarballs/pkg-oss-tests/encrypted-session/t/
+MODULE_TESTS_DEPS_encrypted_session=	ndk
+MODULE_TESTS_CONTRIB_DEPS_encrypted_session=    pkg-oss-tests
+
 define MODULE_PREINSTALL_encrypted_session
 	rm -f objs/ndk_http_module-debug.so
 	rm -f objs/ndk_http_module.so
