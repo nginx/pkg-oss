@@ -440,7 +440,10 @@ test-module-%: base nginx-tests .deps-test-module-% prerequisites-for-module-% m
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
 	if [ ! -d nginx-tests/module-$${module} ]; then \
-		cp -r $${pwd}/debuild-module-$${module}/$(SRCDIR)/debian/extra/$${testdir} nginx-tests/module-$${module} ; \
+		if [ "$${testdir#/}" = "$${testdir}" ]; then \
+			testdir=$${pwd}/debuild-module-$${module}/$(SRCDIR)/debian/extra/$${testdir}; \
+		fi ; \
+		cp -r $${testdir} nginx-tests/module-$${module} ; \
 		ln -fs ../lib nginx-tests/module-$${module}/lib ; \
 	fi ; \
 	PROVE_ARGS="$$PROVE_ARGS -I$$pwd/nginx-tests/lib" ; \
