@@ -415,7 +415,13 @@ test-modules: $(addprefix test-module-, $(MODULES))
 $(foreach mod,$(MODULES),$(eval prerequisites-for-module-$(mod): $(addprefix module-,$(MODULE_TESTS_DEPS_$(call modname,$(mod))))))
 prerequisites-for-module-%: ;
 
-test-module-%: base nginx-tests prerequisites-for-module-% module-%
+.deps-test-module-%:
+	if [ -n "$(MODULE_TESTS_CONTRIB_DEPS_$(call modname, $*))" ]; then \
+		cd $(CONTRIB) && make $(foreach dep,$(MODULE_TESTS_CONTRIB_DEPS_$(call modname, $*)),.sum-$(dep)); \
+	fi; \
+	touch $@
+
+test-module-%: base nginx-tests .deps-test-module-% prerequisites-for-module-% module-%
 	@{ \
 	module=`echo $@ | cut -d '-' -f 3-` ; \
 	testdir="$(MODULE_TESTS_$(call modname, $*))" ; \
