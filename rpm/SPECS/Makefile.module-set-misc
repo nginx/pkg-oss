@@ -18,6 +18,10 @@ MODULE_SOURCES_set_misc=	ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION).tar.gz \
 MODULE_CONFARGS_set_misc=	--add-dynamic-module=ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION) \
 				--add-dynamic-module=set-misc-nginx-module-$(SET_MISC_NGINX_MODULE_VERSION)
 
+MODULE_TESTS_set_misc=		$(CONTRIB)/tarballs/pkg-oss-tests/set-misc/t/
+MODULE_TESTS_DEPS_set_misc=	ndk
+MODULE_TESTS_CONTRIB_DEPS_set_misc=    pkg-oss-tests
+
 define MODULE_DEFINITIONS_set_misc
 Requires: $(NDK_DEPENDENCY_TAG)
 endef
