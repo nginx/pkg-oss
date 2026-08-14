@@ -34,6 +34,10 @@ MODULE_CONFARGS_lua=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_devel_kit-$(NGX_DE
 
 MODULE_DEPENDS_lua=,$(NDK_DEPENDENCY_TAG)
 
+MODULE_TESTS_lua=		$(CONTRIB)/tarballs/pkg-oss-tests/lua/t/
+MODULE_TESTS_DEPS_lua=	ndk
+MODULE_TESTS_CONTRIB_DEPS_lua=    pkg-oss-tests
+
 define MODULE_DEFINITIONS_lua
 	USE_LUAJIT = 1
 	LUAJIT_INC_nginx=$$(BUILDDIR_nginx)/extra/luajit2-$(LUAJIT2_VERSION)/usr/include/nginx-luajit-2.1
