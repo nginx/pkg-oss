@@ -15,6 +15,9 @@ MODULE_SOURCES_brotli=	ngx_brotli-$(NGX_BROTLI_VERSION).tar.gz
 
 MODULE_CONFARGS_brotli=	--add-dynamic-module=ngx_brotli-$(NGX_BROTLI_VERSION)rc
 
+MODULE_TESTS_brotli=		$(CONTRIB)/tarballs/pkg-oss-tests/brotli/t/
+MODULE_TESTS_CONTRIB_DEPS_brotli=    pkg-oss-tests
+
 define MODULE_DEFINITIONS_brotli
 %if 0%{?suse_version} == 0
 BuildRequires: brotli-devel
