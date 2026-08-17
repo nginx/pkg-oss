@@ -472,8 +472,17 @@ test-module-%: base nginx-tests .deps-test-module-% prerequisites-for-module-% m
 		cp -r $${testdir} nginx-tests/module-$${module} ; \
 		ln -fs ../lib nginx-tests/module-$${module}/lib ; \
 	fi ; \
+	if [ "$$module" = "lua" ]; then \
+		globals_http="lua_package_path '$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
+		globals_stream="$$globals_http" ; \
+	fi ; \
 	PROVE_ARGS="$$PROVE_ARGS -I$$pwd/nginx-tests/lib" ; \
-	cd nginx-tests/module-$${module} && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$TEST_NGINX_GLOBALS $$globals" prove $$PROVE_ARGS . ; \
+	cd nginx-tests/module-$${module} && \
+		TEST_NGINX_BINARY=$$pwd/base/nginx \
+		TEST_NGINX_GLOBALS="$$TEST_NGINX_GLOBALS $$globals" \
+		TEST_NGINX_GLOBALS_HTTP="$$globals_http" \
+		TEST_NGINX_GLOBALS_STREAM="$$globals_stream" \
+		prove $$PROVE_ARGS . ; \
 	}
 
 clean:
