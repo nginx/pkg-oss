@@ -15,6 +15,9 @@ MODULE_SOURCES_rtmp=	nginx-rtmp-module-$(NGINX_RTMP_MODULE_VERSION).tar.gz
 
 MODULE_CONFARGS_rtmp=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-rtmp-module-$(NGINX_RTMP_MODULE_VERSION)
 
+MODULE_TESTS_rtmp=		$(CONTRIB)/tarballs/pkg-oss-tests/rtmp/t/
+MODULE_TESTS_CONTRIB_DEPS_rtmp=    pkg-oss-tests
+
 define MODULE_POST_rtmp
 cat <<BANNER
 ----------------------------------------------------------------------
