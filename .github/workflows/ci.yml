@@ -121,6 +121,10 @@ jobs:
             perl-protocol-websocket
             rustup
             xz
+            krb5-server
+            krb5
+            krb5-dev
+            perl-gssapi
 
       - name: Install Rust toolchain
         shell: alpine.sh {0}
@@ -238,7 +242,12 @@ jobs:
             libio-socket-inet6-perl \
             libxml2-utils \
             lsb-release \
-            xsltproc
+            xsltproc \
+            krb5-kdc \
+            krb5-admin-server \
+            krb5-user \
+            libkrb5-dev \
+            libgssapi-perl
 
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
@@ -362,7 +371,11 @@ jobs:
             perl-Test-Simple \
             rpm-build \
             which \
-            xz
+            xz \
+            krb5-server \
+            krb5-workstation \
+            krb5-devel \
+            perl-GSSAPI
 
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
