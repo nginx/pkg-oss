@@ -26,7 +26,7 @@ jobs:
           for target in $(make list-all-modules | cut -d ' ' -f 1); do
             targets="$targets module-$target";
           done
-          echo targets="base $targets" >> $GITHUB_ENV
+          echo targets="$targets" >> $GITHUB_ENV
 
       - name: set-matrix
         id: set-matrix
@@ -38,8 +38,58 @@ jobs:
             jq -nRr '"matrix-" + $os +"=" + ( { include: [ $ARGS.positional[] | {target: . } ] } | tojson)' --arg os $os --args ${targets/ module-geoip/} >> $GITHUB_OUTPUT
           done
 
-  alpine:
+  alpine-base:
+    runs-on: ubuntu-24.04
+    container: alpine:3.24
+    defaults:
+      run:
+        shell: sh -e {0}
     needs: generate-matrix
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup Alpine Linux
+        run: |
+          apk add \
+            abuild \
+            build-base \
+            coreutils \
+            curl \
+            findutils \
+            git \
+            make \
+            xz
+          printf "#!/bin/sh\\nSETFATTR=true /usr/bin/abuild -F \"\$@\"\\n" > /usr/local/bin/abuild
+          chmod +x /usr/local/bin/abuild
+
+      - name: Create build depends for base
+        working-directory: alpine
+        run: |
+          make abuild-base
+
+      - name: Install build depends for base
+        working-directory: alpine
+        run: |
+          apk add $(. ./abuild-base/APKBUILD; echo $makedepends;)
+
+      - name: Build base
+        working-directory: alpine
+        run: |
+          make base
+
+      - name: Upload nginx binary
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: nginx-binary-alpine
+          path: alpine/base/nginx
+
+      - name: List what has been built
+        if: ${{ !cancelled() }}
+        run: |
+          find ~/packages/alpine -type f | xargs ls -ld
+
+  alpine:
+    needs: [generate-matrix, alpine-base]
     runs-on: ubuntu-24.04
     container: alpine:3.24
     defaults:
@@ -93,9 +143,52 @@ jobs:
         run: |
           find ~/packages/alpine -type f | xargs ls -ld
 
-  ubuntu:
+  ubuntu-base:
     runs-on: ubuntu-24.04
     needs: generate-matrix
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup Ubuntu
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-suggests --no-install-recommends \
+            curl \
+            devscripts \
+            equivs \
+            git \
+            libxml2-utils \
+            lsb-release \
+            xsltproc
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
+        with:
+          toolchain: 1.86.0
+
+      - name: Build base
+        working-directory: debian
+        run: |
+          NGINX_VERSION=$(make --eval 'nv:; @echo $(BASE_VERSION)' nv)
+          make rules-base
+          sudo mk-build-deps --install --tool="apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes" \
+            debuild-base/nginx-${NGINX_VERSION}/debian/control
+          make base
+
+      - name: Upload nginx binary
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: nginx-binary-ubuntu
+          path: debian/base/nginx
+
+      - name: List what has been built
+        if: ${{ !cancelled() }}
+        run: |
+          find .. -mindepth 1 -maxdepth 1 -name "*.deb" | xargs ls -ld
+
+  ubuntu:
+    runs-on: ubuntu-24.04
+    needs: [generate-matrix, ubuntu-base]
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-ubuntu)}}
@@ -134,8 +227,54 @@ jobs:
         run: |
           find .. -mindepth 1 -maxdepth 1 -name "*.deb" | xargs ls -ld
 
-  redhat:
+  redhat-base:
+    runs-on: ubuntu-24.04
     needs: generate-matrix
+    container: almalinux:9
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup AlmaLinux
+        run: |
+          dnf makecache
+          dnf install -y \
+            g++ \
+            gcc \
+            git \
+            epel-release \
+            libxslt \
+            make \
+            rpm-build \
+            which \
+            xz \
+            'dnf-command(config-manager)'
+          dnf config-manager --set-enabled crb
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
+        with:
+          toolchain: 1.86.0
+
+      - name: Build base
+        working-directory: rpm/SPECS
+        run: |
+          make nginx.spec
+          dnf -y builddep ./nginx.spec
+          make base
+
+      - name: Upload nginx binary
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: nginx-binary-redhat
+          path: rpm/SPECS/base/nginx
+
+      - name: List what has been built
+        if: ${{ !cancelled() }}
+        run: |
+          find rpm/RPMS -type f | xargs ls -ld
+
+  redhat:
+    needs: [generate-matrix, redhat-base]
     runs-on: ubuntu-24.04
     container: almalinux:9
     strategy:
@@ -169,16 +308,8 @@ jobs:
       - name: Create and install build depends for ${{ matrix.target }} and build it
         working-directory: rpm/SPECS
         run: |
-          case ${{ matrix.target }} in
-            base)
-              spec="nginx.spec"
-              ;;
-            *)
-              spec="nginx-${{ matrix.target }}.spec"
-              ;;
-          esac
-          make $spec
-          dnf -y builddep ./${spec}
+          make nginx-${{ matrix.target }}.spec
+          dnf -y builddep ./nginx-${{ matrix.target }}.spec
           make ${{ matrix.target }}
 
       - name: List what has been built
