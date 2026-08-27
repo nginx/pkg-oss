@@ -369,26 +369,47 @@ check-compat-%:
 		;; \
 	esac
 
-nginx-tests:
+nginx-tests pkg-oss-tests:
 	@{ \
-	if [ ! -d "$(CONTRIB)/tarballs/nginx-tests" ]; then \
+	if [ ! -d "$(CONTRIB)/tarballs/$@" ]; then \
 	    curdir=`pwd` ; \
-	    cd $(CONTRIB) && make .sum-nginx-tests ; \
+	    cd $(CONTRIB) && make .sum-$@ ; \
 	    cd $$curdir ; \
 	fi ; \
-	echo "===> Copying tests from $(CONTRIB)/tarballs/nginx-tests" ; \
-	cp -rP $(CONTRIB)/tarballs/nginx-tests nginx-tests ; \
+	echo "===> Copying tests from $(CONTRIB)/tarballs/$@" ; \
+	cp -rP $(CONTRIB)/tarballs/$@ $@ ; \
 	}
 
-test: base nginx-tests
-	@echo "===> Running tests with regular binary/modules"
+NDK_MODULES=	$(filter-out ndk,$(foreach m,$(MODULES),$(if $(findstring ngx_devel_kit,$(MODULE_CONFARGS_$(call modname, $(m)))),$(m))))
+
+test test-debug: base nginx-tests pkg-oss-tests
 	@{ \
+	TEST_BIN=nginx ; \
+	TEST_SO_SUFFIX= ; \
+	case "$@" in \
+		*-debug) \
+			TEST_BIN="$${TEST_BIN}-debug" \
+			TEST_SO_SUFFIX="-debug" \
+		;; \
+	esac ; \
+	echo "===> Running tests with $$TEST_BIN binary/modules" ; \
 	pwd=`pwd` ; \
+	for m in $(NDK_MODULES); do \
+		[ -d module-$$m ] || continue ; \
+		[ -d module-ndk ] && break ; \
+		echo "===> Building module-ndk, required by module-$$m" ; \
+		make module-ndk || exit 1 ; \
+		break ; \
+	done ; \
 	globals= ; \
 	globals_http= ; \
 	globals_stream= ; \
-	for so in `find module-*/ -maxdepth 1 -type f -name "*module.so" | sort -t / -k 2`; do \
-		globals="$$globals load_module $$pwd/$$so;" ; \
+	for m in ndk $(filter-out ndk,$(MODULES)); do \
+		[ -d module-$$m ] || continue ; \
+		for so in module-$$m/*module$${TEST_SO_SUFFIX}.so; do \
+			[ -e "$$so" ] || continue ; \
+			globals="$$globals load_module $$pwd/$$so;" ; \
+		done ; \
 	done ; \
 	if [ -d $$pwd/module-perl ]; then \
 		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
@@ -397,55 +418,55 @@ test: base nginx-tests
 		globals_http="lua_package_path '$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
 		globals_stream="$$globals_http" ; \
 	fi ; \
-	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$globals" TEST_NGINX_GLOBALS_HTTP="$$globals_http" TEST_NGINX_GLOBALS_STREAM="$$globals_stream" prove $$PROVE_ARGS . ; \
-	}
-
-test-debug: base nginx-tests
-	@echo "===> Running tests with debug binary/modules"
-	@{ \
-	pwd=`pwd` ; \
-	globals= ; \
-	globals_http= ; \
-	globals_stream= ; \
-	for so in `find module-*/ -maxdepth 1 -type f -name "*module-debug.so" | sort -t / -k 2`; do \
-		globals="$$globals load_module $$pwd/$$so;" ; \
+	staged_dirs= ; \
+	for m in $(MODULES); do \
+		[ -d module-$$m ] || continue ; \
+		case $$m in \
+		acme)	testdir=$$pwd/module-acme/../nginx-acme-$(NGINX_ACME_VERSION)/t ;; \
+		njs)	testdir=$$pwd/module-njs/../njs-$(NJS_VERSION)/nginx/t ;; \
+		*)	testdir=pkg-oss-tests/$$m/t ;; \
+		esac ; \
+		[ -d "$$testdir" ] || continue ; \
+		echo "===> Staging module-$$m tests from $$testdir" ; \
+		rm -rf nginx-tests/module-$$m ; \
+		cp -r "$$testdir" nginx-tests/module-$$m ; \
+		[ -e nginx-tests/module-$$m/lib ] || ln -s ../lib nginx-tests/module-$$m/lib ; \
+		staged_dirs="$$staged_dirs module-$$m" ; \
 	done ; \
-	if [ -d $$pwd/module-perl ]; then \
-		globals="$$globals env PERL5LIB=$$pwd/module-perl/src/http/modules/perl:$$pwd/module-perl/src/http/modules/perl/blib/arch;" ; \
+	if [ -n "$(TEST_MODULES)" ]; then \
+		run_dirs= ; \
+		for m in $(TEST_MODULES); do \
+			case "$$m" in \
+			.)	d=. ;; \
+			*)	d="module-$$m" ;; \
+			esac ; \
+			if [ -e "nginx-tests/$${d%%/*}" ]; then \
+				run_dirs="$$run_dirs $$d" ; \
+			else \
+				echo "---> $$m: no tests staged, skipping" ; \
+			fi ; \
+		done ; \
+	else \
+		run_dirs=". $$staged_dirs" ; \
 	fi ; \
-	if [ -d $$pwd/module-lua ]; then \
-		globals_http="lua_package_path '$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/../BUILD/$(MODULE_PACKAGE_PREFIX)-lua-$(BASE_VERSION)/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
-		globals_stream="$$globals_http" ; \
-	fi ; \
-	cd nginx-tests && TEST_NGINX_BINARY=$$pwd/base/nginx-debug TEST_NGINX_GLOBALS="$$globals" TEST_NGINX_GLOBALS_HTTP="$$globals_http" TEST_NGINX_GLOBALS_STREAM="$$globals_stream" prove $$PROVE_ARGS . ; \
-	}
-
-test-modules: $(addprefix test-module-, $(MODULES))
-
-test-module-%: base nginx-tests module-%
-	@{ \
-	module=`echo $@ | cut -d '-' -f 3-` ; \
-	testdir="$(MODULE_TESTS_$(shell echo $@ | cut -d '-' -f 3-))" ; \
-	if [ -z "$$testdir" ]; then \
-		echo "---> Skipping, no tests defined for $$module module" ; \
+	if [ -z "$$run_dirs" ]; then \
+		echo "---> Nothing to test" ; \
 		exit 0 ; \
 	fi ; \
-	pwd=`pwd` ; \
-	globals= ; \
-	for so in `find module-$${module}/ -maxdepth 1 -type f -name "*module.so"`; do \
-		globals="$$globals load_module $$pwd/$$so;" ; \
-	done ; \
-	if [ ! -d nginx-tests/module-$${module} ]; then \
-		cp -r $${pwd}/module-$${module}/../$${testdir} nginx-tests/module-$${module} ; \
-		ln -fs ../lib nginx-tests/module-$${module}/lib ; \
-	fi ; \
-	cd nginx-tests/module-$${module} && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$globals" prove $$PROVE_ARGS . ; \
+	cd nginx-tests && \
+		TEST_NGINX_BINARY=$$pwd/base/$$TEST_BIN \
+		TEST_NGINX_GLOBALS="$$TEST_NGINX_GLOBALS $$globals" \
+		TEST_NGINX_GLOBALS_HTTP="$$globals_http" \
+		TEST_NGINX_GLOBALS_STREAM="$$globals_stream" \
+		prove $$PROVE_ARGS -I$$pwd/nginx-tests/lib $$run_dirs ; \
 	}
+
 
 clean:
 	@rm -f base module-*
 	@rm -f nginx.spec nginx-module-*.spec nginx-module-*.skip
 	@rm -rf nginx-tests
+	@rm -rf pkg-oss-tests
 	@rm -f $(BASE_SRC) $(SRCPATH)/$(BASE_SRC)
 	@rm -f nginx.rpm-changelog nginx-*.rpm-changelog nginx-module-*.rpm-changelog
 	@rm -f .deps-module-*
