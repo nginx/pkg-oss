@@ -113,12 +113,26 @@ jobs:
             findutils \
             git \
             make \
+            perl \
+            perl-io-socket-ssl \
+            perl-io-socket-inet6 \
+            perl-utils \
+            perl-cryptx \
+            perl-dev \
+            perl-fcgi \
+            perl-parse-recdescent \
+            perl-protocol-websocket \
             rustup \
-            xz
+            xz \
+            krb5-server \
+            krb5 \
+            krb5-dev \
+            perl-gssapi
           printf "#!/bin/sh\\nSETFATTR=true /usr/bin/abuild -F \"\$@\"\\n" > /usr/local/bin/abuild
           chmod +x /usr/local/bin/abuild
 
       - name: Install Rust toolchain
+        if: matrix.target == 'module-acme'
         uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
         with:
           toolchain: 1.86.0
@@ -137,6 +151,28 @@ jobs:
         working-directory: alpine
         run: |
           make ${{ matrix.target }}
+
+      - name: Download nginx binary
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: nginx-binary-alpine
+          path: alpine/base
+
+      - name: Setup test environment for ${{ matrix.target }}
+        run: |
+          SETUP="$GITHUB_WORKSPACE/.github/test-env/${{ matrix.target }}.sh"
+          if [ -f "$SETUP" ]; then bash "$SETUP"; fi
+
+      - name: Test ${{ matrix.target }}
+        env:
+          TEST_NGINX_BINARY: "${{ github.workspace }}/alpine/base/nginx"
+          TEST_NGINX_GLOBALS: "user root;"
+        working-directory: alpine
+        run: |
+          MODULE=${{ matrix.target }}
+          MODULE=${MODULE#module-}
+          chmod +x "$TEST_NGINX_BINARY"
+          make test TEST_MODULES=${MODULE}
 
       - name: List what has been built
         if: ${{ !cancelled() }}
@@ -160,11 +196,6 @@ jobs:
             libxml2-utils \
             lsb-release \
             xsltproc
-
-      - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
-        with:
-          toolchain: 1.86.0
 
       - name: Build base
         working-directory: debian
@@ -204,11 +235,19 @@ jobs:
             devscripts \
             equivs \
             git \
+            libio-socket-ssl-perl \
+            libio-socket-inet6-perl \
             libxml2-utils \
             lsb-release \
-            xsltproc
+            xsltproc \
+            krb5-kdc \
+            krb5-admin-server \
+            krb5-user \
+            libkrb5-dev \
+            libgssapi-perl
 
       - name: Install Rust toolchain
+        if: matrix.target == 'module-acme'
         uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
         with:
           toolchain: 1.86.0
@@ -221,6 +260,27 @@ jobs:
           sudo mk-build-deps --install --tool="apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes" \
             debuild-${{ matrix.target }}/nginx-${NGINX_VERSION}/debian/control
           make ${{ matrix.target }}
+
+      - name: Download nginx binary
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: nginx-binary-ubuntu
+          path: debian/base
+
+      - name: Setup test environment for ${{ matrix.target }}
+        run: |
+          SETUP="$GITHUB_WORKSPACE/.github/test-env/${{ matrix.target }}.sh"
+          if [ -f "$SETUP" ]; then bash "$SETUP"; fi
+
+      - name: Test ${{ matrix.target }}
+        env:
+          TEST_NGINX_BINARY: "${{ github.workspace }}/debian/base/nginx"
+        working-directory: debian
+        run: |
+          MODULE=${{ matrix.target }}
+          MODULE=${MODULE#module-}
+          chmod +x "$TEST_NGINX_BINARY"
+          make test TEST_MODULES=${MODULE}
 
       - name: List what has been built
         if: ${{ !cancelled() }}
@@ -250,11 +310,6 @@ jobs:
             'dnf-command(config-manager)'
           dnf config-manager --set-enabled crb
 
-      - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
-        with:
-          toolchain: 1.86.0
-
       - name: Build base
         working-directory: rpm/SPECS
         run: |
@@ -276,7 +331,9 @@ jobs:
   redhat:
     needs: [generate-matrix, redhat-base]
     runs-on: ubuntu-24.04
-    container: almalinux:9
+    container:
+      image: almalinux:9
+      options: --init
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-redhat )}}
@@ -287,20 +344,33 @@ jobs:
       - name: Setup AlmaLinux
         run: |
           dnf makecache
+          dnf install -y epel-release 'dnf-command(config-manager)'
+          dnf config-manager --set-enabled crb
           dnf install -y \
             g++ \
             gcc \
             git \
-            epel-release \
             libxslt \
             make \
+            perl \
+            perl-Digest-MD5 \
+            perl-ExtUtils-Embed \
+            perl-IO-Compress \
+            perl-IO-Socket-INET6 \
+            perl-IO-Socket-SSL \
+            perl-JSON \
+            perl-JSON-PP \
+            perl-Test-Simple \
             rpm-build \
             which \
             xz \
-            'dnf-command(config-manager)'
-          dnf config-manager --set-enabled crb
+            krb5-server \
+            krb5-workstation \
+            krb5-devel \
+            perl-GSSAPI
 
       - name: Install Rust toolchain
+        if: matrix.target == 'module-acme'
         uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
         with:
           toolchain: 1.86.0
@@ -311,6 +381,28 @@ jobs:
           make nginx-${{ matrix.target }}.spec
           dnf -y builddep ./nginx-${{ matrix.target }}.spec
           make ${{ matrix.target }}
+
+      - name: Download nginx binary
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: nginx-binary-redhat
+          path: rpm/SPECS/base
+
+      - name: Setup test environment for ${{ matrix.target }}
+        run: |
+          SETUP="$GITHUB_WORKSPACE/.github/test-env/${{ matrix.target }}.sh"
+          if [ -f "$SETUP" ]; then bash "$SETUP"; fi
+
+      - name: Test ${{ matrix.target }}
+        env:
+          TEST_NGINX_BINARY: "${{ github.workspace }}/rpm/SPECS/base/nginx"
+          TEST_NGINX_GLOBALS: "user root;"
+        working-directory: rpm/SPECS
+        run: |
+          MODULE=${{ matrix.target }}
+          MODULE=${MODULE#module-}
+          chmod +x "$TEST_NGINX_BINARY"
+          make test TEST_MODULES=${MODULE}
 
       - name: List what has been built
         if: ${{ !cancelled() }}
