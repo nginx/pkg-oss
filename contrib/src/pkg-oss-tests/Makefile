@@ -2,6 +2,8 @@
 
 PKG_OSS_TESTS_URL := https://github.com/thresheek/pkg-oss-tests
 
+PKGS += pkg-oss-tests
+
 $(TARBALLS)/pkg-oss-tests:
 	git clone $(PKG_OSS_TESTS_URL) $@
 
