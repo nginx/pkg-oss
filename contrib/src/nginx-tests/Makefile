@@ -2,8 +2,6 @@
 
 NGINX_TESTS_URL := https://github.com/nginx/nginx-tests
 
-PKGS += nginx-tests
-
 $(TARBALLS)/nginx-tests:
 	git clone $(NGINX_TESTS_URL) $@
 
