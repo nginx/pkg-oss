@@ -31,6 +31,7 @@ source="$pkgname-$_base_version.tar.gz
 	$pkgname.logrotate
 	$pkgname.initd
 	$pkgname-debug.initd
+	$pkgname.confd
 	COPYRIGHT
 	%%BASE_PATCHES%%
 	"
@@ -87,6 +88,7 @@ package() {
 	install -Dm644 "$srcdir"/$pkgname.default.conf ./etc/nginx/conf.d/default.conf
 	install -Dm755 "$srcdir"/$pkgname.initd ./etc/init.d/nginx
 	install -Dm755 "$srcdir"/$pkgname-debug.initd ./etc/init.d/nginx-debug
+	install -Dm644 "$srcdir"/$pkgname.confd ./etc/conf.d/nginx
 	install -Dm644 "$srcdir"/$pkgname.logrotate ./etc/logrotate.d/nginx
 
 	install -Dm644 "$srcdir"/COPYRIGHT ./usr/share/licenses/$pkgname/COPYRIGHT

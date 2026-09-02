@@ -5,9 +5,10 @@ extra_commands="checkconfig"
 extra_started_commands="reload reopen upgrade"
 
 cfgfile=${cfgfile:-/etc/nginx/nginx.conf}
+cmdopts=${cmdopts:-}
 pidfile=/run/nginx.pid
 command=/usr/sbin/%%DAEMON%%
-command_args="-c $cfgfile"
+command_args="-c $cfgfile $cmdopts"
 required_files="$cfgfile"
 
 depend() {
