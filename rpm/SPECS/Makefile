@@ -72,6 +72,7 @@ BASE_CONFIGURE_ARGS=\
 	--user=%{nginx_user} \
 	--group=%{nginx_group} \
 	--with-compat \
+	--with-control-api \
 	--with-file-aio \
 	--with-threads \
 	--with-http_addition_module \
