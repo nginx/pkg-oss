@@ -20,7 +20,7 @@ MODULE_CONFARGS_passenger=	--add-dynamic-module=$(MODSRC_PREFIX)passenger-$(PASS
 
 prerequisites-for-module-passenger:
 
-MODULE_BUILD_DEPENDS_passenger=ruby-dev ruby-rake ruby-etc
+MODULE_BUILD_DEPENDS_passenger=ruby-dev ruby-rake
 
 define MODULE_POST_passenger
 cat <<BANNER
