@@ -414,24 +414,51 @@ test-debug: base nginx-tests
 
 test-modules: $(addprefix test-module-, $(MODULES))
 
-test-module-%: base nginx-tests module-%
+$(foreach mod,$(MODULES),$(eval prerequisites-for-module-$(mod): $(addprefix module-,$(MODULE_TESTS_DEPS_$(call modname,$(mod))))))
+prerequisites-for-module-%: ;
+
+.deps-test-module-%:
+	if [ -n "$(MODULE_TESTS_CONTRIB_DEPS_$(call modname, $*))" ]; then \
+		cd $(CONTRIB) && make $(foreach dep,$(MODULE_TESTS_CONTRIB_DEPS_$(call modname, $*)),.sum-$(dep)); \
+	fi; \
+	touch $@
+
+test-module-%: base nginx-tests .deps-test-module-% prerequisites-for-module-% module-%
 	@{ \
 	module=`echo $@ | cut -d '-' -f 3-` ; \
-	testdir="$(MODULE_TESTS_$(shell echo $@ | cut -d '-' -f 3-))" ; \
+	testdir="$(MODULE_TESTS_$(call modname, $*))" ; \
 	if [ -z "$$testdir" ]; then \
 		echo "---> Skipping, no tests defined for $$module module" ; \
 		exit 0 ; \
 	fi ; \
 	pwd=`pwd` ; \
 	globals= ; \
+	for dep in $(MODULE_TESTS_DEPS_$(call modname, $*)); do \
+		for so in `find module-$${dep}/ -maxdepth 1 -type f -name "*module.so"`; do \
+			globals="load_module $$pwd/$$so; $$globals" ; \
+		done ; \
+	done ; \
 	for so in `find module-$${module}/ -maxdepth 1 -type f -name "*module.so"`; do \
 		globals="$$globals load_module $$pwd/$$so;" ; \
 	done ; \
 	if [ ! -d nginx-tests/module-$${module} ]; then \
-		cp -r $${pwd}/debuild-module-$${module}/$(SRCDIR)/debian/extra/$${testdir} nginx-tests/module-$${module} ; \
+		if [ "$${testdir#/}" = "$${testdir}" ]; then \
+			testdir=$${pwd}/debuild-module-$${module}/$(SRCDIR)/debian/extra/$${testdir}; \
+		fi ; \
+		cp -r $${testdir} nginx-tests/module-$${module} ; \
 		ln -fs ../lib nginx-tests/module-$${module}/lib ; \
 	fi ; \
-	cd nginx-tests/module-$${module} && TEST_NGINX_BINARY=$$pwd/base/nginx TEST_NGINX_GLOBALS="$$globals" prove $$PROVE_ARGS . ; \
+	if [ "$$module" = "lua" ]; then \
+		globals_http="lua_package_path '$$pwd/debuild-module-lua/$(SRCDIR)/debian/extra/lua-resty-core-$(LUA_RESTY_CORE_VERSION)/lib/?.lua;$$pwd/debuild-module-lua/$(SRCDIR)/debian/extra/lua-resty-lrucache-$(LUA_RESTY_LRUCACHE_VERSION)/lib/?.lua;;';" ; \
+		globals_stream="$$globals_http" ; \
+	fi ; \
+	PROVE_ARGS="$$PROVE_ARGS -I$$pwd/nginx-tests/lib" ; \
+	cd nginx-tests/module-$${module} && \
+		TEST_NGINX_BINARY=$$pwd/base/nginx \
+		TEST_NGINX_GLOBALS="$$TEST_NGINX_GLOBALS $$globals" \
+		TEST_NGINX_GLOBALS_HTTP="$$globals_http" \
+		TEST_NGINX_GLOBALS_STREAM="$$globals_stream" \
+		prove $$PROVE_ARGS . ; \
 	}
 
 check-modules:

@@ -17,7 +17,8 @@ MODULE_PATCHES_fips_check= $(CONTRIB)/src/nginx-fips-check-module/0001-Added-sup
 
 MODULE_CONFARGS_fips_check=	--add-dynamic-module=$(MODSRC_PREFIX)nginx-fips-check-module-$(NGINX_FIPS_CHECK_MODULE_VERSION)
 
-prerequisites-for-module-fips-check:
+MODULE_TESTS_fips_check=		$(CONTRIB)/tarballs/pkg-oss-tests/fips-check/t/
+MODULE_TESTS_CONTRIB_DEPS_fips_check=    pkg-oss-tests
 
 define MODULE_POST_fips_check
 cat <<BANNER

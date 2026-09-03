@@ -22,6 +22,9 @@ MODULE_BUILD_DEPENDS_auth_spnego=,libkrb5-dev
 MODULE_CC_OPT_auth_spnego="-Wno-error=discarded-qualifiers"
 MODULE_CC_OPT_DEBUG_auth_spnego="-Wno-error=discarded-qualifiers"
 
+MODULE_TESTS_auth_spnego=		$(CONTRIB)/tarballs/pkg-oss-tests/auth-spnego/t/
+MODULE_TESTS_CONTRIB_DEPS_auth_spnego=    pkg-oss-tests
+
 define MODULE_POST_auth_spnego
 cat <<BANNER
 ----------------------------------------------------------------------

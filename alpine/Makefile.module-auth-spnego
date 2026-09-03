@@ -17,9 +17,10 @@ MODULE_PATCHES_auth_spnego=
 
 MODULE_CONFARGS_auth_spnego=	--add-dynamic-module=$(MODSRC_PREFIX)spnego-http-auth-nginx-module-$(SPNEGO_HTTP_AUTH_NGINX_MODULE_GITHASH)
 
-prerequisites-for-module-auth-spnego:
-
 MODULE_BUILD_DEPENDS_auth_spnego=krb5-dev
+
+MODULE_TESTS_auth_spnego=		$(CONTRIB)/tarballs/pkg-oss-tests/auth-spnego/t/
+MODULE_TESTS_CONTRIB_DEPS_auth_spnego=    pkg-oss-tests
 
 define MODULE_POST_auth_spnego
 cat <<BANNER

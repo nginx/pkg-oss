@@ -18,6 +18,10 @@ MODULE_SOURCES_encrypted_session=	ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION).tar.gz 
 MODULE_CONFARGS_encrypted_session=	--add-dynamic-module=ngx_devel_kit-$(NGX_DEVEL_KIT_VERSION) \
 					--add-dynamic-module=encrypted-session-nginx-module-$(ENCRYPTED_SESSION_NGINX_MODULE_VERSION)
 
+MODULE_TESTS_encrypted_session=		$(CONTRIB)/tarballs/pkg-oss-tests/encrypted-session/t/
+MODULE_TESTS_DEPS_encrypted_session=	ndk
+MODULE_TESTS_CONTRIB_DEPS_encrypted_session=    pkg-oss-tests
+
 define MODULE_DEFINITIONS_encrypted_session
 Requires: $(NDK_DEPENDENCY_TAG)
 endef

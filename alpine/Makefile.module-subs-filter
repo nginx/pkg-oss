@@ -15,7 +15,8 @@ MODULE_SOURCES_subs_filter=	ngx_http_substitutions_filter_module-$(NGX_HTTP_SUBS
 
 MODULE_CONFARGS_subs_filter=	--add-dynamic-module=$(MODSRC_PREFIX)ngx_http_substitutions_filter_module-$(NGX_HTTP_SUBSTITUTIONS_FILTER_MODULE_GITHASH)
 
-prerequisites-for-module-subs-filter:
+MODULE_TESTS_subs_filter=		$(CONTRIB)/tarballs/pkg-oss-tests/subs-filter/t/
+MODULE_TESTS_CONTRIB_DEPS_subs_filter=    pkg-oss-tests
 
 define MODULE_POST_subs_filter
 cat <<BANNER

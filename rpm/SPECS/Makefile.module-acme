@@ -18,6 +18,8 @@ MODULE_PATCHES_acme=
 
 MODULE_CONFARGS_acme=	--add-dynamic-module=nginx-acme-$(NGINX_ACME_VERSION)/
 
+MODULE_TESTS_acme=     nginx-acme-$(NGINX_ACME_VERSION)/t/
+
 # since our build system uses rustup-provided rustc/cargo,
 # we need clang from the system repos
 define MODULE_DEFINITIONS_acme

@@ -15,6 +15,9 @@ MODULE_SOURCES_geoip2=	ngx_http_geoip2_module-$(NGX_HTTP_GEOIP2_MODULE_VERSION).
 
 MODULE_CONFARGS_geoip2=	--add-dynamic-module=ngx_http_geoip2_module-$(NGX_HTTP_GEOIP2_MODULE_VERSION)
 
+MODULE_TESTS_geoip2=		$(CONTRIB)/tarballs/pkg-oss-tests/geoip2/t/
+MODULE_TESTS_CONTRIB_DEPS_geoip2=    pkg-oss-tests
+
 define MODULE_DEFINITIONS_geoip2
 BuildRequires: libmaxminddb-devel
 endef

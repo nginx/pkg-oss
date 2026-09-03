@@ -15,6 +15,10 @@ MODULE_SOURCES_headers_more=	headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODU
 
 MODULE_CONFARGS_headers_more=	--add-dynamic-module=headers-more-nginx-module-$(HEADERS_MORE_NGINX_MODULE_GITHASH)
 
+MODULE_TESTS_headers_more=		$(CONTRIB)/tarballs/pkg-oss-tests/headers-more/t/
+MODULE_TESTS_DEPS_headers_more=	ndk
+MODULE_TESTS_CONTRIB_DEPS_headers_more=    pkg-oss-tests
+
 define MODULE_POST_headers_more
 cat <<BANNER
 ----------------------------------------------------------------------

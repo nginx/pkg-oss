@@ -21,6 +21,8 @@ MODULE_PATCHES_njs= $(CONTRIB)/src/quickjs/quickjs.makefile.patch
 MODULE_VERSION_PREFIX_njs=$(MODULE_TARGET_PREFIX)
 MODULE_BUILD_DEPENDS_njs=libedit-dev libxml2-dev libxslt-dev
 
+MODULE_TESTS_njs= njs-$(NJS_VERSION)/nginx/t/
+
 define MODULE_ADD_CONTROL_TAGS_njs
 replaces="nginx-mod-http-js"
 endef
