@@ -279,7 +279,10 @@ rules-module-%: $(BASE_SRC) nginx-module-%.deb-changelog .deps-module-%
 		if [ "$${sn}" = "$${src}" ] ; then \
 			sn=$${src%-*} ; \
 		fi ; \
-		( cd $${builddir}/$(SRCDIR)/debian/extra && ln -s $${sn}-* $${sn} ) ; \
+		( cd $${builddir}/$(SRCDIR)/debian/extra && \
+			if [ ! -e "$${sn}" ] && [ ! -L "$${sn}" ]; then \
+				ln -s $${sn}-* "$${sn}"; \
+			fi ) ; \
 	done ; \
 	for p in $(MODULE_PATCHES_$(call modname, $*)); do \
 		dn=`dirname $${p}` ; \
