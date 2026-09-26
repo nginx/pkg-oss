@@ -1,0 +1,52 @@
+name: build_module.sh CI
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: sh -e {0}
+
+jobs:
+  build-module:
+    name: build-module (${{ matrix.os.container }}, ${{ matrix.nginx.flavor }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - container: almalinux:9
+            pre_install: |
+              dnf install -y git
+          - container: ubuntu:26.04
+            pre_install: |
+              apt-get update
+              apt-get install -y --no-install-recommends git ca-certificates
+          - container: alpine:3.23
+            pre_install: |
+              apk add --no-cache git
+              printf "#!/bin/sh\\nSETFATTR=true /usr/bin/abuild -F \"\$@\"\\n" > /usr/local/bin/abuild
+              chmod +x /usr/local/bin/abuild
+        nginx:
+          - flavor: oss
+            build_args: ""
+          - flavor: plus
+            build_args: "-r 37.0"
+    container: ${{ matrix.os.container }}
+
+    steps:
+      - name: Install prerequisites
+        run: ${{ matrix.os.pre_install }}
+
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Build echo-nginx-module (${{ matrix.nginx.flavor }})
+        run: |
+          sh build_module.sh -y -n echo ${{ matrix.nginx.build_args }} -V 0.64 \
+            https://github.com/openresty/echo-nginx-module/archive/v0.64.tar.gz
+
+      - name: List built packages
+        if: always()
+        run: find build-module-artifacts -type f | xargs ls -ld

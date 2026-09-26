@@ -53,7 +53,7 @@ __EOF__
 #
 # Check command line parameters
 #
-ME=`basename $0`
+ME=`basename "$0"`
 if [ $# -eq 0 ]; then
 	echo "USAGE: $ME [options] <URL | path to module source>"
 	echo ""
@@ -110,7 +110,7 @@ while [ $# -gt 1 ]; do
 			;;
 		"-r")
 			BUILD_PLATFORM=Plus
-			if [ `echo -n $2 | tr -d '[0-9p.]' | wc -c` -gt 0 ]; then
+			if [ `printf '%s' "$2" | tr -d '[0-9p.]' | wc -c` -gt 0 ]; then
 				echo "$ME: ERROR: NGINX Plus release must be in the format NN[pN] or NN.N[.N] - quitting"
 				exit 1
 			elif [ "`echo "10^$2" | tr '^' '\n' | sort -nr | head -1`" = "10" ]; then
@@ -118,12 +118,12 @@ while [ $# -gt 1 ]; do
 				exit 1
 			fi
 			# Normalize NN.N.N to NN.N for git branch naming
-			PLUS_REL=`echo $2 | sed 's/^\([0-9]*\.[0-9]*\)\.[0-9]*$/\1/'`
+			PLUS_REL=`echo "$2" | sed 's/^\([0-9]*\.[0-9]*\)\.[0-9]*$/\1/'`
 			shift; shift
 			;;
 		"-v")
 			BUILD_PLATFORM=OSS
-			if [ `echo -n .$2 | tr -d '[0-9\.]' | wc -c` -eq 0 ]; then
+			if [ `printf '%s' ".$2" | tr -d '[0-9\.]' | wc -c` -eq 0 ]; then
 				OSS_VER=$2
 				shift
 			fi
@@ -134,7 +134,7 @@ while [ $# -gt 1 ]; do
 			shift
 			;;
 		"-o")
-			OUTPUT_DIR=`realpath $2`
+			OUTPUT_DIR=`realpath "$2"`
 			if [ $? -ne 0 ]; then
 				echo "$ME: ERROR: Could not access output directory $2 - quitting"
 				exit 1
@@ -149,10 +149,24 @@ while [ $# -gt 1 ]; do
 done
 
 #
+# Validate remaining argument is the module source, not a dangling option
+#
+if [ $# -ne 1 ] || [ -z "$1" ]; then
+	echo "$ME: ERROR: Missing module source - quitting"
+	exit 1
+fi
+case "$1" in
+	-*)
+		echo "$ME: ERROR: Missing argument for option or missing module source - quitting"
+		exit 1
+		;;
+esac
+
+#
 # Create package output directory
 #
-if [ ! -d $OUTPUT_DIR ]; then
-	mkdir -p $OUTPUT_DIR
+if [ ! -d "$OUTPUT_DIR" ]; then
+	mkdir -p "$OUTPUT_DIR"
 	if [ $? -ne 0 ]; then
 		echo "$ME: ERROR: Could not create output directory $OUTPUT_DIR - quitting"
 		exit 1
@@ -182,7 +196,7 @@ elif [ `whereis apt-get 2>/dev/null | grep -c "^apt-get: /"` -eq 1 ]; then
 	PACKAGING_DIR=debian
 	PACKAGE_SOURCES_DIR=extra
 	PACKAGE_OUTPUT_DIR="debuild-module-*/"
-elif [ `apk --version | grep -c "^apk-tools"` -eq 1 ]; then
+elif [ `apk --version 2>/dev/null | grep -c "^apk-tools"` -eq 1 ]; then
 	PKG_MGR_INSTALL="apk add"
 	PKG_MGR_UPDATE="apk update"
 	PKG_FMT=apk
@@ -221,9 +235,9 @@ if [ "$MODULE_NAME" = "" ]; then
 	#
 	# Construct a reasonable nickname from the module source location
 	#
-	MODULE_NAME=`basename $1 | tr '[:blank:][:punct:]' '\n' | tr '[A-Z]' '[a-z]' | grep -ve nginx -e ngx -e http -e stream -e module -e plus -e tar -e zip -e gz -e git | tr -d '\n'`
+	MODULE_NAME=`basename "$1" | tr '[:blank:][:punct:]' '\n' | tr '[A-Z]' '[a-z]' | grep -ve nginx -e ngx -e http -e stream -e module -e plus -e tar -e zip -e gz -e git | tr -d '\n'`
 	if [ -z "$SAY_YES" ]; then
-		echo -n "$ME: INPUT: Enter module nickname [$MODULE_NAME]: "
+		printf '%s' "$ME: INPUT: Enter module nickname [$MODULE_NAME]: "
 		read -r REPLY
 		if [ "$REPLY" != "" ]; then
 			MODULE_NAME=$REPLY
@@ -237,11 +251,11 @@ fi
 # Sanitize module nickname (this is a debbuild requirement, probably needs to check for more characters)
 #
 while true; do
-	MODULE_NAME_CLEAN=`echo $MODULE_NAME | tr '[A-Z]' '[a-z]' | tr '[/_\-\.\t ]' '\n' | grep -ve nginx | tr -d '\n'`
-	if [ "$MODULE_NAME_CLEAN" != "$MODULE_NAME" ] || [ -z $MODULE_NAME ]; then
+	MODULE_NAME_CLEAN=`echo "$MODULE_NAME" | tr '[A-Z]' '[a-z]' | tr '[/_\-\.\t ]' '\n' | grep -ve nginx | tr -d '\n'`
+	if [ "$MODULE_NAME_CLEAN" != "$MODULE_NAME" ] || [ -z "$MODULE_NAME" ]; then
 		echo "$ME: WARNING: Removed illegal characters from module nickname - using \"$MODULE_NAME_CLEAN\""
-		if [ -z $SAY_YES ]; then
-			echo -n "$ME: INPUT: Confirm module nickname [$MODULE_NAME_CLEAN]: "
+		if [ -z "$SAY_YES" ]; then
+			printf '%s' "$ME: INPUT: Confirm module nickname [$MODULE_NAME_CLEAN]: "
 			read -r MODULE_NAME
 			if [ "$MODULE_NAME" = "" ]; then
 				MODULE_NAME=$MODULE_NAME_CLEAN
@@ -256,20 +270,20 @@ while true; do
 done
 
 #
-# A generic helper function to retry any command with a backoff strategy
+# Download a URL to a file, retrying up to 3 times with exponential backoff
 #
-try_n_times() {
+wget_n_times() {
 	MAX_ATTEMPTS=$1
-	CMD=$2
-	CLEAN_CMD=$3
+	OUTPUT="$2"
+	URL="$3"
 	i=0
 	WAIT_TIME=1
-	while ! $CMD; do
+	while ! wget -O "$OUTPUT" "$URL"; do
 		i=$(expr $i + 1)
-		if [ $i -le $MAX_ATTEMPTS ]; then
+		if [ $i -lt $MAX_ATTEMPTS ]; then
 			echo "Attempt $i failed! Waiting $WAIT_TIME seconds before retry..."
 			sleep $WAIT_TIME
-			test -n "$CLEAN_CMD" && $CLEAN_CMD
+			rm -f "$OUTPUT"
 			WAIT_TIME=$(expr $WAIT_TIME \* 2)
 		else
 			echo "$MAX_ATTEMPTS attempts failed!"
@@ -282,15 +296,14 @@ try_n_times() {
 #
 # Create temporary build area, with working copy of module source
 #
-BUILD_DIR=/tmp/$ME.$$
+BUILD_DIR=$(mktemp -d)
 MODULE_DIR=$BUILD_DIR/$MODULE_NAME
 echo "$ME: INFO: Creating $BUILD_DIR build area"
-mkdir $BUILD_DIR
 
-if [ -d $1 ]; then
-	mkdir -v $MODULE_DIR
+if [ -d "$1" ]; then
+	mkdir -v "$MODULE_DIR"
 	echo "$ME: INFO: Building $MODULE_NAME from $MODULE_DIR"
-	cp -a $1/* $MODULE_DIR
+	cp -a "$1"/. "$MODULE_DIR"
 else
         #
         # Module sources string is not a local directory so assume it is a URL.
@@ -299,24 +312,45 @@ else
 	case "${1##*.}" in
 		"git")
 			echo "$ME: INFO: Cloning module source"
-			git clone --recursive $1 $MODULE_DIR
+			if ! git clone --recursive "$1" "$MODULE_DIR"; then
+				echo "$ME: ERROR: Failed to clone module source from $1 - quitting"
+				exit 1
+			fi
 			;;
 		"zip")
-			echo "$ME: INFO Downloading module source"
-			try_n_times 3 "wget -O $BUILD_DIR/module.zip $1" "rm -f $BUILD_DIR/module.zip"
-			ARCHIVE_DIR=`zipinfo -1 $BUILD_DIR/module.zip | head -n 1 | cut -f1 -d/`
-			unzip $BUILD_DIR/module.zip -d $BUILD_DIR
-			mv $BUILD_DIR/$ARCHIVE_DIR $MODULE_DIR
+			echo "$ME: INFO: Downloading module source"
+			if ! wget_n_times 3 "$BUILD_DIR/module.zip" "$1"; then
+				echo "$ME: ERROR: Failed to download module source from $1 - quitting"
+				exit 1
+			fi
+			ARCHIVE_DIR=`zipinfo -1 "$BUILD_DIR/module.zip" | head -n 1 | cut -f1 -d/`
+			case "$ARCHIVE_DIR" in
+				"" | . | ..)
+					echo "$ME: ERROR: Unsafe path in module zip archive - quitting"
+					exit 1
+					;;
+			esac
+			unzip "$BUILD_DIR/module.zip" -d "$BUILD_DIR"
+			mv "$BUILD_DIR/$ARCHIVE_DIR" "$MODULE_DIR"
 			;;
 		*)
-			echo "$ME: INFO Downloading module source"
+			echo "$ME: INFO: Downloading module source"
 			# Assume tarball of some kind
-			try_n_times 3 "wget -O $BUILD_DIR/module.tgz $1" "rm -f $BUILD_DIR/module.tgz"
-			ARCHIVE_DIR=`tar tfz $BUILD_DIR/module.tgz | head -n 1 | cut -f1 -d/`
-			cd $BUILD_DIR
+			if ! wget_n_times 3 "$BUILD_DIR/module.tgz" "$1"; then
+				echo "$ME: ERROR: Failed to download module source from $1 - quitting"
+				exit 1
+			fi
+			ARCHIVE_DIR=`tar tfz "$BUILD_DIR/module.tgz" | head -n 1 | cut -f1 -d/`
+			case "$ARCHIVE_DIR" in
+				"" | . | ..)
+					echo "$ME: ERROR: Unsafe path in module tar archive - quitting"
+					exit 1
+					;;
+			esac
+			cd "$BUILD_DIR" || { echo "$ME: ERROR: Could not enter build directory - quitting"; exit 1; }
 			tar xfz module.tgz
-			mv $ARCHIVE_DIR $MODULE_DIR
-			cd -
+			mv "$ARCHIVE_DIR" "$MODULE_DIR"
+			cd - > /dev/null || { echo "$ME: ERROR: Could not return from build directory - quitting"; exit 1; }
 			;;
 	esac
 fi
@@ -324,7 +358,7 @@ fi
 #
 # Check the module sources look OK
 #
-if [ ! -f $MODULE_DIR/config ]; then
+if [ ! -f "$MODULE_DIR/config" ]; then
 	echo "$ME: ERROR: Cannot locate module config file - quitting"
 	exit 1
 fi
@@ -332,22 +366,22 @@ fi
 #
 # Check/convert module config
 #
-if [ `grep -c "\.[[:space:]]auto/module" $MODULE_DIR/config` -eq 0 ]; then
+if [ `grep -c "\.[[:space:]]auto/module" "$MODULE_DIR/config"` -eq 0 ]; then
 	if [ $DO_DYNAMIC_CONVERT = 1 ]; then
 		echo "$ME: WARNING: This is a static module, attempting to convert to dynamic (experimental)"
-		grep -ve HTTP_MODULES -e STREAM_MODULES -e NGX_ADDON_SRCS $MODULE_DIR/config > $MODULE_DIR/config.dynamic
-		echo "ngx_module_name=`grep ngx_addon_name= $MODULE_DIR/config | cut -f2 -d=`" >> $MODULE_DIR/config.dynamic
-		if [ `grep -c "HTTP_AUX_FILTER_MODULES=" $MODULE_DIR/config` -gt 0 ]; then
-			echo "ngx_module_type=HTTP_AUX_FILTER" >> $MODULE_DIR/config.dynamic
-		elif [ `grep -c "STREAM_MODULES=" $MODULE_DIR/config` -gt 0 ]; then
-			echo "ngx_module_type=Stream" >> $MODULE_DIR/config.dynamic
+		grep -ve HTTP_MODULES -e STREAM_MODULES -e NGX_ADDON_SRCS "$MODULE_DIR/config" > "$MODULE_DIR/config.dynamic"
+		echo "ngx_module_name=`grep ngx_addon_name= "$MODULE_DIR/config" | cut -f2 -d=`" >> "$MODULE_DIR/config.dynamic"
+		if [ `grep -c "HTTP_AUX_FILTER_MODULES=" "$MODULE_DIR/config"` -gt 0 ]; then
+			echo "ngx_module_type=HTTP_AUX_FILTER" >> "$MODULE_DIR/config.dynamic"
+		elif [ `grep -c "STREAM_MODULES=" "$MODULE_DIR/config"` -gt 0 ]; then
+			echo "ngx_module_type=Stream" >> "$MODULE_DIR/config.dynamic"
 		else
-			echo "ngx_module_type=HTTP" >> $MODULE_DIR/config.dynamic
+			echo "ngx_module_type=HTTP" >> "$MODULE_DIR/config.dynamic"
 		fi
-		echo "ngx_module_srcs=\"`grep NGX_ADDON_SRCS= $MODULE_DIR/config | cut -f2 -d\\" | sed -e 's/^\$NGX_ADDON_SRCS \(\$ngx_addon_dir\/.*$\)/\1/'`\"" >> $MODULE_DIR/config.dynamic
-		echo ". auto/module" >> $MODULE_DIR/config.dynamic
-		mv $MODULE_DIR/config $MODULE_DIR/config.static
-		cp $MODULE_DIR/config.dynamic $MODULE_DIR/config
+		echo "ngx_module_srcs=\"`grep NGX_ADDON_SRCS= "$MODULE_DIR/config" | cut -f2 -d\\" | sed -e 's/^\$NGX_ADDON_SRCS \(\$ngx_addon_dir\/.*$\)/\1/'`\"" >> "$MODULE_DIR/config.dynamic"
+		echo ". auto/module" >> "$MODULE_DIR/config.dynamic"
+		mv "$MODULE_DIR/config" "$MODULE_DIR/config.static"
+		cp "$MODULE_DIR/config.dynamic" "$MODULE_DIR/config"
 	else
 		echo "$ME: ERROR: This is a static module and should be updated to dynamic configuration. To attempt automatic conversion to dynamic module configuration use the '--force-dynamic' option. This will not modify the original configuration. Quitting."
 		exit 1
@@ -358,41 +392,50 @@ fi
 # Get the internal module name(s) from the module config so we can write
 # the .so files into the postinstall banner.
 #
-touch $BUILD_DIR/postinstall.txt
-for MODULE_SO_NAME in $(grep ngx_module_name= $MODULE_DIR/config | cut -f2 -d= | cut -f2 -d\"); do
-	if [ "`echo $MODULE_SO_NAME | cut -c1`" = "$" ]; then
+touch "$BUILD_DIR/postinstall.txt"
+for MODULE_SO_NAME in $(grep ngx_module_name= "$MODULE_DIR/config" | cut -f2 -d= | cut -f2 -d\"); do
+	if [ "`echo "$MODULE_SO_NAME" | cut -c1`" = "$" ]; then
 		# Dereference variable
-		SOURCE_VAR=`echo $MODULE_SO_NAME | cut -f2 -d\$`
-		MODULE_SO_NAME=`grep $SOURCE_VAR= $MODULE_DIR/config | cut -f2 -d= | cut -f2 -d\"`
+		SOURCE_VAR=`echo "$MODULE_SO_NAME" | cut -f2 -d\$`
+		MODULE_SO_NAME=`grep "$SOURCE_VAR=" "$MODULE_DIR/config" | cut -f2 -d= | cut -f2 -d\"`
 	fi
 	# Only write load_module line when no backslash present (can't cope with multi-line values)
-	echo $MODULE_SO_NAME | grep -c '\\' > /dev/null
+	echo "$MODULE_SO_NAME" | grep -c '\\' > /dev/null
 	if [ $? -eq 1 ]; then
-		echo "    load_module modules/$MODULE_SO_NAME.so;" >> $BUILD_DIR/postinstall.txt
+		echo "    load_module modules/$MODULE_SO_NAME.so;" >> "$BUILD_DIR/postinstall.txt"
 	fi
 done
-if [ ! -s $BUILD_DIR/postinstall.txt ]; then
+if [ ! -s "$BUILD_DIR/postinstall.txt" ]; then
 	# Didn't find any .so names so this is a final attempt to extract from config file
-	MODULE_SO_NAME=`grep ngx_addon_name= $MODULE_DIR/config | cut -f2 -d= | cut -f2 -d\"`
-	echo "    load_module modules/$MODULE_SO_NAME.so;" >> $BUILD_DIR/postinstall.txt
+	MODULE_SO_NAME=`grep ngx_addon_name= "$MODULE_DIR/config" | cut -f2 -d= | cut -f2 -d\"`
+	echo "    load_module modules/$MODULE_SO_NAME.so;" >> "$BUILD_DIR/postinstall.txt"
 fi
 
 #
 # Get NGINX OSS packaging tool
 #
 echo "$ME: INFO: Downloading NGINX packaging tool"
-cd $BUILD_DIR
+cd "$BUILD_DIR" || { echo "$ME: ERROR: Could not enter build directory - quitting"; exit 1; }
 
 PKG_OSS_URL="https://github.com/nginx/pkg-oss"
 
-git clone $PKG_OSS_URL
+if ! git clone $PKG_OSS_URL; then
+	echo "$ME: ERROR: Unable to clone NGINX packaging tool - quitting"
+	exit 1
+fi
 
 if [ "$BUILD_PLATFORM" = "OSS" ]; then
 	if [ "$OSS_VER" != "" ]; then
-		( cd pkg-oss && git checkout `git tag -l | grep "^$OSS_VER" | head -1 | awk '{print $1}'` )
+		if ! ( cd pkg-oss && git checkout `git tag -l | grep "^$OSS_VER" | head -1 | awk '{print $1}'` ); then
+			echo "$ME: ERROR: Unable to checkout NGINX OSS version $OSS_VER - quitting"
+			exit 1
+		fi
 	fi
 else
-	( cd pkg-oss && git checkout target-plus-r$PLUS_REL )
+	if ! ( cd pkg-oss && git checkout target-plus-r$PLUS_REL ); then
+		echo "$ME: ERROR: Unable to checkout NGINX Plus release $PLUS_REL - quitting"
+		exit 1
+	fi
 fi
 cd pkg-oss/$PACKAGING_DIR
 if [ $? -ne 0 ]; then
@@ -403,24 +446,28 @@ fi
 #
 # Archive the module source for use with packaging tool using the base OSS version
 #
-cd $BUILD_DIR
+cd "$BUILD_DIR" || { echo "$ME: ERROR: Could not enter build directory - quitting"; exit 1; }
 if [ -d pkg-oss/contrib ]; then
 	VERSION=`grep "^NGINX_VERSION :=" pkg-oss/contrib/src/nginx/version | cut -f2 -d= | tr -d "[:blank:]"`
 else
 	VERSION=`grep "^BASE_VERSION=" pkg-oss/$PACKAGING_DIR/Makefile | cut -f2 -d= | tr -d "[:blank:]"`
 fi
-echo "$ME: INFO: Archiving module source for $VERSION"
-mv $MODULE_NAME $MODULE_NAME-$VERSION
-tar cf - $MODULE_NAME-$VERSION | gzip -1 > $MODULE_NAME-$VERSION.tar.gz
-if [ -d pkg-oss/contrib ]; then
-	cp $MODULE_NAME-$VERSION.tar.gz pkg-oss/contrib/tarballs/
-else
-	cp $MODULE_NAME-$VERSION.tar.gz $OLDPWD/$PACKAGE_SOURCES_DIR/
+if [ -z "$VERSION" ]; then
+	echo "$ME: ERROR: Could not determine NGINX version from packaging tool - quitting"
+	exit 1
 fi
-cd -
+echo "$ME: INFO: Archiving module source for $VERSION"
+mv "$MODULE_NAME" "$MODULE_NAME-$VERSION"
+tar cf - "$MODULE_NAME-$VERSION" | gzip -1 > "$MODULE_NAME-$VERSION.tar.gz"
+if [ -d pkg-oss/contrib ]; then
+	cp "$MODULE_NAME-$VERSION.tar.gz" pkg-oss/contrib/tarballs/
+else
+	cp "$MODULE_NAME-$VERSION.tar.gz" "$OLDPWD/$PACKAGE_SOURCES_DIR/"
+fi
+cd - > /dev/null || { echo "$ME: ERROR: Could not return from build directory - quitting"; exit 1; }
 
 echo "$ME: INFO: Creating changelog"
-cd $BUILD_DIR
+cd "$BUILD_DIR" || { echo "$ME: ERROR: Could not enter build directory - quitting"; exit 1; }
 cat << __EOF__ >pkg-oss/docs/nginx-module-$MODULE_NAME.xml
 <?xml version="1.0" ?>
 <!DOCTYPE change_log SYSTEM "changes.dtd" >
@@ -479,9 +526,9 @@ endef
 export MODULE_POST_$MODULE_NAME
 __EOF__
 
-cp Makefile.module-$MODULE_NAME $BUILD_DIR/pkg-oss/rpm/SPECS/
-cp Makefile.module-$MODULE_NAME $BUILD_DIR/pkg-oss/debian/
-cp Makefile.module-$MODULE_NAME $BUILD_DIR/pkg-oss/alpine/
+cp "Makefile.module-$MODULE_NAME" "$BUILD_DIR/pkg-oss/rpm/SPECS/"
+cp "Makefile.module-$MODULE_NAME" "$BUILD_DIR/pkg-oss/debian/"
+cp "Makefile.module-$MODULE_NAME" "$BUILD_DIR/pkg-oss/alpine/"
 
 #
 # Build!
@@ -489,11 +536,11 @@ cp Makefile.module-$MODULE_NAME $BUILD_DIR/pkg-oss/alpine/
 echo "$ME: INFO: Building"
 
 if [ "$PKG_FMT" = "rpm" ]; then
-	cd $BUILD_DIR/pkg-oss/rpm/SPECS
+	cd "$BUILD_DIR/pkg-oss/rpm/SPECS" || { echo "$ME: ERROR: Could not enter packaging directory - quitting"; exit 1; }
 elif [ "$PKG_FMT" = "deb" ]; then
-	cd $BUILD_DIR/pkg-oss/debian
+	cd "$BUILD_DIR/pkg-oss/debian" || { echo "$ME: ERROR: Could not enter packaging directory - quitting"; exit 1; }
 else
-	cd $BUILD_DIR/pkg-oss/alpine
+	cd "$BUILD_DIR/pkg-oss/alpine" || { echo "$ME: ERROR: Could not enter packaging directory - quitting"; exit 1; }
 fi
 
 if [ "$BUILD_PLATFORM" = "Plus" ]; then
@@ -507,14 +554,14 @@ if [ $? -ne 0 ]; then
 else
 	echo ""
 	echo "$ME: INFO: Module binaries created"
-	find $BUILD_DIR/$PACKAGING_ROOT -type f -name "*.so" -print
+	find "$BUILD_DIR/$PACKAGING_ROOT" -type f -name "*.so" -print
 
 	echo "$ME: INFO: Module packages created"
 	if [ "$PKG_FMT" = "apk" ]; then
-		find ~/packages -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} $OUTPUT_DIR/ \;
+		find ~/packages -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} "$OUTPUT_DIR/" \;
 	else
-		find $BUILD_DIR/$PACKAGING_ROOT$PACKAGE_OUTPUT_DIR -type f -name "*.$PKG_FMT" -exec $COPY_CMD -v {} $OUTPUT_DIR/ \;
+		find "$BUILD_DIR/$PACKAGING_ROOT" -type f -name "*.$PKG_FMT" -path "*/$PACKAGE_OUTPUT_DIR*" -exec $COPY_CMD -v {} "$OUTPUT_DIR/" \;
 	fi
 	echo "$ME: INFO: Removing $BUILD_DIR"
-	rm -fr $BUILD_DIR
+	rm -fr "$BUILD_DIR"
 fi
