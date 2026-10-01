@@ -31,11 +31,8 @@ jobs:
       - name: set-matrix
         id: set-matrix
         run: |
-          for os in alpine ubuntu; do
+          for os in alpine ubuntu redhat; do
             jq -nRr '"matrix-" + $os +"=" + ( { include: [ $ARGS.positional[] | {target: . } ] } | tojson)' --arg os $os --args $targets >> $GITHUB_OUTPUT
-          done
-          for os in redhat; do
-            jq -nRr '"matrix-" + $os +"=" + ( { include: [ $ARGS.positional[] | {target: . } ] } | tojson)' --arg os $os --args ${targets/ module-geoip/} >> $GITHUB_OUTPUT
           done
 
   alpine-base:
