@@ -340,13 +340,6 @@ check-compat-%:
 			exit ; \
 		fi ; \
 		;; \
-		geoip) \
-		if [ `rpm --eval '0%{?rhel}'` -ge 8 ] || [ `rpm --eval '0%{?amzn}'` -gt 2 ] || [ `rpm --eval '0%{?suse_version}'` -ge 1600 ]; then \
-			echo "GeoIP can not be build on RHEL/CentOS >= 8 or Amazon Linux >2 or SLES >= 16" > \
-			nginx-module-$${module}.skip ; \
-			exit ; \
-		fi ; \
-		;; \
 		geoip2) \
 		if [ `rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 -o \
 			 `rpm --eval '0%{?amzn}'` -eq 2 ]; then \
