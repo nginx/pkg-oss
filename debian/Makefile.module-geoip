@@ -8,7 +8,7 @@ MODULE_RELEASE_geoip=	1
 MODULE_CONFARGS_geoip=	--with-http_geoip_module=dynamic \
 			--with-stream_geoip_module=dynamic
 
-MODULE_BUILD_DEPENDS_geoip=,libgeoip-dev
+MODULE_BUILD_DEPENDS_geoip=,libgeoip-dev,libmaxminddb-dev
 
 define MODULE_POST_geoip
 cat <<BANNER
