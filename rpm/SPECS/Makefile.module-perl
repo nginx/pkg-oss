@@ -8,7 +8,7 @@ MODULE_RELEASE_perl=	1
 MODULE_CONFARGS_perl=	--with-http_perl_module=dynamic
 
 define MODULE_DEFINITIONS_perl
-%if 0%{?suse_version} >= 1315
+%if 0%{?suse_version}
 BuildRequires: perl
 %else
 BuildRequires: perl-devel

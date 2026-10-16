@@ -13,7 +13,7 @@
 BuildRequires: openssl-devel
 %endif
 
-%if 0%{?suse_version} >= 1315
+%if 0%{?suse_version}
 %define _group Productivity/Networking/Web/Servers
 BuildRequires: libopenssl-devel
 %define _debugsource_template %{nil}
@@ -128,7 +128,7 @@ ln -s . nginx%{?base_suffix}
 cd %{bdir}
 grep -v 'usr/src' debugfiles.list > debugfiles.list.new && mv debugfiles.list.new debugfiles.list
 cat /dev/null > debugsources.list
-%if 0%{?suse_version} >= 1500
+%if 0%{?suse_version}
 cat /dev/null > debugsourcefiles.list
 %endif
 
