@@ -26,10 +26,6 @@ endef
 export MODULE_DEFINITIONS_acme
 
 define MODULE_ENV_acme
-%if 0%{?amzn} == 2
-export OPENSSL_LIB_DIR=/usr/lib64/
-export OPENSSL_INCLUDE_DIR=/usr/include/
-%endif
 export CARGO_PROFILE_RELEASE_DEBUG=true
 export CARGO_PROFILE_RELEASE_STRIP=none
 export NGX_ACME_STATE_PREFIX=/var/cache/nginx

@@ -91,7 +91,7 @@ BASE_CONFIGURE_ARGS=\
 	--with-http_stub_status_module \
 	--with-http_sub_module \
 	--with-http_v2_module \
-$$( if [ 0%{?rhel} -eq 7 ] || [ 0%{?suse_version} -eq 1315 ]; then \
+$$( if [ 0%{?suse_version} -eq 1315 ]; then \
 	continue; \
 else \
 	echo "--with-http_v3_module"; \
@@ -341,9 +341,8 @@ check-compat-%:
 		fi ; \
 		;; \
 		geoip2) \
-		if [ `rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 -o \
-			 `rpm --eval '0%{?amzn}'` -eq 2 ]; then \
-			echo "GeoIP2 can not be built on SLES < 15 and Amazon Linux 2 due to libmaxminddb absence" > \
+		if [ `rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 ]; then \
+			echo "GeoIP2 can not be built on SLES < 15 due to libmaxminddb absence" > \
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \
@@ -364,16 +363,6 @@ check-compat-%:
 		otel) \
 		if [`rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 ]; then \
 			echo "otel can not be built on SLES < 15 due to absence of re2" > \
-			nginx-module-$${module}.skip ; \
-			exit ; \
-		fi ; \
-		if [ "`rpm --eval '0%{?amzn}'`" -eq 2 ]; then \
-			echo "otel can not be built on Amazon Linux 2 due to too old c-ares library" > \
-			nginx-module-$${module}.skip ; \
-			exit ; \
-		fi ; \
-		if [ "`rpm --eval '0%{?rhel}'`" -eq 7 ]; then \
-			echo "otel can not be built on RHEL 7 due to too old compiler" > \
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \

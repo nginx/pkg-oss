@@ -25,7 +25,7 @@ BuildRequires: libedit-devel
 BuildRequires: libxml2-devel
 BuildRequires: libxslt-devel
 BuildRequires: which
-%if ((0%{?rhel} >= 8) || (0%{?amzn} >= 2023))
+%if 0%{?rhel} || 0%{?amzn}
 BuildRequires: libatomic
 %endif
 endef
@@ -45,7 +45,7 @@ if [ $$_nproc -gt 1 ]; then
 fi
 
 %define __with_quickjs %{nil}
-%if (0%{?rhel} >= 8) || (0%{?amzn} >= 2023) || (0%{?suse_version} >= 1500)
+%if 0%{?rhel} || 0%{?amzn} || (0%{?suse_version} >= 1500)
 cd %{bdir}/quickjs-$(QUICKJS_GITHASH) \&\& \
 CFLAGS="%{WITH_CC_OPT} -fPIC" make $$_make_opts libquickjs.a
 %define __with_quickjs --with-quickjs

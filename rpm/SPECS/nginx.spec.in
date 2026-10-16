@@ -13,25 +13,6 @@ Requires(postun): systemd
 %define _group System Environment/Daemons
 %endif
 
-%if (0%{?rhel} == 7) && (0%{?amzn} == 0)
-%define epoch 1
-Epoch: %{epoch}
-Requires(pre): shadow-utils
-Requires: openssl >= 1.0.2
-Requires: procps-ng
-BuildRequires: openssl-devel >= 1.0.2
-%define dist .el7
-%endif
-
-%if (0%{?rhel} == 7) && (0%{?amzn} == 2)
-%define epoch 1
-Epoch: %{epoch}
-Requires(pre): shadow-utils
-Requires: openssl11 >= 1.1.1
-Requires: procps-ng
-BuildRequires: openssl11-devel >= 1.1.1
-%endif
-
 %if 0%{?rhel} == 8
 %define epoch 1
 Epoch: %{epoch}
@@ -120,9 +101,7 @@ BuildRequires: pcre2-devel
 Provides: webserver
 Provides: nginx-r%{base_version}
 
-%if !(0%{?rhel} == 7)
 Recommends: logrotate
-%endif
 
 %description
 nginx [engine x] is an HTTP and reverse proxy server, as well as

@@ -6,28 +6,13 @@
 
 %if 0%{?rhel} || 0%{?amzn} || 0%{?fedora}
 %define _group System Environment/Daemons
-%if 0%{?amzn} == 2
-BuildRequires: openssl11-devel
-%else
 BuildRequires: openssl-devel
-%endif
 %endif
 
 %if 0%{?suse_version} >= 1315
 %define _group Productivity/Networking/Web/Servers
 BuildRequires: libopenssl-devel
 %define _debugsource_template %{nil}
-%endif
-
-%if (0%{?rhel} == 7) && (0%{?amzn} == 0)
-%define epoch 1
-Epoch: %{epoch}
-%define dist .el7
-%endif
-
-%if (0%{?rhel} == 7) && (0%{?amzn} == 2)
-%define epoch 1
-Epoch: %{epoch}
 %endif
 
 %if 0%{?rhel} == 8
