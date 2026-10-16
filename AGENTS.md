@@ -37,9 +37,9 @@ single source of truth for producing installable binary packages of NGINX and
 its dynamic modules across all supported Linux distributions.
 
 **What it produces:**
-- `.apk` packages for Alpine Linux
-- `.deb` packages for Debian and Ubuntu
-- `.rpm` packages for RHEL, CentOS, Fedora, Amazon Linux, and SLES
+- `.apk` packages for Alpine Linux (3.21+)
+- `.deb` packages for Debian (11+) and Ubuntu (22.04+)
+- `.rpm` packages for RHEL 8/9/10, Amazon Linux 2023, SLES 15/16, and Fedora
 
 **What it does NOT contain:** compiled application source code. The entire repo
 is build infrastructure — GNU Make, POSIX shell, XML, and XSLT.
@@ -720,9 +720,8 @@ PEBBLE=$(find "$GITHUB_WORKSPACE" -path "*/nginx-acme-*/build/get-pebble.pl" \
 
 ## 13. Platform Compatibility and Skip Files
 
-Some modules cannot be built on certain platforms or architectures (e.g. GeoIP
-is not available on RHEL ≥ 8; LuaJIT does not support ppc64le/s390x; OTel
-requires a newer toolchain than Ubuntu 18.04 or RHEL 7 provide).
+Some modules cannot be built on certain platforms or architectures (e.g. LuaJIT
+does not support ppc64le/s390x).
 
 The `check-compat-<name>` target inspects the current OS/distro version and
 writes `nginx-module-<name>.skip` when a module must be skipped. The
