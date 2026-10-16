@@ -9,10 +9,8 @@ MODULE_CONFARGS_geoip=	--with-http_geoip_module=dynamic \
 			--with-stream_geoip_module=dynamic
 
 define MODULE_DEFINITIONS_geoip
-%if 0%{?suse_version} >= 1315
-%if 0%{?suse_version} < 1600
+%if ( 0%{?suse_version} \&\& 0%{?suse_version} < 1600 )
 BuildRequires: libGeoIP-devel
-%endif
 %endif
 BuildRequires: libmaxminddb-devel
 endef

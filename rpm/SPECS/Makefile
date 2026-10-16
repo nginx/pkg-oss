@@ -91,12 +91,7 @@ BASE_CONFIGURE_ARGS=\
 	--with-http_stub_status_module \
 	--with-http_sub_module \
 	--with-http_v2_module \
-$$( if [ 0%{?suse_version} -eq 1315 ]; then \
-	continue; \
-else \
-	echo "--with-http_v3_module"; \
-fi; \
-) \
+	--with-http_v3_module \
 	--with-mail \
 	--with-mail_ssl_module \
 	--with-stream \
@@ -331,38 +326,12 @@ nginx-module-%.spec: nginx-module-%.rpm-changelog
 	}
 
 check-compat-%:
-	@module=`echo $@ | cut -d '-' -f 3 | tr '-' '_'` ; \
+	@module=`echo $@ | cut -d '-' -f 3- | tr '-' '_'` ; \
 	case "$${module}" in \
-		brotli) \
-		if [	`rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 ]; then \
-			echo "Brotli can't be build on SLES < 15" > \
-			nginx-module-$${module}.skip ; \
-			exit ; \
-		fi ; \
-		;; \
-		geoip2) \
-		if [ `rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 ]; then \
-			echo "GeoIP2 can not be built on SLES < 15 due to libmaxminddb absence" > \
-			nginx-module-$${module}.skip ; \
-			exit ; \
-		fi ; \
-		;; \
 		lua) \
 		ARCH=`rpm --eval '%{_arch}'` ; \
 		if [ "$$ARCH" = "ppc64le" -o "$$ARCH" = "s390x" ]; then \
 			echo "Lua module can not be built on $$ARCH" > \
-			nginx-module-$${module}.skip ; \
-			exit ; \
-		fi ; \
-		if [ `rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 ]; then \
-			echo "Lua can't be build on SLES < 15 due to too old openssl" > \
-			nginx-module-$${module}.skip ; \
-			exit ; \
-		fi ; \
-		;; \
-		otel) \
-		if [`rpm --eval '0%{?suse_version}'` -gt 0 -a `rpm --eval '0%{?suse_version}'` -lt 1500 ]; then \
-			echo "otel can not be built on SLES < 15 due to absence of re2" > \
 			nginx-module-$${module}.skip ; \
 			exit ; \
 		fi ; \

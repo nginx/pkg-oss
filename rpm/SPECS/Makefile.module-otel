@@ -32,7 +32,7 @@ MODULE_CONFARGS_otel=	--add-dynamic-module=nginx-otel-$(NGINX_OTEL_GITHASH)/
 define MODULE_DEFINITIONS_otel
 BuildRequires: cmake
 BuildRequires: pkgconfig(re2) pkgconfig(libcares)
-%if 0%{?suse_version} >= 1500
+%if 0%{?suse_version}
 BuildRequires: grpc-devel protobuf-devel
 %endif
 endef
