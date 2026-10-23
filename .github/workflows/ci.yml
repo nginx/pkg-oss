@@ -11,13 +11,13 @@ defaults:
 
 jobs:
   generate-matrix:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       matrix-alpine: ${{ steps.set-matrix.outputs.matrix-alpine }}
       matrix-ubuntu: ${{ steps.set-matrix.outputs.matrix-ubuntu }}
       matrix-redhat: ${{ steps.set-matrix.outputs.matrix-redhat }}
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Figure out what targets we're building for
         working-directory: debian
@@ -36,14 +36,14 @@ jobs:
           done
 
   alpine-base:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     container: alpine:3.24
     defaults:
       run:
         shell: sh -e {0}
     needs: generate-matrix
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Alpine Linux
         run: |
@@ -75,7 +75,7 @@ jobs:
           make base
 
       - name: Upload nginx binary
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: nginx-binary-alpine
           path: alpine/base/nginx
@@ -87,7 +87,7 @@ jobs:
 
   alpine:
     needs: [generate-matrix, alpine-base]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     container: alpine:3.24
     defaults:
       run:
@@ -97,7 +97,7 @@ jobs:
       matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-alpine)}}
 
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Alpine Linux
         run: |
@@ -130,7 +130,7 @@ jobs:
 
       - name: Install Rust toolchain
         if: matrix.target == 'module-acme'
-        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
         with:
           toolchain: 1.86.0
 
@@ -150,7 +150,7 @@ jobs:
           make ${{ matrix.target }}
 
       - name: Download nginx binary
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: nginx-binary-alpine
           path: alpine/base
@@ -180,7 +180,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: generate-matrix
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Ubuntu
         run: |
@@ -204,7 +204,7 @@ jobs:
           make base
 
       - name: Upload nginx binary
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: nginx-binary-ubuntu
           path: debian/base/nginx
@@ -222,7 +222,7 @@ jobs:
       matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-ubuntu)}}
 
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Ubuntu
         run: |
@@ -245,7 +245,7 @@ jobs:
 
       - name: Install Rust toolchain
         if: matrix.target == 'module-acme'
-        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
         with:
           toolchain: 1.86.0
 
@@ -259,7 +259,7 @@ jobs:
           make ${{ matrix.target }}
 
       - name: Download nginx binary
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: nginx-binary-ubuntu
           path: debian/base
@@ -285,11 +285,11 @@ jobs:
           find .. -mindepth 1 -maxdepth 1 -name "*.deb" | xargs ls -ld
 
   redhat-base:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: generate-matrix
     container: almalinux:9
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup AlmaLinux
         run: |
@@ -315,7 +315,7 @@ jobs:
           make base
 
       - name: Upload nginx binary
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: nginx-binary-redhat
           path: rpm/SPECS/base/nginx
@@ -327,7 +327,7 @@ jobs:
 
   redhat:
     needs: [generate-matrix, redhat-base]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     container:
       image: almalinux:9
       options: --init
@@ -336,7 +336,7 @@ jobs:
       matrix: ${{fromJson(needs.generate-matrix.outputs.matrix-redhat )}}
 
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup AlmaLinux
         run: |
@@ -368,7 +368,7 @@ jobs:
 
       - name: Install Rust toolchain
         if: matrix.target == 'module-acme'
-        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 #v1
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
         with:
           toolchain: 1.86.0
 
@@ -380,7 +380,7 @@ jobs:
           make ${{ matrix.target }}
 
       - name: Download nginx binary
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: nginx-binary-redhat
           path: rpm/SPECS/base
