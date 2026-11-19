@@ -6,8 +6,7 @@ MODULE_CONTRIB_DEPS_otel=	nginx-otel \
 				abseil-cpp \
 				grpc \
 				opentelemetry-cpp \
-				opentelemetry-proto \
-				protobuf
+				opentelemetry-proto
 
 include $(foreach dep,$(MODULE_CONTRIB_DEPS_otel),$(CONTRIB)/src/$(dep)/version)
 
@@ -20,8 +19,7 @@ MODULE_SOURCES_otel=	nginx-otel-$(NGINX_OTEL_VERSION)-$(NGINX_OTEL_GITHASH).tar.
 				abseil-cpp-$(ABSEIL_CPP_VERSION).tar.gz \
 				grpc-$(GRPC_VERSION).tar.gz \
 				opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION).tar.gz \
-				opentelemetry-proto-$(OPENTELEMETRY_PROTO_VERSION).tar.gz \
-				protobuf-$(PROTOBUF_VERSION).tar.gz
+				opentelemetry-proto-$(OPENTELEMETRY_PROTO_VERSION).tar.gz
 
 MODULE_PATCHES_otel=   $(CONTRIB)/src/abseil-cpp/b957f0ccd00481cd4fd663d8320aa02ae0564f18.patch \
 					   $(CONTRIB)/src/abseil-cpp/4500c2fada4e952037c59bd65e8be1ba0b29f21e.patch \
@@ -31,9 +29,9 @@ MODULE_CONFARGS_otel=	--add-dynamic-module=nginx-otel-$(NGINX_OTEL_GITHASH)/
 
 define MODULE_DEFINITIONS_otel
 BuildRequires: cmake
-BuildRequires: pkgconfig(re2) pkgconfig(libcares)
+BuildRequires: pkgconfig(re2) pkgconfig(libcares) protobuf-devel
 %if 0%{?suse_version}
-BuildRequires: grpc-devel protobuf-devel
+BuildRequires: grpc-devel
 %endif
 endef
 export MODULE_DEFINITIONS_otel
@@ -66,20 +64,6 @@ cd %{bdir}/abseil-cpp-$(ABSEIL_CPP_VERSION) \&\& mkdir build \&\& cd build \&\& 
 	-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	../ \&\& \
 	make $$_make_opts install \&\& \
-cd %{bdir}/protobuf-$(PROTOBUF_VERSION) \&\& mkdir build \&\& cd build \&\& \
-	cmake \
-	-DCMAKE_CXX_STANDARD=17 \
-	-DCMAKE_CXX_EXTENSIONS=OFF \
-	-DCMAKE_CXX_VISIBILITY_PRESET=hidden \
-	-DCMAKE_POLICY_DEFAULT_CMP0063=NEW \
-	-DCMAKE_PREFIX_PATH=%{bdir}/prebuilt/ \
-	-DCMAKE_INSTALL_PREFIX:STRING=%{bdir}/prebuilt/ \
-	-DCMAKE_INSTALL_LIBDIR:STRING=lib \
-	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-	-Dprotobuf_BUILD_TESTS=OFF \
-	-DCMAKE_BUILD_TYPE=RelWithDebInfo \
-	../cmake/ \&\& \
-	make $$_make_opts install \&\& \
 cd %{bdir}/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	CXXFLAGS="%{optflags} -DGRPC_NO_XDS -DGRPC_NO_RLS" \
 	cmake \
@@ -104,7 +88,7 @@ cd %{bdir}/grpc-$(GRPC_VERSION) \&\& mkdir build \&\& cd build \&\& \
 	-DgRPC_CARES_PROVIDER=package \
 	-DgRPC_ABSL_PROVIDER=package \
 	-DgRPC_PROTOBUF_PROVIDER=package \
-	-DgRPC_PROTOBUF_PACKAGE_TYPE=CONFIG \
+	-DgRPC_PROTOBUF_PACKAGE_TYPE=MODULE \
 	-DgRPC_USE_PROTO_LITE=ON \
 	-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 	../ \&\& \
@@ -127,6 +111,8 @@ cd %{bdir}/opentelemetry-cpp-$(OPENTELEMETRY_CPP_VERSION) \&\& mkdir build \&\& 
 	../ \&\& \
 	make $$_make_opts install || \
 exit 1
+cd %{bdir}/nginx-otel-$(NGINX_OTEL_GITHASH) \&\& \
+       sed -i.bak 's,protobuf REQUIRED,Protobuf MODULE REQUIRED,g' CMakeLists.txt
 endef
 export MODULE_PREBUILD_otel
 

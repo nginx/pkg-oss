@@ -3,8 +3,6 @@ MODULES+=	otel
 MODULE_SUMMARY_otel=	OpenTelemetry dynamic module
 
 MODULE_CONTRIB_DEPS_otel=	nginx-otel \
-							abseil-cpp \
-							grpc \
 							opentelemetry-cpp \
 							opentelemetry-proto
 
