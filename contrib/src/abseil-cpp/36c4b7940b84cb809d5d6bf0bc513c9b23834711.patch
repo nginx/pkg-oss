@@ -1,0 +1,22 @@
+From 36c4b7940b84cb809d5d6bf0bc513c9b23834711 Mon Sep 17 00:00:00 2001
+From: Ma Aiguo <maaiguo@uniontech.com>
+Date: Mon, 21 Feb 2022 21:04:57 +0800
+Subject: [PATCH] Fit for build on loong64 architecture
+
+---
+ absl/debugging/internal/examine_stack.cc | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/absl/debugging/internal/examine_stack.cc b/absl/debugging/internal/examine_stack.cc
+index 589a3ef367d..2fbfea8e53f 100644
+--- a/absl/debugging/internal/examine_stack.cc
++++ b/absl/debugging/internal/examine_stack.cc
+@@ -82,6 +82,8 @@ void* GetProgramCounter(void* vuc) {
+       return reinterpret_cast<void*>(context->uc_mcontext.gregs[16]);
+ #elif defined(__e2k__)
+     return reinterpret_cast<void*>(context->uc_mcontext.cr0_hi);
++#elif defined(__loongarch__)
++    return reinterpret_cast<void*>(context->uc_mcontext.__pc);
+ #else
+ #error "Undefined Architecture."
+ #endif
